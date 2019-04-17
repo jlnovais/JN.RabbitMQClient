@@ -1,4 +1,4 @@
-# JN.Authentication
+# JN.RabbitMQClient
 Simple implementation of RabbitMQ consumer and sender.
 
 ## Install
@@ -48,7 +48,6 @@ private static void StopReceive(string queuename, string lasterrordescription, s
 {
     Console.WriteLine("Stop receiving on queue " + queuename + "; last error: " + lasterrordescription);
 }
-
 
 ```
 
