@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace JN.RabbitMQClient.Tests
 {
-    public class Test : RabbitMqToolsBase
+    public class Test : RabbitMQClientBase
     {
         public void SetupConnection()
         {
@@ -12,7 +12,7 @@ namespace JN.RabbitMQClient.Tests
     }
 
     [TestFixture]
-    class RabbitMQToolsBaseTests
+    class RabbitMQClientBaseTests
     {
         [TestCase("")]
         [TestCase(null)]

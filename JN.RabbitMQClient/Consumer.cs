@@ -7,7 +7,7 @@ using RabbitMQClient.Interfaces;
 
 namespace JN.RabbitMQClient
 {
-    public class Consumer : RabbitMqToolsBase, IConsumer
+    public class Consumer : RabbitMQClientBase, IConsumer
     {
 
 
@@ -241,7 +241,7 @@ namespace JN.RabbitMQClient
 
             SetupConnection(connectionDescription, false, AutomaticConnectionRecovery);
 
-            // BasicQos(0="Dont send me a new message until I’ve finshed",  PrefetchCount= "Send me PrefetchCount messages at a time", false ="Apply to this Model only")
+            // BasicQos(0="Dont send me a new message until I’ve finished",  PrefetchCount= "Send me PrefetchCount messages at a time", false ="Apply to this Model only")
             _model.BasicQos(0, PrefetchCount, false);
 
             //IsConsuming = true;

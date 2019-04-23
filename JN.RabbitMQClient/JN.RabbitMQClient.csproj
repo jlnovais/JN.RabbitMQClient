@@ -4,6 +4,10 @@
     <TargetFramework>netstandard1.5</TargetFramework>
     <Description>Simple implementation of RabbitMQ consumer and sender.</Description>
     <Authors>José Novais</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/jlnovais/JN.RabbitMQClient</PackageProjectUrl>
+    <Copyright>José Novais, 2019</Copyright>
+    <Product>JN.RabbitMQClient - Simple RabbitMQ client</Product>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,7 +4,7 @@ using RabbitMQClient.Interfaces;
 
 namespace JN.RabbitMQClient
 {
-    public class Sender: RabbitMqToolsBase, ISender
+    public class Sender: RabbitMQClientBase, ISender
     {
         //private bool _isInitialized;
         public string ExchangeName { get; set; }

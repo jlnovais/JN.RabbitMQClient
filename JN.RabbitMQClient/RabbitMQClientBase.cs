@@ -4,7 +4,7 @@ using RabbitMQ.Client;
 
 namespace JN.RabbitMQClient
 {
-    public abstract class RabbitMqToolsBase : IDisposable
+    public abstract class RabbitMQClientBase : IDisposable
     {
         private ConnectionFactory _connectionFactory;
         private IConnection _connection;
