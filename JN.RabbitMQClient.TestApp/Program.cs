@@ -6,21 +6,44 @@ namespace JN.RabbitMQClient.TestApp
     {
         static void Main(string[] args)
         {
+
+            string queueName = "testeQueue";
+            string virtualHost = "Testes";//"Testes";
+
             Consumer c = new Consumer
             {
                 Host = "localhost",
                 Password = "123",
                 Username = "teste",
-                QueueName = "teste",
-                VirtualHost = "Testes",
+                QueueName = queueName,
+                VirtualHost = virtualHost,
                 Description = "test client",
                 PrefetchCount = 1
             };
 
 
+            //c.Host = "localhost";
+            //c.Password = "123";
+            //c.Username = "teste";
+            //c.QueueName = "teste";
+            //c.VirtualHost = "Testes";
+            //c.Description = "test client";
+
+            Sender sender = new Sender()
+            {
+                QueueName = queueName,
+                Host = "localhost",
+                Username = "teste",
+                Password = "123",
+                VirtualHost = virtualHost
+            };
+
+            sender.Send("test message... " + DateTime.Now, true);
+
+
             c.onStopReceive += StopReceive;
             c.onMessageReceived += MessageReceived;
-            c.Start("test consumer....");
+            c.Start("teste consumer....");
 
             Console.WriteLine("Started...");
             Console.ReadLine();
@@ -30,6 +53,7 @@ namespace JN.RabbitMQClient.TestApp
             Console.WriteLine("Stopped...");
 
             Console.ReadLine();
+
         }
 
         private static Constants.MessageProcessInstruction MessageReceived(string message, string sourcequeuename, long firsterrortimestamp, string consumerdescription)
