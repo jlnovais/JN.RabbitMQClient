@@ -9,11 +9,12 @@
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
     <projectUrl>https://github.com/jlnovais/JN.RabbitMQClient</projectUrl>
-    <tags>RabbitMq;Client;Sender;Consumer;netstandard;csharp</tags>
+    <title>JN.RabbitMQClient</title>
+    <tags>RabbitMq;Client;Sender;Consumer;netstandard;csharp;Producer</tags>
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
-    <summary>Client for RabbitMQ.</summary>
+    <summary>Simple client for RabbitMQ.</summary>
     <copyright>José Novais, 2019</copyright>
-    <releaseNotes>first release</releaseNotes>
+    <releaseNotes>possibility to create the queue in the sender</releaseNotes>
     <dependencies>
       <group targetFramework=".NETStandard1.5">
         <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
