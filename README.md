@@ -3,9 +3,10 @@ Simple implementation of RabbitMQ consumer and sender.
 
 Under maintenance...
 
-Code available here:
+Code for current Nuget package is available here:
 
 https://github.com/jlnovais/Archive/tree/master/JN.RabbitMQClient
+
 
 -------------------------
 

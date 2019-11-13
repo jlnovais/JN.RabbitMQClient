@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JN.RabbitMQClient", "JN.Rab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JN.RabbitMQClient.TestApp", "JN.RabbitMQClient.TestApp\JN.RabbitMQClient.TestApp.csproj", "{4D09EAF2-E6B5-4202-8115-3A743669AEAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JN.RabbitMQClient.Tests", "JN.RabbitMQClient.Tests\JN.RabbitMQClient.Tests.csproj", "{259F3E8C-AE75-49B0-96CE-5E0138691591}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4D09EAF2-E6B5-4202-8115-3A743669AEAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D09EAF2-E6B5-4202-8115-3A743669AEAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D09EAF2-E6B5-4202-8115-3A743669AEAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{259F3E8C-AE75-49B0-96CE-5E0138691591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{259F3E8C-AE75-49B0-96CE-5E0138691591}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{259F3E8C-AE75-49B0-96CE-5E0138691591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{259F3E8C-AE75-49B0-96CE-5E0138691591}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
