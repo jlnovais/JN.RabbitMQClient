@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using RabbitMQ.Client;
 
-[assembly: InternalsVisibleTo("JN.RabbitMQClient.Tests")]
 namespace JN.RabbitMQClient
 {
+
     public static class Utils
     {
+
         //public static long UnixTimeNow()
         //{
         //    var timeSpan = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
         //    return (long) timeSpan.TotalSeconds;
         //}
 
+
+        public static void SetPropertiesConsumer(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds)
+        {
+            properties.Persistent = true; // SetPersistent(true);
+            properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
+            properties.Expiration = retentionPeriodInRetryQueueMilliseconds.ToString();
+            properties.Headers = new Dictionary<string, object>();
+        }
 
         /// <summary>
         /// convert to unixTimeStamp; usage: var timestamp = currentDate.ToUnixTimestamp();
@@ -42,22 +50,6 @@ namespace JN.RabbitMQClient
             return dateTime.AddSeconds(timestamp);
         }
 
-        internal static long GetFirstErrorTimeStampFromMessageArgs(IBasicProperties properties)
-        {
-            long res = 0;
-
-            if (properties == null) 
-                return res;
-
-            if (properties.Headers == null)
-                return res;
-
-            if (properties.Headers.ContainsKey(Constants.FirstErrorTimeStampHeaderName))
-                res = (long) (properties.Headers[Constants.FirstErrorTimeStampHeaderName]);
-
-            return res;
-        }
-
         public static List<string> GetHostsList(string hosts)
         {
             if (string.IsNullOrEmpty(hosts))
@@ -65,11 +57,9 @@ namespace JN.RabbitMQClient
 
             var hostArr = hosts.Split(';');
 
-            var res = new List<string>(hostArr.Where(x=>!string.IsNullOrWhiteSpace(x)));
+            var res = hostArr.Where(x=>!string.IsNullOrWhiteSpace(x)).ToList();
 
             return res;
         }
-
     }
 }
-

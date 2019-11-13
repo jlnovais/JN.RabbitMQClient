@@ -1,5 +1,6 @@
 ﻿namespace JN.RabbitMQClient
 {
+
     public static class Constants
     {
         public enum MessageProcessInstruction

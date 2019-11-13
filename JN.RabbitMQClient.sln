@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JN.RabbitMQClient", "JN.RabbitMQClient\JN.RabbitMQClient.csproj", "{C3A312BB-B78D-4F19-A70D-F28146016B54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JN.RabbitMQClient", "JN.RabbitMQClient\JN.RabbitMQClient.csproj", "{C3A312BB-B78D-4F19-A70D-F28146016B54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JN.RabbitMQClient.TestApp", "JN.RabbitMQClient.TestApp\JN.RabbitMQClient.TestApp.csproj", "{4D09EAF2-E6B5-4202-8115-3A743669AEAC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JN.RabbitMQClient.Tests", "JN.RabbitMQClient.Tests\JN.RabbitMQClient.Tests.csproj", "{34719C58-E300-4518-86BD-84F4981162D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JN.RabbitMQClient.TestApp", "JN.RabbitMQClient.TestApp\JN.RabbitMQClient.TestApp.csproj", "{4D09EAF2-E6B5-4202-8115-3A743669AEAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{4D09EAF2-E6B5-4202-8115-3A743669AEAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D09EAF2-E6B5-4202-8115-3A743669AEAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D09EAF2-E6B5-4202-8115-3A743669AEAC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{34719C58-E300-4518-86BD-84F4981162D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34719C58-E300-4518-86BD-84F4981162D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34719C58-E300-4518-86BD-84F4981162D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34719C58-E300-4518-86BD-84F4981162D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
