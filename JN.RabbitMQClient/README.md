@@ -1,6 +1,15 @@
 # JN.RabbitMQClient
 Simple implementation of RabbitMQ consumer and sender.
 
+Under maintenance...
+
+Code available here:
+
+https://github.com/jlnovais/Archive/tree/master/JN.RabbitMQClient
+
+-------------------------
+
+
 ## Install
 Download the package from NuGet:
 
