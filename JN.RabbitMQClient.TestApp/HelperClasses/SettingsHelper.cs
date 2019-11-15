@@ -11,7 +11,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
         {
             var section = configuration.GetSection(sectionName);
 
-            short.TryParse(section["TotalInstances"], out var totalInstances);
+            byte.TryParse(section["TotalInstances"], out var totalInstances);
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
 
             var conf = new BrokerConfig()

@@ -5,13 +5,15 @@ namespace JN.RabbitMQClient
 {
     public interface IRabbitMqConsumerService
     {
-        void StartConsumers(string consumerName, string queueName = null, short? totalConsumers = null);
+        void StartConsumers(string consumerName, string queueName = null, byte? totalConsumers = null);
         void Dispose();
         event ReceiveMessageDelegate ReceiveMessage;
         event ShutdownDelegate ShutdownConsumer;
         event ReceiveMessageErrorDelegate ReceiveMessageError;
         string ServiceDescription { get; set; }
-        short GetTotalRunningConsumers { get; }
+        byte GetTotalRunningConsumers { get; }
+        short GetTotalConsumers { get; }
         IEnumerable<ConsumerInfo> GetConsumerDetails();
+        void StopConsumers(string consumerTag = null);
     }
 }

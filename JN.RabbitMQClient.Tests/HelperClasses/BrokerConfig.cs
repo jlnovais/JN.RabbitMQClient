@@ -1,4 +1,4 @@
-﻿namespace JN.RabbitMQClient.Tests.HelperClasses
+namespace JN.RabbitMQClient.Tests.HelperClasses
 {
     public class BrokerConfig
     {

@@ -9,7 +9,7 @@
         int Port { get; set; }
         string RoutingKeyOrQueueName { get; set; }
         string Exchange { get; set; }
-        short TotalInstances { get; set; }
+        byte TotalInstances { get; set; }
         bool ShuffleHostList { get; set; } 
     }
 

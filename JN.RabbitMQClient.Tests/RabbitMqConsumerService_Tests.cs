@@ -9,8 +9,6 @@ using NUnit.Framework;
 //[assembly: IgnoresAccessChecksTo("RabbitMQToolsV2.Consumer")]
 namespace JN.RabbitMQClient.Tests
 {
-
-
     class RabbitMqConsumerService_Tests
     {
         private static int _totalMessagesReceived;
@@ -54,7 +52,8 @@ namespace JN.RabbitMQClient.Tests
             return consumer;
         }
 
-        private Task ShutDownConsumer(string consumertag, ushort errorcode, string shutdowninitiator, string errormessage)
+        private Task ShutDownConsumer(string consumertag, ushort errorcode, string shutdowninitiator,
+            string errormessage)
         {
             _totalStopProcessing++;
             return Task.CompletedTask;
@@ -67,7 +66,8 @@ namespace JN.RabbitMQClient.Tests
             return Task.CompletedTask;
         }
 
-        private Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename, string consumertag, string exchange, string message)
+        private Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename,
+            string consumertag, string exchange, string message)
         {
             _totalMessagesReceived++;
 
@@ -75,10 +75,14 @@ namespace JN.RabbitMQClient.Tests
             {
                 case "error":
                     throw new Exception("error");
+                case "ok":
+                    return Task.FromResult(Constants.MessageProcessInstruction.OK);
                 case "ignore":
                     return Task.FromResult(Constants.MessageProcessInstruction.IgnoreMessage);
+                case "ignoreRequeue":
+                    return Task.FromResult(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
                 default:
-                    return Task.FromResult(Constants.MessageProcessInstruction.OK);
+                    return Task.FromResult(Constants.MessageProcessInstruction.Unknown);
             }
         }
 
@@ -98,7 +102,7 @@ namespace JN.RabbitMQClient.Tests
             _rabbitMqHelper.DeleteQueue(queueName);
         }
 
-        [TestCase("" )]
+        [TestCase("")]
         [TestCase(";")]
         [TestCase("  ")]
         [TestCase(null)]
@@ -125,11 +129,13 @@ namespace JN.RabbitMQClient.Tests
             Thread.Sleep(100);
 
             var startedConsumers = _consumerService.GetTotalRunningConsumers;
+            var totalConsumers = _consumerService.GetTotalConsumers;
 
             var res = _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
             var consumerCount = res.ConsumerCount;
 
             Assert.AreEqual(TotalConsumers, startedConsumers);
+            Assert.AreEqual(TotalConsumers, totalConsumers);
             Assert.AreEqual(TotalConsumers, consumerCount);
         }
 
@@ -171,7 +177,7 @@ namespace JN.RabbitMQClient.Tests
             _consumerService.StartConsumers("test", null, TotalConsumers);
 
             Thread.Sleep(100);
-            
+
             _consumerService.Dispose();
 
             Thread.Sleep(100);
@@ -192,6 +198,71 @@ namespace JN.RabbitMQClient.Tests
             Thread.Sleep(100);
 
             Assert.AreEqual(2, _totalErrors);
+        }
+
+        [TestCase("ok", 0)]
+        [TestCase("ignore", 0)]
+        [TestCase("ignoreRequeue", 1)]
+        [TestCase("unknownState", 0)]
+        public void ConsumerService_ProcessMessage_messageIsReceived(string messageType,
+            int expectedMessageInQueueAfterProcessing)
+        {
+            _consumerService = GetConsumerService();
+
+            _rabbitMqHelper.SendMessage(queueName, messageType);
+
+            _consumerService.StartConsumers("test", null, TotalConsumers);
+
+            Thread.Sleep(100);
+
+            _consumerService.Dispose();
+
+            var res = _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
+            var totalMessagesInQueue = res.MessageCount;
+
+            //Assert.AreEqual(1, _totalMessagesReceived);
+            Assert.AreEqual(expectedMessageInQueueAfterProcessing, totalMessagesInQueue);
+
+        }
+
+
+        [Test]
+        public void ConsumerService_StopConsumers_AllConsumersStopConsuming()
+        {
+            _consumerService = GetConsumerService();
+
+            _consumerService.StartConsumers("test", null, TotalConsumers);
+
+            Thread.Sleep(100);
+
+            Assert.AreEqual(TotalConsumers, _consumerService.GetTotalRunningConsumers);
+
+            Thread.Sleep(100);
+
+            _consumerService.StopConsumers();
+
+
+            Assert.AreEqual(0, _consumerService.GetTotalRunningConsumers);
+            Assert.AreEqual(0, _consumerService.GetTotalConsumers);
+        }
+
+        [Test]
+        public void ConsumerService_StopConsumers_oneConsumer_consumerStopConsuming()
+        {
+            _consumerService = GetConsumerService();
+
+            _consumerService.StartConsumers("test", null, TotalConsumers);
+
+            Thread.Sleep(100);
+
+            Assert.AreEqual(TotalConsumers, _consumerService.GetTotalRunningConsumers);
+
+            _consumerService.StopConsumers("test_0");
+
+            Thread.Sleep(100);
+
+            Assert.AreEqual(1, _consumerService.GetTotalRunningConsumers);
+            Assert.AreEqual(1, _consumerService.GetTotalConsumers);
         }
 
     }

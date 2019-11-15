@@ -11,7 +11,7 @@ namespace JN.RabbitMQClient.Entities
         public int Port { get; set; }
         public string RoutingKeyOrQueueName { get; set; }
         public string Exchange { get; set; }
-        public short TotalInstances { get; set; }
+        public byte TotalInstances { get; set; }
         public bool ShuffleHostList { get; set; }
     }
 

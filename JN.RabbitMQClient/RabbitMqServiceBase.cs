@@ -24,13 +24,14 @@ namespace JN.RabbitMQClient
                 //HostName = host,
                 UserName = _config.Username,
                 Password = _config.Password,
-                DispatchConsumersAsync = true
+                DispatchConsumersAsync = true,
             };
 
             if (!string.IsNullOrEmpty(_config.VirtualHost))
                 factory.VirtualHost = _config.VirtualHost;
             if (_config.Port > 0)
                 factory.Port = _config.Port;
+
 
             factory.EndpointResolverFactory = GetEndpointResolver;
             var conn = factory.CreateConnection(connectionName);

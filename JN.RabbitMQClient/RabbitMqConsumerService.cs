@@ -20,7 +20,8 @@ namespace JN.RabbitMQClient
         
 
         private const short MaxChannelsPerConnection = 3;
-        private short _totalConsumersToStart;
+        private byte _totalConsumersToStart;
+        private bool _disposed;
 
 
         public RabbitMqConsumerService(IBrokerConfigConsumers config)
@@ -65,12 +66,14 @@ namespace JN.RabbitMQClient
             return null;
         }
 
-        public short GetTotalRunningConsumers
+        public byte GetTotalRunningConsumers
         {
-            get { return (short) (_consumers.Any() ? _consumers.Count(x => x.IsRunning) : 0); }
+            get { return (byte) (_consumers.Any() ? _consumers.Count(x => x.IsRunning) : 0); }
         }
 
-        public void StartConsumers(string consumerName, string queueName = null, short? totalConsumers = null)
+        public short GetTotalConsumers => (short)(_consumers.Any() ? _consumers.Count : 0);
+
+        public void StartConsumers(string consumerName, string queueName = null, byte? totalConsumers = null)
         {
             _totalConsumersToStart = totalConsumers ?? _config.TotalInstances;
 
@@ -105,6 +108,25 @@ namespace JN.RabbitMQClient
             }
         }
 
+        public void StopConsumers(string consumerTag = null)
+        {
+            if (!string.IsNullOrWhiteSpace(consumerTag))
+            {
+                var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
+                consumer?.Model.Abort();
+
+                _consumers.Remove(consumer);
+
+                return;
+            }
+
+            foreach (var consumer in _consumers)
+            {
+                consumer.Model.Abort();
+            }
+
+            _consumers.RemoveAll(x=>!x.IsRunning);
+        }
 
         private IConnection GetConnection(string connectionName, int totalConsumers = 0, short maxChannelsPerConnection = 1)
         {
@@ -218,20 +240,35 @@ namespace JN.RabbitMQClient
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
             if (_consumers.Any())
             {
                 foreach (var consumer in _consumers)
                 {
+                    try
+                    {
+                        consumer.Model.Close();
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+
                     consumer.Model.Dispose();
                 }
+                _consumers.Clear();
             }
 
 
             foreach (var connection in _connections)
             {
+                connection.Abort();
                 connection.Dispose();
             }
 
+            _disposed = true;
         }
 
     }
