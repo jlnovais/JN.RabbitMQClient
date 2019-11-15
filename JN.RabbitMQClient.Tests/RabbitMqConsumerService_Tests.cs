@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Tests.HelperClasses;
 using NUnit.Framework;
+using BrokerConfig = JN.RabbitMQClient.Tests.HelperClasses.BrokerConfig;
 
 
 //[assembly: IgnoresAccessChecksTo("RabbitMQToolsV2.Consumer")]
@@ -17,6 +19,7 @@ namespace JN.RabbitMQClient.Tests
 
         private const int TotalConsumers = 2;
         private const string queueName = "TestQueue";
+        private const string queueNameRetry = "TestQueueRetry";
 
         private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig()
         {
@@ -52,6 +55,8 @@ namespace JN.RabbitMQClient.Tests
             return consumer;
         }
 
+
+
         private Task ShutDownConsumer(string consumertag, ushort errorcode, string shutdowninitiator,
             string errormessage)
         {
@@ -66,8 +71,7 @@ namespace JN.RabbitMQClient.Tests
             return Task.CompletedTask;
         }
 
-        private Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename,
-            string consumertag, string exchange, string message)
+        private Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename, string consumertag, long firsterrortimestamp, string exchange, string message)
         {
             _totalMessagesReceived++;
 
@@ -81,6 +85,8 @@ namespace JN.RabbitMQClient.Tests
                     return Task.FromResult(Constants.MessageProcessInstruction.IgnoreMessage);
                 case "ignoreRequeue":
                     return Task.FromResult(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
+                case "RequeueDelay":
+                    return Task.FromResult(Constants.MessageProcessInstruction.RequeueMessageWithDelay);
                 default:
                     return Task.FromResult(Constants.MessageProcessInstruction.Unknown);
             }
@@ -90,7 +96,11 @@ namespace JN.RabbitMQClient.Tests
         [SetUp]
         public void Setup()
         {
+            _rabbitMqHelper.DeleteQueue(queueName);
+            _rabbitMqHelper.DeleteQueue(queueNameRetry);
+
             _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
+            _rabbitMqHelper.CreateQueueOrGetInfo(queueNameRetry);
 
             _totalMessagesReceived = 0;
             _totalStopProcessing = 0;
@@ -100,6 +110,7 @@ namespace JN.RabbitMQClient.Tests
         public void TearDown()
         {
             _rabbitMqHelper.DeleteQueue(queueName);
+            _rabbitMqHelper.DeleteQueue(queueNameRetry);
         }
 
         [TestCase("")]
@@ -203,6 +214,7 @@ namespace JN.RabbitMQClient.Tests
         [TestCase("ok", 0)]
         [TestCase("ignore", 0)]
         [TestCase("ignoreRequeue", 1)]
+        [TestCase("RequeueDelay", 0)]
         [TestCase("unknownState", 0)]
         public void ConsumerService_ProcessMessage_messageIsReceived(string messageType,
             int expectedMessageInQueueAfterProcessing)
@@ -223,6 +235,44 @@ namespace JN.RabbitMQClient.Tests
             //Assert.AreEqual(1, _totalMessagesReceived);
             Assert.AreEqual(expectedMessageInQueueAfterProcessing, totalMessagesInQueue);
 
+        }
+
+        [TestCase("ok", 0, 0)]
+        [TestCase("ignore", 0, 0)]
+        [TestCase("ignoreRequeue", 1, 0)]
+        [TestCase("RequeueDelay", 0, 1)]
+        [TestCase("unknownState", 0, 0)]
+        public void ConsumerService_ProcessMessageWithDelay_messageIsReceived(string messageType,
+            int expectedMessageInQueueAfterProcessing, int expectedMessageInRetryQueueAfterProcessing)
+        {
+            _consumerService = GetConsumerService();
+
+            _rabbitMqHelper.SendMessage(queueName, messageType);
+
+            _consumerService.StartConsumers("test", GetRetryOptions(), null, TotalConsumers);
+
+            Thread.Sleep(100);
+
+            _consumerService.Dispose();
+
+            var resQueue = _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
+            var resRetryQueue = _rabbitMqHelper.CreateQueueOrGetInfo(queueNameRetry);
+
+            var totalMessagesInQueue = resQueue.MessageCount;
+            var totalMessagesInRetryQueue = resRetryQueue.MessageCount;
+
+            Assert.AreEqual(expectedMessageInQueueAfterProcessing, totalMessagesInQueue);
+            Assert.AreEqual(expectedMessageInRetryQueueAfterProcessing, totalMessagesInRetryQueue);
+
+        }
+
+        private RetryQueueDetails GetRetryOptions()
+        {
+            return new RetryQueueDetails()
+            {
+                RetentionPeriodInRetryQueueMilliseconds = 60000,
+                RetryQueue = queueNameRetry
+            };
         }
 
 

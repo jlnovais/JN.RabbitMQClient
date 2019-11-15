@@ -13,7 +13,7 @@ namespace JN.RabbitMQClient.TestApp
         public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService)
         {
             _logger = logger;
- 
+
             _consumerService = consumerService;
             _senderService = senderService;
 
@@ -26,6 +26,7 @@ namespace JN.RabbitMQClient.TestApp
             _senderService.ServiceDescription = "Sender Service";
 
         }
+
 
         private async Task ProcessError(string routingkeyorqueuename, string consumertag, string exchange, string message, string errormessage)
         {
@@ -53,11 +54,8 @@ namespace JN.RabbitMQClient.TestApp
 
         }
 
-
-
-        private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, string exchange, string message)
+        private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingkeyorqueuename, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-
             await Console.Out.WriteLineAsync($"Message received by '{consumerTag}'. Consumer status: ");
 
             var details = _consumerService.GetConsumerDetails();
@@ -68,7 +66,7 @@ namespace JN.RabbitMQClient.TestApp
                 {
                     Console.ForegroundColor = consumerInfo.Id % 2 == 0 ? ConsoleColor.Blue : ConsoleColor.DarkGreen;
 
-                    await Console.Out.WriteLineAsync($"Consumer '{consumerInfo.Name}'; connected to {consumerInfo.ConnectedToHost}:{consumerInfo.ConnectedToPort}; started at {consumerInfo.ConnectionTime:yyyy-MM-dd HH:mm:ss}; {consumerInfo.LastMessageDate:yyyy-MM-dd HH:mm:ss} ");
+                    await Console.Out.WriteLineAsync($"Consumer '{consumerInfo.Name}'; connected to {consumerInfo.ConnectedToHost}:{consumerInfo.ConnectedToPort}; firstErrorTimestamp: {firstErrorTimestamp}; started at {consumerInfo.ConnectionTime:yyyy-MM-dd HH:mm:ss}; {consumerInfo.LastMessageDate:yyyy-MM-dd HH:mm:ss} ");
 
                     Console.ResetColor();
 
@@ -94,7 +92,7 @@ namespace JN.RabbitMQClient.TestApp
                     return Constants.MessageProcessInstruction.Unknown;
             }
 
-            
+
 
 
         }

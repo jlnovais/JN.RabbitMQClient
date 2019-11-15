@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
+using JN.RabbitMQClient.Other;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -17,7 +18,7 @@ namespace JN.RabbitMQClient
         public event ReceiveMessageDelegate ReceiveMessage;
         public event ShutdownDelegate ShutdownConsumer;
         public event ReceiveMessageErrorDelegate ReceiveMessageError;
-        
+
 
         private const short MaxChannelsPerConnection = 3;
         private byte _totalConsumersToStart;
@@ -31,56 +32,61 @@ namespace JN.RabbitMQClient
 
         public IEnumerable<ConsumerInfo> GetConsumerDetails()
         {
-            if (_consumers.Any())
+            if (!_consumers.Any())
+                return null;
+
+            //use copy of list to avoid error: "Collection was modified; enumeration operation may not execute"
+            var consumers = _consumers.Select(x => new ConsumerInfo()
             {
-                //use copy of list to avoid error: "Collection was modified; enumeration operation may not execute"
-                var consumers = _consumers.Select(x => new ConsumerInfo()
-                {
-                    Name = x.ConsumerTag,
-                    IsRunning = x.IsRunning,
-                    ShutdownReason = x.ShutdownReason?.ReplyText ?? "",
-                    ConnectedToPort = x.ConnectedToPort,
-                    ConnectedToHost = x.ConnectedToHost,
-                    ConnectionTime = x.ConnectionTime,
-                    LastMessageDate = x.LastMessageDate,
-                    Id = x.Id
+                Name = x.ConsumerTag,
+                IsRunning = x.IsRunning,
+                ShutdownReason = x.ShutdownReason?.ReplyText ?? "",
+                ConnectedToPort = x.ConnectedToPort,
+                ConnectedToHost = x.ConnectedToHost,
+                ConnectionTime = x.ConnectionTime,
+                LastMessageDate = x.LastMessageDate,
+                Id = x.Id
 
-                });
+            });
 
-                return consumers.ToList();
+            return consumers.ToList();
 
-                //return _consumers.Select(x => new ConsumerInfo()
-                //{
-                //    Name = x.ConsumerTag,
-                //    IsRunning = x.IsRunning,
-                //    ShutdownReason = x.ShutdownReason?.ReplyText ?? "",
-                //    ConnectedToPort = x.ConnectedToPort,
-                //    ConnectedToHost = x.ConnectedToHost,
-                //    ConnectionTime = x.ConnectionTime,
-                //    LastMessageDate = x.LastMessageDate,
-                //    Id = x.Id
+            //return _consumers.Select(x => new ConsumerInfo()
+            //{
+            //    Name = x.ConsumerTag,
+            //    IsRunning = x.IsRunning,
+            //    ShutdownReason = x.ShutdownReason?.ReplyText ?? "",
+            //    ConnectedToPort = x.ConnectedToPort,
+            //    ConnectedToHost = x.ConnectedToHost,
+            //    ConnectionTime = x.ConnectionTime,
+            //    LastMessageDate = x.LastMessageDate,
+            //    Id = x.Id
 
-                //});
-            }
+            //});
 
-            return null;
         }
 
         public byte GetTotalRunningConsumers
         {
-            get { return (byte) (_consumers.Any() ? _consumers.Count(x => x.IsRunning) : 0); }
+            get { return (byte)(_consumers.Any() ? _consumers.Count(x => x.IsRunning) : 0); }
         }
 
         public short GetTotalConsumers => (short)(_consumers.Any() ? _consumers.Count : 0);
 
+
         public void StartConsumers(string consumerName, string queueName = null, byte? totalConsumers = null)
+        {
+            StartConsumers(consumerName, null, queueName, totalConsumers);
+        }
+
+        public void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null, byte? totalConsumers = null)
         {
             _totalConsumersToStart = totalConsumers ?? _config.TotalInstances;
 
             if (_totalConsumersToStart <= 0)
                 throw new ArgumentException("Invalid total number of consumers to start");
 
-            
+
             for (var i = 0; i < _totalConsumersToStart; i++)
             {
                 var totalCreatedConsumers = _consumers.Count;
@@ -93,7 +99,9 @@ namespace JN.RabbitMQClient
                     ConnectedToPort = connection.Endpoint.Port,
                     ConnectedToHost = connection.Endpoint.HostName,
                     ConnectionTime = DateTime.Now,
-                    Id = i
+                    Id = i,
+                    RetentionPeriodInRetryQueueMilliseconds = retryQueueDetails?.RetentionPeriodInRetryQueueMilliseconds ?? 0,
+                    RetryQueue = retryQueueDetails?.RetryQueue
                 };
 
                 consumer.Received += Consumer_Received;
@@ -125,7 +133,7 @@ namespace JN.RabbitMQClient
                 consumer.Model.Abort();
             }
 
-            _consumers.RemoveAll(x=>!x.IsRunning);
+            _consumers.RemoveAll(x => !x.IsRunning);
         }
 
         private IConnection GetConnection(string connectionName, int totalConsumers = 0, short maxChannelsPerConnection = 1)
@@ -162,7 +170,7 @@ namespace JN.RabbitMQClient
 
         private async Task Consumer_Shutdown(object sender, ShutdownEventArgs e)
         {
-            var consumer = (AsyncEventingBasicConsumer) sender;
+            var consumer = (AsyncEventingBasicConsumer)sender;
 
             var errorCode = e.ReplyCode;
             var errorMessage = e.ReplyText;
@@ -172,7 +180,7 @@ namespace JN.RabbitMQClient
             await OnShutdownConsumer(consumerTag, errorCode, shutdownInitiator, errorMessage).ConfigureAwait(false);
         }
 
- 
+
 
         private async Task Consumer_Received(object sender, BasicDeliverEventArgs e)
         {
@@ -185,15 +193,17 @@ namespace JN.RabbitMQClient
             {
                 message = Encoding.UTF8.GetString(e.Body);
 
-                var consumer = (AsyncEventingBasicConsumerExtended) sender;
+                var consumer = (AsyncEventingBasicConsumerExtended)sender;
 
                 consumer.LastMessageDate = DateTime.Now;
 
-                var model = consumer.Model; 
+                var firstErrorTimestamp = Tools.GetFirstErrorTimeStampFromMessageArgs(e.BasicProperties);
 
-                var result = await OnReceiveMessage(routingKeyOrQueueName, consumerTag, exchange, message).ConfigureAwait(false);
+                var model = consumer.Model;
 
-                switch (result)
+                var messageProcessInstruction = await OnReceiveMessage(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message).ConfigureAwait(false);
+
+                switch (messageProcessInstruction)
                 {
                     case Constants.MessageProcessInstruction.OK:
                         model.BasicAck(e.DeliveryTag, false);
@@ -205,8 +215,7 @@ namespace JN.RabbitMQClient
                         model.BasicReject(e.DeliveryTag, true);
                         break;
                     case Constants.MessageProcessInstruction.RequeueMessageWithDelay:
-                        //TO DO
-                        //RequeueMessageWithDelay(deliveryArgs);
+                        RequeueMessageWithDelay(consumer, e);
                         model.BasicReject(e.DeliveryTag, false);
                         break;
                     default:
@@ -217,9 +226,34 @@ namespace JN.RabbitMQClient
             }
             catch (Exception ex)
             {
-                    await OnMessageReceiveError(routingKeyOrQueueName, consumerTag, exchange, message, ex.Message)
-                        .ConfigureAwait(false);
+                await OnMessageReceiveError(routingKeyOrQueueName, consumerTag, exchange, message, ex.Message)
+                    .ConfigureAwait(false);
             }
+        }
+
+        private void RequeueMessageWithDelay(AsyncEventingBasicConsumerExtended consumer, BasicDeliverEventArgs deliveryArgs)
+        {
+
+            if (string.IsNullOrWhiteSpace(consumer.RetryQueue))
+                return;
+
+            var properties = consumer.Model.CreateBasicProperties();
+            Tools.SetPropertiesConsumer(properties, consumer.RetentionPeriodInRetryQueueMilliseconds);
+
+            var firstErrorTimeStamp = Tools.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
+            SetFirstErrorTimeStampToProperties(firstErrorTimeStamp, properties);
+
+            consumer.Model.BasicPublish(
+                "",
+                consumer.RetryQueue,
+                properties,
+                deliveryArgs.Body);
+        }
+
+        private void SetFirstErrorTimeStampToProperties(long firstErrorTimeStamp, IBasicProperties properties)
+        {
+            properties.Headers.Add(Constants.FirstErrorTimeStampHeaderName,
+                firstErrorTimeStamp > 0 ? firstErrorTimeStamp : DateTime.UtcNow.ToUnixTimestamp());
         }
 
 
@@ -228,9 +262,9 @@ namespace JN.RabbitMQClient
             return ReceiveMessageError?.Invoke(routingKeyOrQueueName, consumerTag, exchange, message, errorMessage);
         }
 
-        protected virtual Task<Constants.MessageProcessInstruction> OnReceiveMessage(string routingKeyOrQueueName, string consumerTag, string exchange, string message)
+        protected virtual Task<Constants.MessageProcessInstruction> OnReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-            return ReceiveMessage?.Invoke(routingKeyOrQueueName, consumerTag, exchange, message);
+            return ReceiveMessage?.Invoke(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message);
         }
 
         protected virtual Task OnShutdownConsumer(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)

@@ -5,25 +5,8 @@ using RabbitMQ.Client;
 
 namespace JN.RabbitMQClient
 {
-
     public static class Utils
     {
-
-        //public static long UnixTimeNow()
-        //{
-        //    var timeSpan = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
-        //    return (long) timeSpan.TotalSeconds;
-        //}
-
-
-        public static void SetPropertiesConsumer(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds)
-        {
-            properties.Persistent = true; // SetPersistent(true);
-            properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
-            properties.Expiration = retentionPeriodInRetryQueueMilliseconds.ToString();
-            properties.Headers = new Dictionary<string, object>();
-        }
-
         /// <summary>
         /// convert to unixTimeStamp; usage: var timestamp = currentDate.ToUnixTimestamp();
         /// </summary>
@@ -57,7 +40,7 @@ namespace JN.RabbitMQClient
 
             var hostArr = hosts.Split(';');
 
-            var res = hostArr.Where(x=>!string.IsNullOrWhiteSpace(x)).ToList();
+            var res = hostArr.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
             return res;
         }

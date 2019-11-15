@@ -15,5 +15,6 @@ namespace JN.RabbitMQClient
         short GetTotalConsumers { get; }
         IEnumerable<ConsumerInfo> GetConsumerDetails();
         void StopConsumers(string consumerTag = null);
+        void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null, byte? totalConsumers = null);
     }
 }

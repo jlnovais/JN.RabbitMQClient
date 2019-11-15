@@ -11,12 +11,13 @@ namespace JN.RabbitMQClient
 
         public DateTime ConnectionTime { get; set; }
         public DateTime LastMessageDate { get; set; }
+        public string RetryQueue { get; set; }
+
         public int Id { get; set; }
+        public int RetentionPeriodInRetryQueueMilliseconds { get; set; }
 
         public AsyncEventingBasicConsumerExtended(IModel model) : base(model)
         {
         }
-
-
     }
 }
