@@ -1,20 +1,16 @@
-# JN.RabbitMQClient
-Simple implementation of RabbitMQ consumer and sender.
+﻿using System;
+using System.Threading.Tasks;
+using JN.RabbitMQClient.Entities;
+using JN.RabbitMQClient.Interfaces;
 
-
-## Install
-Download the package from NuGet:
-
-`Install-Package JN.RabbitMQClient`
-
-## Usage
-First, you must create the `RabbitMqConsumerService` and then define delegates for `ReceiveMessage`, `ShutdownConsumer` and `ReceiveMessageError`. The service will start the required number of consumers when `StartConsumers` is called.
-
-Example for consumer and sender services:
-
-```csharp
+namespace JN.RabbitMQClient.SimpleConsoleTestApp
+{
+    class Program
+    {
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello World!");
+
             // consumer
 
             var consumerService = new RabbitMqConsumerService(GetBrokerConfigConsumers());
@@ -82,12 +78,5 @@ Example for consumer and sender services:
             await Console.Out.WriteLineAsync($"Message received from '{consumerTag}': {message}");
             return Constants.MessageProcessInstruction.OK;
         }
-
-```
-
-
-
-
-
-
-
+    }
+}
