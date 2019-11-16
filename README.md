@@ -1,15 +1,6 @@
 # JN.RabbitMQClient
 Simple implementation of RabbitMQ consumer and sender.
 
-Under maintenance...
-
-Code for current Nuget package is available here:
-
-https://github.com/jlnovais/Archive/tree/master/JN.RabbitMQClient
-
-
--------------------------
-
 
 ## Install
 Download the package from NuGet:
@@ -17,112 +8,86 @@ Download the package from NuGet:
 `Install-Package JN.RabbitMQClient`
 
 ## Usage
-First, you must create the consumer and then define delegates for `onStopReceive` and `onMessageReceived`. The consumer will start running when `Start` is called and until `Stop` is called.
+First, you must create the `RabbitMqConsumerService` and then define delegates for `ReceiveMessage`, `ShutdownConsumer` and `ReceiveMessageError`. The service will start the required number of consumers when `StartConsumers` is called.
+
+Example for consumer and sender services:
 
 ```csharp
-static void Main(string[] args)
-{
-    Consumer c = new Consumer
-    {
-        Host = "localhost",
-        Password = "123",
-        Username = "teste",
-        QueueName = "teste",
-        VirtualHost = "Testes",
-        Description = "test client",
-        PrefetchCount = 1
-    };
+        static void Main(string[] args)
+        {
+            // consumer
 
+            var consumerService = new RabbitMqConsumerService(GetBrokerConfigConsumers());
 
-    c.onStopReceive += StopReceive;
-    c.onMessageReceived += MessageReceived;
-    c.Start("test consumer....");
+            consumerService.ReceiveMessage += ReceiveMessage;
+            consumerService.ShutdownConsumer += ShutdownConsumer;
+            consumerService.ReceiveMessageError += ReceiveMessageError;
 
-    Console.WriteLine("Started...");
-    Console.ReadLine();
+            consumerService.StartConsumers("my consumer");
 
-    c.Stop();
+            // sender
 
-    Console.WriteLine("Stopped...");
+            var senderService = new RabbitMqSenderService(GetBrokerConfigSender());
 
-    Console.ReadLine();
-}
+            senderService.Send("my message");
 
-private static Constants.MessageProcessInstruction MessageReceived(string message, string sourcequeuename, long firsterrortimestamp, string consumerdescription)
-{
-    Console.WriteLine("Message received: " + message);
-    return Constants.MessageProcessInstruction.OK;
-}
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
 
-private static void StopReceive(string queuename, string lasterrordescription, string consumerdescription)
-{
-    Console.WriteLine("Stop receiving on queue " + queuename + "; last error: " + lasterrordescription);
-}
+            consumerService.Dispose();
+        }
+
+        private static IBrokerConfigSender GetBrokerConfigSender()
+        {
+            IBrokerConfigSender configSender = new BrokerConfig()
+            {
+                Username = "test",
+                Password = "123",
+                Host = "localhost",
+                VirtualHost = "/",
+                RoutingKeyOrQueueName = "MyTestQueue"
+            };
+            return configSender;
+        }
+
+        private static IBrokerConfigConsumers GetBrokerConfigConsumers()
+        {
+            IBrokerConfigConsumers configConsumers = new BrokerConfig()
+            {
+                Username = "test",
+                Password = "123",
+                Host = "localhost",
+                VirtualHost = "/",
+                RoutingKeyOrQueueName = "MyTestQueue",
+                ShuffleHostList = false,
+                Exchange = "",
+                Port = 0,
+                TotalInstances = 3
+            };
+            return configConsumers;
+        }
+
+        private static async Task ReceiveMessageError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
+        {
+            await Console.Out.WriteLineAsync($"Error: '{consumerTag}' | {errorMessage}");
+        }
+
+        private static async Task ShutdownConsumer(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
+        {
+            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}");
+        }
+
+        private static async Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
+        {
+            await Console.Out.WriteLineAsync($"Message received from '{consumerTag}': {message}");
+            return Constants.MessageProcessInstruction.OK;
+        }
 
 ```
 
-In `MessageReceived` the returned `Constants.MessageProcessInstruction` will define how the message will be processed (accept, requeue, ignore).
 
-The `Sender` can be used as in the following example.
 
-```csharp
-public class ResponseProcessor
-{
-	private readonly BrokerConfig _config;
 
-	public ResponseProcessor(BrokerConfig config)
-	{
-		_config = config;
-	}
 
-	public Result ProcessResponse(NotificationResponse response)
-	{
-		var res = new Result();
-
-		try
-		{
-			var sender = GetSender(_config);
-
-			var objStr = GetJSONFromObject(response);
-
-			sender.Send(objStr);
-			res.Success = true;
-		}
-		catch (Exception ex)
-		{
-			res.Success = false;
-			res.ErrorCode = -100;
-			res.ErrorDescription = ex.Message;
-		}
-
-		return res;
-	}
-
-	private ISender GetSender(BrokerConfig config)
-	{
-		var sender = new Sender
-		{
-			Host = config.Host,
-			Username = config.Username,
-			Password = config.Password,
-			VirtualHost = config.VirtualHost,
-			Port = config.Port,
-			QueueName = config.RoutingKeyOrQueueName,
-			ExchangeName = config.Exchange,
-			ShuffleHostList = config.ShuffleHostList
-		};
-
-		return sender;
-	}
-
-	private string GetJSONFromObject<T>(T objectToSerialize)
-	{
-		string json = JsonConvert.SerializeObject(objectToSerialize);
-
-		return json;
-	}
-}
-
-```
 
 
