@@ -18,8 +18,11 @@ namespace JN.RabbitMQClient.Tests
         private static int _totalErrors;
 
         private const int TotalConsumers = 2;
+        private const int DefaultTotalConsumers = 5;
         private const string queueName = "TestQueue";
         private const string queueNameRetry = "TestQueueRetry";
+
+        private const string otherQueueName = "TestOtherQueue";
 
         private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig()
         {
@@ -29,13 +32,14 @@ namespace JN.RabbitMQClient.Tests
             VirtualHost = "/"
         });
 
-        private readonly IBrokerConfigConsumers _brokerConfig = new Entities.BrokerConfig()
+        private readonly IBrokerConfigConsumers _brokerConfig = new Entities.BrokerConfigConsumers()
         {
             Username = "test",
             Password = "123",
             Host = "localhost",
             RoutingKeyOrQueueName = queueName,
             VirtualHost = "/",
+            TotalInstances = DefaultTotalConsumers
         };
 
         private IRabbitMqConsumerService _consumerService;
@@ -43,16 +47,16 @@ namespace JN.RabbitMQClient.Tests
         private IRabbitMqConsumerService GetConsumerService(IBrokerConfigConsumers config = null)
         {
 
-            var consumer = new RabbitMqConsumerService(config ?? _brokerConfig)
+            var service = new RabbitMqConsumerService(config ?? _brokerConfig)
             {
                 ServiceDescription = "Test service"
             };
 
-            consumer.ReceiveMessage += ReceiveMessage;
-            consumer.ReceiveMessageError += ReceiveMessageError;
-            consumer.ShutdownConsumer += ShutDownConsumer;
+            service.ReceiveMessage += ReceiveMessage;
+            service.ReceiveMessageError += ReceiveMessageError;
+            service.ShutdownConsumer += ShutDownConsumer;
 
-            return consumer;
+            return service;
         }
 
 
@@ -97,6 +101,7 @@ namespace JN.RabbitMQClient.Tests
         public void Setup()
         {
             _rabbitMqHelper.DeleteQueue(queueName);
+            _rabbitMqHelper.DeleteQueue(otherQueueName);
             _rabbitMqHelper.DeleteQueue(queueNameRetry);
 
             _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
@@ -110,6 +115,7 @@ namespace JN.RabbitMQClient.Tests
         public void TearDown()
         {
             _rabbitMqHelper.DeleteQueue(queueName);
+            _rabbitMqHelper.DeleteQueue(otherQueueName);
             _rabbitMqHelper.DeleteQueue(queueNameRetry);
         }
 
@@ -120,7 +126,7 @@ namespace JN.RabbitMQClient.Tests
         public void ConsumerService_StartConsumers_InvalidHost_ThrowsException(string invalidHost)
         {
 
-            IBrokerConfigConsumers config = new Entities.BrokerConfig()
+            IBrokerConfigConsumers config = new Entities.BrokerConfigConsumers()
             {
                 Host = invalidHost,
             };
@@ -151,6 +157,28 @@ namespace JN.RabbitMQClient.Tests
         }
 
 
+        [Test]
+        public void ConsumerService_StartConsumers_ValidNumberOfConsumers_useDefaultConsumers_returnsOk()
+        {
+            _consumerService = GetConsumerService();
+
+            _consumerService.StartConsumers("test");
+
+            Thread.Sleep(100);
+
+            var startedConsumers = _consumerService.GetTotalRunningConsumers;
+            var totalConsumers = _consumerService.GetTotalConsumers;
+
+            var res = _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
+            var consumerCount = res.ConsumerCount;
+
+            Assert.AreEqual(DefaultTotalConsumers, startedConsumers);
+            Assert.AreEqual(DefaultTotalConsumers, totalConsumers);
+            Assert.AreEqual(DefaultTotalConsumers, consumerCount);
+        }
+
+
+
 
         [Test]
         public void ConsumerService_StartConsumers_InValidNumberOfConsumers_ThrowsException()
@@ -179,6 +207,68 @@ namespace JN.RabbitMQClient.Tests
             Assert.AreEqual(0, totalMessagesInQueue);
 
         }
+
+        [Test]
+        public void ConsumerService_ReceiveMessage_CreateQueue_queueAlreadyExists_receivesAllMessages()
+        {
+            _consumerService = GetConsumerService();
+
+            _rabbitMqHelper.SendMessage(queueName, "message 1");
+            _rabbitMqHelper.SendMessage(queueName, "message 2");
+
+            _consumerService.StartConsumers("test", null, TotalConsumers, true);
+
+            Thread.Sleep(100);
+
+            var res = _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
+            var totalMessagesInQueue = res.MessageCount;
+
+            Assert.AreEqual(2, _totalMessagesReceived);
+            Assert.AreEqual(0, totalMessagesInQueue);
+
+        }
+
+        [Test]
+        public void ConsumerService_ReceiveMessage_CreateQueue_queueDoesnt_existYet_receivesAllMessages()
+        {
+            _consumerService = GetConsumerService();
+
+            _consumerService.StartConsumers("test", otherQueueName, TotalConsumers, true);
+
+            _rabbitMqHelper.SendMessage(otherQueueName, "message 1");
+            _rabbitMqHelper.SendMessage(otherQueueName, "message 2");
+
+            Thread.Sleep(100);
+
+            var res = _rabbitMqHelper.CreateQueueOrGetInfo(otherQueueName);
+            var totalMessagesInQueue = res.MessageCount;
+
+            Assert.AreEqual(2, _totalMessagesReceived);
+            Assert.AreEqual(0, totalMessagesInQueue);
+
+        }
+
+        //public void ConsumerService_ReceiveMessage_CreateQueue_receivesAllMessages()
+        //{
+        //    string localQueueName = "otherQueue";
+        //    _consumerService = GetConsumerService();
+
+        //    _rabbitMqHelper.SendMessage(localQueueName, "message 1");
+        //    _rabbitMqHelper.SendMessage(localQueueName, "message 2");
+
+        //    _consumerService.StartConsumers("test", localQueueName, TotalConsumers, true);
+
+        //    Thread.Sleep(100);
+
+        //    var res = _rabbitMqHelper.CreateQueueOrGetInfo(localQueueName);
+        //    var totalMessagesInQueue = res.MessageCount;
+
+        //    Assert.AreEqual(2, _totalMessagesReceived);
+        //    Assert.AreEqual(0, totalMessagesInQueue);
+
+        //}
+
+
 
         [Test]
         public void ConsumerService_Dispose_executesAllDisposeDelegates()

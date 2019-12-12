@@ -63,23 +63,26 @@ namespace JN.RabbitMQClient
         /// <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
         public void Send(string message, string exchangeName, string routingKeyOrQueueName, Encoding encoding, bool createQueue = false)
         {
+            var config = (IBrokerConfigSender)_config;
+
             var body = encoding.GetBytes(message);
 
             using (var connection = GetConnection(ServiceDescription + "_sender"))
             using (var channel = connection.CreateModel())
             {
                 var properties = channel.CreateBasicProperties();
-                Tools.SetPropertiesSender(properties, encoding.EncodingName);
+                RabbitMqUtilities.SetPropertiesSender(properties, encoding.EncodingName);
 
-                var exchange = string.IsNullOrWhiteSpace(exchangeName) ? _config.Exchange : exchangeName;
-                if (string.IsNullOrWhiteSpace(exchangeName))
+                var exchange = string.IsNullOrWhiteSpace(exchangeName) ? config.Exchange : exchangeName;
+
+                if (string.IsNullOrWhiteSpace(exchange))
                     exchange = "";
 
-                if (string.IsNullOrWhiteSpace(exchangeName) && createQueue)
+                if (string.IsNullOrWhiteSpace(exchange) && createQueue)
                 {
                     try
                     {
-                        channel.QueueDeclare(routingKeyOrQueueName, true, false, false, null);
+                        RabbitMqUtilities.CreateQueueOrGetInfo(routingKeyOrQueueName, channel);
                     }
                     catch (Exception e)
                     {
@@ -88,11 +91,16 @@ namespace JN.RabbitMQClient
 
                 }
 
+                var routingKey = (string.IsNullOrWhiteSpace(routingKeyOrQueueName)
+                    ? config.RoutingKeyOrQueueName
+                    : routingKeyOrQueueName);
+
+                if (string.IsNullOrWhiteSpace(routingKey))
+                    routingKey = "";
+
                 channel.BasicPublish(
                     exchange,
-                    (string.IsNullOrWhiteSpace(routingKeyOrQueueName)
-                        ? _config.RoutingKeyOrQueueName
-                        : routingKeyOrQueueName),
+                    routingKey,
                     properties,
                     body);
             }

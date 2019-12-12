@@ -5,7 +5,7 @@ using RabbitMQ.Client;
 
 namespace JN.RabbitMQClient.Other
 {
-    internal class Tools
+    internal class RabbitMqUtilities
     {
         internal static long GetFirstErrorTimeStampFromMessageArgs(IBasicProperties properties)
         {
@@ -22,6 +22,14 @@ namespace JN.RabbitMQClient.Other
 
             return res;
         }
+
+
+        internal static QueueDeclareOk CreateQueueOrGetInfo(string queueName, IModel channel)
+        {
+            return channel.QueueDeclare(queueName, true, false, false);
+        }
+
+
 
 
         internal static void SetPropertiesConsumer(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds)

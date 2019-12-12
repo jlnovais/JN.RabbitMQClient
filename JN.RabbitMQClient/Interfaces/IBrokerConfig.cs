@@ -7,20 +7,19 @@
         string Password { get; set; }
         string VirtualHost { get; set; }
         int Port { get; set; }
-        string RoutingKeyOrQueueName { get; set; }
-        string Exchange { get; set; }
-        byte TotalInstances { get; set; }
-        bool ShuffleHostList { get; set; } 
+        bool ShuffleHostList { get; set; }
     }
 
     public interface IBrokerConfigSender : IBrokerConfig
     {
-
+        string RoutingKeyOrQueueName { get; set; }
+        string Exchange { get; set; }
     }
 
     public interface IBrokerConfigConsumers : IBrokerConfig
     {
-        
+        string RoutingKeyOrQueueName { get; set; }
+        byte TotalInstances { get; set; }
     }
 
 

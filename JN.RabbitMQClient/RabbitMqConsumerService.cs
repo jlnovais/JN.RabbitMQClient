@@ -74,26 +74,62 @@ namespace JN.RabbitMQClient
         public short GetTotalConsumers => (short)(_consumers.Any() ? _consumers.Count : 0);
 
 
-        public void StartConsumers(string consumerName, string queueName = null, byte? totalConsumers = null)
+        /// <summary>
+        /// StartConsumers - start consumers and connect them to a queue.
+        /// </summary>
+        /// <param name="consumerName">Consumer name</param>
+        /// <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
+        /// <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
+        /// <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+        public void StartConsumers(string consumerName, string queueName = null, byte? totalConsumers = null, bool createQueue = false)
         {
-            StartConsumers(consumerName, null, queueName, totalConsumers);
+            StartConsumers(consumerName, null, queueName, totalConsumers, createQueue);
         }
 
-        public void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null, byte? totalConsumers = null)
+        /// <summary>
+        /// StartConsumers - start consumers and connect them to a queue.
+        /// </summary>
+        /// <param name="consumerName">Consumer name</param>
+        /// <param name="retryQueueDetails">Retry queue details if a message needs to be requeued with a delay (a Dead letter exchange must be defined)</param>
+        /// <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
+        /// <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
+        /// <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+        public void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null, byte? totalConsumers = null, bool createQueue = false)
         {
-            _totalConsumersToStart = totalConsumers ?? _config.TotalInstances;
+
+            var config = (IBrokerConfigConsumers)_config;
+
+            _totalConsumersToStart = totalConsumers ?? config.TotalInstances;
 
             if (_totalConsumersToStart <= 0)
                 throw new ArgumentException("Invalid total number of consumers to start");
 
+            var triedCreateQueue = false;
 
             for (var i = 0; i < _totalConsumersToStart; i++)
             {
+                var routingKeyOrQueueName =
+                    string.IsNullOrWhiteSpace(queueName) ? config.RoutingKeyOrQueueName : queueName;
+
                 var totalCreatedConsumers = _consumers.Count;
 
                 var connection = GetConnection(ServiceDescription + "_" + i, totalCreatedConsumers, MaxChannelsPerConnection);
 
                 var channel = connection.CreateModel();
+
+                if (createQueue && !triedCreateQueue)
+                {
+                    try
+                    {
+                        RabbitMqUtilities.CreateQueueOrGetInfo(routingKeyOrQueueName, channel);
+                        triedCreateQueue = true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception("Unable do create queue.", e);
+                    }
+                }
+
                 var consumer = new AsyncEventingBasicConsumerExtended(channel)
                 {
                     ConnectedToPort = connection.Endpoint.Port,
@@ -109,13 +145,14 @@ namespace JN.RabbitMQClient
 
                 _consumers.Add(consumer);
 
-                var routingKeyOrQueueName =
-                    string.IsNullOrWhiteSpace(queueName) ? _config.RoutingKeyOrQueueName : queueName;
-
                 channel.BasicConsume(routingKeyOrQueueName, false, $"{consumerName}_{i}", consumer);
             }
         }
 
+        /// <summary>
+        /// Stop consumers
+        /// </summary>
+        /// <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
         public void StopConsumers(string consumerTag = null)
         {
             if (!string.IsNullOrWhiteSpace(consumerTag))
@@ -197,7 +234,7 @@ namespace JN.RabbitMQClient
 
                 consumer.LastMessageDate = DateTime.Now;
 
-                var firstErrorTimestamp = Tools.GetFirstErrorTimeStampFromMessageArgs(e.BasicProperties);
+                var firstErrorTimestamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(e.BasicProperties);
 
                 var model = consumer.Model;
 
@@ -238,9 +275,9 @@ namespace JN.RabbitMQClient
                 return;
 
             var properties = consumer.Model.CreateBasicProperties();
-            Tools.SetPropertiesConsumer(properties, consumer.RetentionPeriodInRetryQueueMilliseconds);
+            RabbitMqUtilities.SetPropertiesConsumer(properties, consumer.RetentionPeriodInRetryQueueMilliseconds);
 
-            var firstErrorTimeStamp = Tools.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
+            var firstErrorTimeStamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
             SetFirstErrorTimeStampToProperties(firstErrorTimeStamp, properties);
 
             consumer.Model.BasicPublish(
