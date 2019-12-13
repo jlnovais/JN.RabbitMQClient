@@ -56,7 +56,7 @@ namespace JN.RabbitMQClient.TestApp
 
         private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingkeyorqueuename, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-            await Console.Out.WriteLineAsync($"Message received by '{consumerTag}'. Consumer status: ");
+            await Console.Out.WriteLineAsync($"Message received by '{consumerTag}'. Message: {message} ");
 
             var details = _consumerService.GetConsumerDetails();
 
@@ -79,6 +79,7 @@ namespace JN.RabbitMQClient.TestApp
             {
                 case "ok":
                     _senderService.Send(message);
+                    await Console.Out.WriteLineAsync($"Message sent !! ");
                     return Constants.MessageProcessInstruction.OK;
                 case "ignore":
                     return Constants.MessageProcessInstruction.IgnoreMessage;

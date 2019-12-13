@@ -35,7 +35,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
         private static IBrokerConfigSender GetBrokerConfigSender()
         {
-            IBrokerConfigSender configSender = new BrokerConfig()
+            IBrokerConfigSender configSender = new BrokerConfigSender()
             {
                 Username = "test",
                 Password = "123",
@@ -48,7 +48,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
         private static IBrokerConfigConsumers GetBrokerConfigConsumers()
         {
-            IBrokerConfigConsumers configConsumers = new BrokerConfig()
+            IBrokerConfigConsumers configConsumers = new BrokerConfigConsumers()
             {
                 Username = "test",
                 Password = "123",
@@ -56,7 +56,6 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
                 VirtualHost = "/",
                 RoutingKeyOrQueueName = "MyTestQueue",
                 ShuffleHostList = false,
-                Exchange = "",
                 Port = 0,
                 TotalInstances = 3
             };

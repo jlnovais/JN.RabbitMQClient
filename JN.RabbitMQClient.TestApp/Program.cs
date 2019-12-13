@@ -58,9 +58,9 @@ namespace JN.RabbitMQClient.TestApp
             services.AddSingleton<IRabbitMqConsumerService, RabbitMqConsumerService>();
             services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService>();
             services.AddSingleton<IBrokerConfigSender>(
-                configuration.GetBrokerConfig("BrokerConfigSender"));
+                configuration.GetBrokerConfigSender("BrokerConfigSender"));
             services.AddSingleton<IBrokerConfigConsumers>(
-                configuration.GetBrokerConfig("BrokerConfigConsumers"));
+                configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
 
 
             return services;
