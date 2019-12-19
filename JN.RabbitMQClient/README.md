@@ -1,7 +1,7 @@
 # JN.RabbitMQClient
 Simple implementation of RabbitMQ consumer and sender.
 
-This version IS NOT compatible with previous versions.
+This version IS NOT compatible with version 1.x.x.
 
 
 ## Install
@@ -15,6 +15,8 @@ First, you must create the `RabbitMqConsumerService` and then define delegates f
 Example for consumer and sender services:
 
 ```csharp
+    class Program
+    {
         static void Main(string[] args)
         {
             // consumer
@@ -41,7 +43,7 @@ Example for consumer and sender services:
 
         private static IBrokerConfigSender GetBrokerConfigSender()
         {
-            IBrokerConfigSender configSender = new BrokerConfig()
+            IBrokerConfigSender configSender = new BrokerConfigSender()
             {
                 Username = "test",
                 Password = "123",
@@ -54,7 +56,7 @@ Example for consumer and sender services:
 
         private static IBrokerConfigConsumers GetBrokerConfigConsumers()
         {
-            IBrokerConfigConsumers configConsumers = new BrokerConfig()
+            IBrokerConfigConsumers configConsumers = new BrokerConfigConsumers()
             {
                 Username = "test",
                 Password = "123",
@@ -62,7 +64,6 @@ Example for consumer and sender services:
                 VirtualHost = "/",
                 RoutingKeyOrQueueName = "MyTestQueue",
                 ShuffleHostList = false,
-                Exchange = "",
                 Port = 0,
                 TotalInstances = 3
             };
@@ -84,6 +85,7 @@ Example for consumer and sender services:
             await Console.Out.WriteLineAsync($"Message received from '{consumerTag}': {message}");
             return Constants.MessageProcessInstruction.OK;
         }
+    }
 
 ```
 
