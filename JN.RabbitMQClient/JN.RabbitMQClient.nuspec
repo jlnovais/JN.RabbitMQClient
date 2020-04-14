@@ -10,15 +10,22 @@
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
     <projectUrl>https://github.com/jlnovais/JN.RabbitMQClient</projectUrl>
     <title>JN.RabbitMQClient</title>
-    <tags>RabbitMq;Client;Sender;Consumer;netstandard;csharp;Producer</tags>
+    <tags>RabbitMq;Client;Sender;Consumer;netstandard;csharp;Producer;Broker</tags>
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
-    <summary>Simple client for RabbitMQ.</summary>
+    <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
     <copyright>José Novais, 2020</copyright>
-    <releaseNotes>possibility to create the queue in the sender</releaseNotes>
+    <releaseNotes>
+      Release Notes for current version:
+
+      - Add random expiration to messages
+      - Minor update to documentation and examples.
+
+      (This version IS NOT compatible with versions 1.x.x.)
+    </releaseNotes>
     <dependencies>
       <group targetFramework=".NETStandard1.5">
         <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
-        <dependency id="RabbitMQ.Client" version="5.1.0" exclude="Build,Analyzers" />
+        <dependency id="RabbitMQ.Client" version="5.1.2" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

@@ -12,9 +12,9 @@ Download the package from NuGet:
 ## Usage
 First, you must create the `RabbitMqConsumerService` and then define delegates for `ReceiveMessage`, `ShutdownConsumer` and `ReceiveMessageError`. The service will start the required number of consumers when `StartConsumers` is called. 
 
-To use a retry queue, the method `StartConsumers` should be called with a `RetryQueueDetails` object.
+To use a retry queue, the method `StartConsumers` should be called with a `RetryQueueDetails` object. 
 
-## Message instructions
+## Message processing instructions
 `OK` - message is considered as successfully processed
 `RequeueMessageWithDelay` - message is removed from the queue, but sent to a retry queue for latter processing (typically with a dead letter configuration)
 `IgnoreMessage` - message is removed from the queue and ignored
