@@ -7,7 +7,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
     public static class SettingsHelper
     {
 
-        public static BrokerConfigConsumers GetBrokerConfigConfigConsumers(this IConfiguration configuration, string sectionName)
+        public static BrokerConfigConsumers GetBrokerConfigConfigConsumers(this IConfiguration configuration,
+            string sectionName)
         {
             var section = configuration.GetSection(sectionName);
 
@@ -51,6 +52,23 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
 
             return conf;
         }
+
+        public static AppConfig GetAppConfig(this IConfiguration configuration, string sectionName)
+        {
+            var section = configuration.GetSection(sectionName);
+
+            var config = new AppConfig()
+            {
+                BrokerRetentionPeriodInRetryQueueSeconds = Convert.ToInt16(section["RetentionPeriodInRetryQueueSeconds"]),
+                BrokerRetentionPeriodInRetryQueueSecondsMax = Convert.ToInt16(section["RetentionPeriodInRetryQueueSecondsMax"]),
+                BrokerMessageTTLSeconds = Convert.ToInt16(section["MessageTTLSeconds"]),
+                BrokerRetryQueue = section["RetryQueue"]
+            };
+
+            return config;
+
+        }
+
 
     }
 }

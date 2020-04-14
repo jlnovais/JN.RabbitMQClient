@@ -137,6 +137,7 @@ namespace JN.RabbitMQClient
                     ConnectionTime = DateTime.Now,
                     Id = i,
                     RetentionPeriodInRetryQueueMilliseconds = retryQueueDetails?.RetentionPeriodInRetryQueueMilliseconds ?? 0,
+                    RetentionPeriodInRetryQueueMillisecondsMax = retryQueueDetails?.RetentionPeriodInRetryQueueMillisecondsMax ?? 0,
                     RetryQueue = retryQueueDetails?.RetryQueue
                 };
 
@@ -275,7 +276,7 @@ namespace JN.RabbitMQClient
                 return;
 
             var properties = consumer.Model.CreateBasicProperties();
-            RabbitMqUtilities.SetPropertiesConsumer(properties, consumer.RetentionPeriodInRetryQueueMilliseconds);
+            RabbitMqUtilities.SetPropertiesConsumer(properties, consumer.RetentionPeriodInRetryQueueMilliseconds, consumer.RetentionPeriodInRetryQueueMillisecondsMax);
 
             var firstErrorTimeStamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
             SetFirstErrorTimeStampToProperties(firstErrorTimeStamp, properties);

@@ -7,6 +7,8 @@ namespace JN.RabbitMQClient.Other
 {
     internal class RabbitMqUtilities
     {
+        private static readonly Random random = new Random();
+
         internal static long GetFirstErrorTimeStampFromMessageArgs(IBasicProperties properties)
         {
             long res = 0;
@@ -32,11 +34,11 @@ namespace JN.RabbitMQClient.Other
 
 
 
-        internal static void SetPropertiesConsumer(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds)
+        internal static void SetPropertiesConsumer(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds, int retentionPeriodInRetryQueueMillisecondsMax)
         {
             properties.Persistent = true; // SetPersistent(true);
             properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
-            properties.Expiration = retentionPeriodInRetryQueueMilliseconds.ToString();
+            properties.Expiration = GetNumber(retentionPeriodInRetryQueueMilliseconds, retentionPeriodInRetryQueueMillisecondsMax).ToString();
             properties.Headers = new Dictionary<string, object>();
         }
 
@@ -45,6 +47,14 @@ namespace JN.RabbitMQClient.Other
             properties.Persistent = true; // SetPersistent(true);
             properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
             properties.ContentEncoding = encoding;
+        }
+
+        private static int GetNumber(int min, int max)
+        {
+            if (min>=max)
+                return min;
+            
+            return random.Next(min, max + 1);
         }
     }
 }

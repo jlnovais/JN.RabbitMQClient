@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JN.RabbitMQClient.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace JN.RabbitMQClient.TestApp
@@ -9,13 +10,15 @@ namespace JN.RabbitMQClient.TestApp
         private readonly ILogger<ConsoleApp> _logger;
         private readonly IRabbitMqConsumerService _consumerService;
         private readonly IRabbitMqSenderService _senderService;
+        private readonly AppConfig _config;
 
-        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService)
+        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, AppConfig config)
         {
             _logger = logger;
 
             _consumerService = consumerService;
             _senderService = senderService;
+            _config = config;
 
 
             _consumerService.ServiceDescription = "Consumer Service";
@@ -37,7 +40,14 @@ namespace JN.RabbitMQClient.TestApp
         // Application starting point
         public void Run()
         {
-            _consumerService.StartConsumers("consumer");
+            var retryQueueDetails = new RetryQueueDetails
+            {
+                RetentionPeriodInRetryQueueMilliseconds = _config.BrokerRetentionPeriodInRetryQueueSeconds * 1000,
+                RetentionPeriodInRetryQueueMillisecondsMax = _config.BrokerRetentionPeriodInRetryQueueSecondsMax * 1000,
+                RetryQueue = _config.BrokerRetryQueue
+            };
+
+            _consumerService.StartConsumers("consumer", retryQueueDetails);
 
             _logger.LogInformation($"Starting consumers...");
 

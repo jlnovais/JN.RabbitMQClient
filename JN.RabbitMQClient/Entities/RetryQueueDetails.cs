@@ -4,5 +4,6 @@
     {
         public string RetryQueue { get; set; }
         public int RetentionPeriodInRetryQueueMilliseconds { get; set; }
+        public int RetentionPeriodInRetryQueueMillisecondsMax { get; set; }
     }
 }

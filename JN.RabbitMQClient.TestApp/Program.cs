@@ -62,9 +62,13 @@ namespace JN.RabbitMQClient.TestApp
             services.AddSingleton<IBrokerConfigConsumers>(
                 configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
 
+            services.AddSingleton<AppConfig>(configuration.GetAppConfig("BrokerConfigConsumersRetry"));
+
 
             return services;
         }
+
+ 
 
 
 
