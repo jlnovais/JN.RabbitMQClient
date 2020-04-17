@@ -8,6 +8,7 @@ using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Other;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 
 namespace JN.RabbitMQClient
 {
@@ -21,8 +22,7 @@ namespace JN.RabbitMQClient
 
 
         private const short MaxChannelsPerConnection = 3;
-        private byte _totalConsumersToStart;
-        private bool _disposed;
+ private bool _disposed;
 
 
         public RabbitMqConsumerService(IBrokerConfigConsumers config)
@@ -36,7 +36,7 @@ namespace JN.RabbitMQClient
                 return null;
 
             //use copy of list to avoid error: "Collection was modified; enumeration operation may not execute"
-            var consumers = _consumers.Select(x => new ConsumerInfo()
+            var consumers = _consumers.Select(x => new ConsumerInfo
             {
                 Name = x.ConsumerTag,
                 IsRunning = x.IsRunning,
@@ -50,20 +50,6 @@ namespace JN.RabbitMQClient
             });
 
             return consumers.ToList();
-
-            //return _consumers.Select(x => new ConsumerInfo()
-            //{
-            //    Name = x.ConsumerTag,
-            //    IsRunning = x.IsRunning,
-            //    ShutdownReason = x.ShutdownReason?.ReplyText ?? "",
-            //    ConnectedToPort = x.ConnectedToPort,
-            //    ConnectedToHost = x.ConnectedToHost,
-            //    ConnectionTime = x.ConnectionTime,
-            //    LastMessageDate = x.LastMessageDate,
-            //    Id = x.Id
-
-            //});
-
         }
 
         public byte GetTotalRunningConsumers
@@ -94,19 +80,19 @@ namespace JN.RabbitMQClient
         /// <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
         /// <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
         /// <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+        /// <exception cref="RabbitMQClientException"></exception>
         public void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null, byte? totalConsumers = null, bool createQueue = false)
         {
+            var config = (IBrokerConfigConsumers) _config;
 
-            var config = (IBrokerConfigConsumers)_config;
+            var totalConsumersToStart = totalConsumers ?? config.TotalInstances;
 
-            _totalConsumersToStart = totalConsumers ?? config.TotalInstances;
-
-            if (_totalConsumersToStart <= 0)
+            if (totalConsumersToStart <= 0)
                 throw new ArgumentException("Invalid total number of consumers to start");
 
             var triedCreateQueue = false;
 
-            for (var i = 0; i < _totalConsumersToStart; i++)
+            for (var i = 0; i < totalConsumersToStart; i++)
             {
                 var routingKeyOrQueueName =
                     string.IsNullOrWhiteSpace(queueName) ? config.RoutingKeyOrQueueName : queueName;
@@ -126,7 +112,7 @@ namespace JN.RabbitMQClient
                     }
                     catch (Exception e)
                     {
-                        throw new Exception("Unable do create queue.", e);
+                        throw new RabbitMqClientException($"Unable do create queue. Details: {e.Message}", e);
                     }
                 }
 
@@ -154,7 +140,11 @@ namespace JN.RabbitMQClient
         /// Stop consumers
         /// </summary>
         /// <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
-        public void StopConsumers(string consumerTag = null)
+        public void StopConsumers()
+        {
+            StopConsumers(null);
+        }
+        public void StopConsumers(string consumerTag)
         {
             if (!string.IsNullOrWhiteSpace(consumerTag))
             {

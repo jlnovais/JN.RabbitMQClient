@@ -17,7 +17,7 @@ namespace JN.RabbitMQClient
         internal IConnection GetConnection(string connectionName)
         {
             if (string.IsNullOrEmpty(_config.Host))
-                throw new Exception("Invalid host.");
+                throw new ArgumentException("Invalid host.");
 
             var factory = new ConnectionFactory()
             {
@@ -44,7 +44,7 @@ namespace JN.RabbitMQClient
             var hosts = Utils.GetHostsList(_config.Host);
 
             if (hosts.Count == 0)
-                throw new Exception("No hosts defined for connection.");
+                throw new ArgumentException("No hosts defined for connection.");
 
             var endpoints = from host in hosts
                 select new AmqpTcpEndpoint(host);

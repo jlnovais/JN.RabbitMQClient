@@ -9,7 +9,7 @@ namespace JN.RabbitMQClient.Tests
         private const string queueName = "TestQueue_created";
         private const string exchangeName = "TestExchange_created";
 
-        private readonly IBrokerConfig _brokerConfig = new Entities.BrokerConfig()
+        private readonly IBrokerConfig _brokerConfig = new Entities.BrokerConfig
         {
             Username = "test",
             Password = "123",
@@ -17,7 +17,7 @@ namespace JN.RabbitMQClient.Tests
             VirtualHost = "/",
         };
 
-        private readonly IBrokerConfig _brokerConfigInvalidHost = new Entities.BrokerConfig()
+        private readonly IBrokerConfig _brokerConfigInvalidHost = new Entities.BrokerConfig
         {
             Username = "test",
             Password = "123",
@@ -26,7 +26,7 @@ namespace JN.RabbitMQClient.Tests
         };
 
 
-        private readonly IBrokerConfigSender _brokerConfigSender = new Entities.BrokerConfigSender()
+        private readonly IBrokerConfigSender _brokerConfigSender = new Entities.BrokerConfigSender
         {
             Username = "test",
             Password = "123",
@@ -58,7 +58,7 @@ namespace JN.RabbitMQClient.Tests
 
 
 
-        private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig()
+        private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig
         {
             HostName = "localhost",
             Password = "123",

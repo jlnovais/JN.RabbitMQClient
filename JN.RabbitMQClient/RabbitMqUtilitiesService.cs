@@ -13,7 +13,18 @@ namespace JN.RabbitMQClient
             _config = config;
         }
 
-        public Result CreateQueue(string queueName, string exchangeToBind = null, string bindRoutingKey = null)
+
+        public Result CreateQueue(string queueName)
+        {
+            return CreateQueue(queueName, null, null);
+        }
+
+        public Result CreateQueue(string queueName, string exchangeToBind)
+        {
+            return CreateQueue(queueName, exchangeToBind, null);
+        }
+
+        public Result CreateQueue(string queueName, string exchangeToBind, string bindRoutingKey)
         {
             var res = new Result();
 

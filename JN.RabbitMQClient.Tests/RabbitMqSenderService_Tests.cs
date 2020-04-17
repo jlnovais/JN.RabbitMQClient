@@ -25,7 +25,7 @@ namespace JN.RabbitMQClient.Tests
             VirtualHost = "/"
         });
 
-        private readonly IBrokerConfigSender _brokerConfig = new Entities.BrokerConfigSender()
+        private readonly IBrokerConfigSender _brokerConfig = new Entities.BrokerConfigSender
         {
             Username = "test",
             Password = "123",

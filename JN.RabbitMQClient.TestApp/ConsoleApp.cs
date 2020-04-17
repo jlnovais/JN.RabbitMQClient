@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
+using JN.RabbitMQClient.TestApp.HelperClasses;
 using Microsoft.Extensions.Logging;
 
 namespace JN.RabbitMQClient.TestApp
@@ -33,7 +34,7 @@ namespace JN.RabbitMQClient.TestApp
 
         private async Task ProcessError(string routingkeyorqueuename, string consumertag, string exchange, string message, string errormessage)
         {
-            await Console.Out.WriteLineAsync($"Error processing message: {errormessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingkeyorqueuename}' | consumertag: {consumertag} | exchange: {exchange} | message: {message}");
+            await Console.Out.WriteLineAsync($"Error processing message: {errormessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingkeyorqueuename}' | consumertag: {consumertag} | exchange: {exchange} | message: {message}").ConfigureAwait(false);
         }
 
 
@@ -76,7 +77,7 @@ namespace JN.RabbitMQClient.TestApp
                 {
                     Console.ForegroundColor = consumerInfo.Id % 2 == 0 ? ConsoleColor.Blue : ConsoleColor.DarkGreen;
 
-                    await Console.Out.WriteLineAsync($"Consumer '{consumerInfo.Name}'; connected to {consumerInfo.ConnectedToHost}:{consumerInfo.ConnectedToPort}; firstErrorTimestamp: {firstErrorTimestamp}; started at {consumerInfo.ConnectionTime:yyyy-MM-dd HH:mm:ss}; {consumerInfo.LastMessageDate:yyyy-MM-dd HH:mm:ss} ");
+                    await Console.Out.WriteLineAsync($"Consumer '{consumerInfo.Name}'; connected to {consumerInfo.ConnectedToHost}:{consumerInfo.ConnectedToPort}; firstErrorTimestamp: {firstErrorTimestamp}; started at {consumerInfo.ConnectionTime:yyyy-MM-dd HH:mm:ss}; {consumerInfo.LastMessageDate:yyyy-MM-dd HH:mm:ss} ").ConfigureAwait(false);
 
                     Console.ResetColor();
 
@@ -89,7 +90,7 @@ namespace JN.RabbitMQClient.TestApp
             {
                 case "ok":
                     _senderService.Send(message);
-                    await Console.Out.WriteLineAsync($"Message sent !! ");
+                    await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
                     return Constants.MessageProcessInstruction.OK;
                 case "ignore":
                     return Constants.MessageProcessInstruction.IgnoreMessage;
@@ -98,7 +99,7 @@ namespace JN.RabbitMQClient.TestApp
                 case "delay":
                     return Constants.MessageProcessInstruction.RequeueMessageWithDelay;
                 case "error":
-                    throw new Exception("error processing message");
+                    throw new ErrorProcessingException("error processing message");
                 default:
                     return Constants.MessageProcessInstruction.Unknown;
             }
@@ -111,7 +112,7 @@ namespace JN.RabbitMQClient.TestApp
 
         private async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}");
+            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}").ConfigureAwait(false);
         }
     }
 }

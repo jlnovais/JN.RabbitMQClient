@@ -11,7 +11,7 @@ using BrokerConfig = JN.RabbitMQClient.Tests.HelperClasses.BrokerConfig;
 //[assembly: IgnoresAccessChecksTo("RabbitMQToolsV2.Consumer")]
 namespace JN.RabbitMQClient.Tests
 {
-    class RabbitMqConsumerService_Tests
+    public class RabbitMqConsumerService_Tests
     {
         private static int _totalMessagesReceived;
         private static int _totalStopProcessing;
@@ -24,7 +24,7 @@ namespace JN.RabbitMQClient.Tests
 
         private const string otherQueueName = "TestOtherQueue";
 
-        private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig()
+        private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig
         {
             HostName = "localhost",
             Password = "123",
@@ -32,7 +32,7 @@ namespace JN.RabbitMQClient.Tests
             VirtualHost = "/"
         });
 
-        private readonly IBrokerConfigConsumers _brokerConfig = new Entities.BrokerConfigConsumers()
+        private readonly IBrokerConfigConsumers _brokerConfig = new Entities.BrokerConfigConsumers
         {
             Username = "test",
             Password = "123",
@@ -133,7 +133,7 @@ namespace JN.RabbitMQClient.Tests
 
             _consumerService = GetConsumerService(config);
 
-            Assert.Throws<Exception>(() => _consumerService.StartConsumers("test", null, TotalConsumers));
+            Assert.Throws<ArgumentException>(() => _consumerService.StartConsumers("test", null, TotalConsumers));
         }
 
         [Test]
@@ -358,7 +358,7 @@ namespace JN.RabbitMQClient.Tests
 
         private RetryQueueDetails GetRetryOptions()
         {
-            return new RetryQueueDetails()
+            return new RetryQueueDetails
             {
                 RetentionPeriodInRetryQueueMilliseconds = 60000,
                 RetryQueue = queueNameRetry

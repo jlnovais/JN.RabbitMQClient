@@ -2,16 +2,16 @@
 {
     public class Result<T>
     {
-        public int ErrorCode;
-        public string ErrorDescription;
-        public T ReturnedObject;
-        public bool Success;
+        public int ErrorCode { get; set; }
+        public string ErrorDescription { get; set; }
+        public T ReturnedObject { get; set; }
+        public bool Success { get; set; }
     }
 
     public class Result
     {
-        public int ErrorCode;
-        public string ErrorDescription;
-        public bool Success;
+        public int ErrorCode { get; set; }
+        public string ErrorDescription { get; set; }
+        public bool Success { get; set; }
     }
 }

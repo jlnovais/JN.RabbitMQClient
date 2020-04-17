@@ -7,7 +7,7 @@ namespace JN.RabbitMQClient.Other
 {
     internal class RabbitMqUtilities
     {
-        private static readonly Random random = new Random();
+        private static readonly Random Random = new Random();
 
         internal static long GetFirstErrorTimeStampFromMessageArgs(IBasicProperties properties)
         {
@@ -54,7 +54,7 @@ namespace JN.RabbitMQClient.Other
             if (min>=max)
                 return min;
             
-            return random.Next(min, max + 1);
+            return Random.Next(min, max + 1);
         }
     }
 }

@@ -9,7 +9,7 @@ using NLog.Extensions.Logging;
 
 namespace JN.RabbitMQClient.TestApp
 {
-    class Program
+    public static class Program
     {
         private static IConfigurationRoot configuration;
 

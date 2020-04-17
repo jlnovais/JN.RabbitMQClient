@@ -5,7 +5,7 @@ using JN.RabbitMQClient.Interfaces;
 
 namespace JN.RabbitMQClient.SimpleConsoleTestApp
 {
-    class Program
+    public static class Program
     {
         static void Main(string[] args)
         {
@@ -35,7 +35,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
         private static IBrokerConfigSender GetBrokerConfigSender()
         {
-            IBrokerConfigSender configSender = new BrokerConfigSender()
+            IBrokerConfigSender configSender = new BrokerConfigSender
             {
                 Username = "test",
                 Password = "123",
@@ -48,7 +48,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
         private static IBrokerConfigConsumers GetBrokerConfigConsumers()
         {
-            IBrokerConfigConsumers configConsumers = new BrokerConfigConsumers()
+            IBrokerConfigConsumers configConsumers = new BrokerConfigConsumers
             {
                 Username = "test",
                 Password = "123",
@@ -64,17 +64,17 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
         private static async Task ReceiveMessageError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Error: '{consumerTag}' | {errorMessage}");
+            await Console.Out.WriteLineAsync($"Error: '{consumerTag}' | {errorMessage}").ConfigureAwait(false);
         }
 
         private static async Task ShutdownConsumer(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}");
+            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}").ConfigureAwait(false);
         }
 
         private static async Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-            await Console.Out.WriteLineAsync($"Message received from '{consumerTag}': {message}");
+            await Console.Out.WriteLineAsync($"Message received from '{consumerTag}': {message}").ConfigureAwait(false);
             return Constants.MessageProcessInstruction.OK;
         }
     }

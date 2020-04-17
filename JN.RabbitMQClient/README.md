@@ -3,7 +3,6 @@ Simple implementation of RabbitMQ consumer and sender.
 
 This version IS NOT compatible with version 1.x.x.
 
-
 ## Install
 Download the package from NuGet:
 
@@ -98,10 +97,3 @@ Example for consumer and sender services:
     }
 
 ```
-
-
-
-
-
-
-
