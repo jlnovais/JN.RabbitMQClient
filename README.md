@@ -2,6 +2,8 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/259943d527ba4afc872e2b922ea52321)](https://app.codacy.com/manual/jlnovais/JN.RabbitMQClient?utm_source=github.com&utm_medium=referral&utm_content=jlnovais/JN.RabbitMQClient&utm_campaign=Badge_Grade_Dashboard)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Simple implementation of RabbitMQ consumer and sender.
 
 This version IS NOT compatible with version 1.x.x.
