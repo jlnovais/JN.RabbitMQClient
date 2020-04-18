@@ -19,7 +19,7 @@ To use a retry queue, the method `StartConsumers` should be called with a `Retry
 `IgnoreMessage` - message is removed from the queue and ignored
 `IgnoreMessageWithRequeue` - message is rejected and sent back to the queue
 
-## Example
+## Example 
 
 Example for consumer and sender services:
 
