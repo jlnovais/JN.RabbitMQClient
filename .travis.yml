@@ -1,7 +1,8 @@
 language: csharp
-solution: JN.RabbitMQClient.sln
+mono: none
 dotnet: 2.1.502
+dist: trusty
 script:
  - cd JN.RabbitMQClient
  - dotnet restore
- - dotnet build -c Release 
+ - dotnet build
