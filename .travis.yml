@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.2.301
+dotnet: 3.0.0
 dist: trusty
 script:
  - cd JN.RabbitMQClient
