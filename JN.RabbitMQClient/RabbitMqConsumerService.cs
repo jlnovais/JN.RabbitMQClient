@@ -22,7 +22,7 @@ namespace JN.RabbitMQClient
 
 
         private const short MaxChannelsPerConnection = 3;
- private bool _disposed;
+        private bool _disposed;
 
 
         public RabbitMqConsumerService(IBrokerConfigConsumers config)

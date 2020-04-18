@@ -19,7 +19,7 @@ namespace JN.RabbitMQClient
             if (string.IsNullOrEmpty(_config.Host))
                 throw new ArgumentException("Invalid host.");
 
-            var factory = new ConnectionFactory()
+            var factory = new ConnectionFactory
             {
                 //HostName = host,
                 UserName = _config.Username,

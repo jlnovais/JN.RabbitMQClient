@@ -13,9 +13,9 @@ namespace JN.RabbitMQClient.Tests
 {
     public class RabbitMqConsumerService_Tests
     {
-        private static int _totalMessagesReceived;
-        private static int _totalStopProcessing;
-        private static int _totalErrors;
+        private int _totalMessagesReceived;
+        private int _totalStopProcessing;
+        private int _totalErrors;
 
         private const int TotalConsumers = 2;
         private const int DefaultTotalConsumers = 5;
@@ -82,7 +82,7 @@ namespace JN.RabbitMQClient.Tests
             switch (message)
             {
                 case "error":
-                    throw new Exception("error");
+                    throw new RabbitMqClientException("error");
                 case "ok":
                     return Task.FromResult(Constants.MessageProcessInstruction.OK);
                 case "ignore":
@@ -126,7 +126,7 @@ namespace JN.RabbitMQClient.Tests
         public void ConsumerService_StartConsumers_InvalidHost_ThrowsException(string invalidHost)
         {
 
-            IBrokerConfigConsumers config = new Entities.BrokerConfigConsumers()
+            IBrokerConfigConsumers config = new Entities.BrokerConfigConsumers
             {
                 Host = invalidHost,
             };
@@ -248,28 +248,6 @@ namespace JN.RabbitMQClient.Tests
 
         }
 
-        //public void ConsumerService_ReceiveMessage_CreateQueue_receivesAllMessages()
-        //{
-        //    string localQueueName = "otherQueue";
-        //    _consumerService = GetConsumerService();
-
-        //    _rabbitMqHelper.SendMessage(localQueueName, "message 1");
-        //    _rabbitMqHelper.SendMessage(localQueueName, "message 2");
-
-        //    _consumerService.StartConsumers("test", localQueueName, TotalConsumers, true);
-
-        //    Thread.Sleep(100);
-
-        //    var res = _rabbitMqHelper.CreateQueueOrGetInfo(localQueueName);
-        //    var totalMessagesInQueue = res.MessageCount;
-
-        //    Assert.AreEqual(2, _totalMessagesReceived);
-        //    Assert.AreEqual(0, totalMessagesInQueue);
-
-        //}
-
-
-
         [Test]
         public void ConsumerService_Dispose_executesAllDisposeDelegates()
         {
@@ -322,7 +300,6 @@ namespace JN.RabbitMQClient.Tests
             var res = _rabbitMqHelper.CreateQueueOrGetInfo(queueName);
             var totalMessagesInQueue = res.MessageCount;
 
-            //Assert.AreEqual(1, _totalMessagesReceived);
             Assert.AreEqual(expectedMessageInQueueAfterProcessing, totalMessagesInQueue);
 
         }

@@ -43,8 +43,6 @@ namespace JN.RabbitMQClient.TestApp
 
             services.AddLogging((loggingBuilder) =>
             {
-                // configure Logging with NLog
-                //loggingBuilder.ClearProviders();
                 loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                 loggingBuilder.AddConsole();
                 loggingBuilder.AddNLog();

@@ -17,7 +17,7 @@ namespace JN.RabbitMQClient.Tests
         private const string queueNameExchange2 = "TestQueueEx2";
 
 
-        private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig()
+        private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig
         {
             HostName = "localhost",
             Password = "123",

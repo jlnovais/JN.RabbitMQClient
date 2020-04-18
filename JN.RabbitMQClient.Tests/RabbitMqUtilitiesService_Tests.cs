@@ -74,7 +74,6 @@ namespace JN.RabbitMQClient.Tests
         {
             CleanAll();
 
-            //_rabbitMqHelper.CreateQueueOrGetInfo(queueName);
             _rabbitMqHelper.CreateExchangeAndBindQueue(exchangeName, null);
         }
 

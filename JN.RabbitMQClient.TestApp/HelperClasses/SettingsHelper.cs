@@ -15,7 +15,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             byte.TryParse(section["TotalInstances"], out var totalInstances);
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
 
-            var conf = new BrokerConfigConsumers()
+            var conf = new BrokerConfigConsumers
             {
                 Host = section["Host"],
                 Port = Convert.ToInt16(section["Port"]),
@@ -37,7 +37,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
 
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
 
-            var conf = new BrokerConfigSender()
+            var conf = new BrokerConfigSender
             {
                 Host = section["Host"],
                 Port = Convert.ToInt16(section["Port"]),
@@ -57,7 +57,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
         {
             var section = configuration.GetSection(sectionName);
 
-            var config = new AppConfig()
+            var config = new AppConfig
             {
                 BrokerRetentionPeriodInRetryQueueSeconds = Convert.ToInt16(section["RetentionPeriodInRetryQueueSeconds"]),
                 BrokerRetentionPeriodInRetryQueueSecondsMax = Convert.ToInt16(section["RetentionPeriodInRetryQueueSecondsMax"]),

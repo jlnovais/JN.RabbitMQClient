@@ -36,7 +36,7 @@ namespace JN.RabbitMQClient.Other
 
         internal static void SetPropertiesConsumer(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds, int retentionPeriodInRetryQueueMillisecondsMax)
         {
-            properties.Persistent = true; // SetPersistent(true);
+            properties.Persistent = true; 
             properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
             properties.Expiration = GetNumber(retentionPeriodInRetryQueueMilliseconds, retentionPeriodInRetryQueueMillisecondsMax).ToString();
             properties.Headers = new Dictionary<string, object>();
@@ -44,7 +44,7 @@ namespace JN.RabbitMQClient.Other
 
         internal static void SetPropertiesSender(IBasicProperties properties, string encoding)
         {
-            properties.Persistent = true; // SetPersistent(true);
+            properties.Persistent = true; 
             properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
             properties.ContentEncoding = encoding;
         }
