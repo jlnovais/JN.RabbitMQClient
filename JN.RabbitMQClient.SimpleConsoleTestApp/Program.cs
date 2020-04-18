@@ -64,7 +64,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
         private static async Task ReceiveMessageError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Error: '{consumerTag}' | {errorMessage}").ConfigureAwait(false);
+            await Console.Out.WriteLineAsync($"Error: '{consumerTag}' | Queued message: {message} | Error message: {errorMessage}").ConfigureAwait(false);
         }
 
         private static async Task ShutdownConsumer(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
@@ -74,7 +74,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
         private static async Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-            await Console.Out.WriteLineAsync($"Message received from '{consumerTag}': {message}").ConfigureAwait(false);
+            await Console.Out.WriteLineAsync($"Message received from '{consumerTag}' ({exchange}): {message} ").ConfigureAwait(false);
             return Constants.MessageProcessInstruction.OK;
         }
     }

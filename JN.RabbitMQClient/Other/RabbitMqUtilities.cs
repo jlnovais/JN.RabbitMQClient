@@ -5,7 +5,7 @@ using RabbitMQ.Client;
 
 namespace JN.RabbitMQClient.Other
 {
-    internal class RabbitMqUtilities
+    internal static class RabbitMqUtilities
     {
         private static readonly Random Random = new Random();
 

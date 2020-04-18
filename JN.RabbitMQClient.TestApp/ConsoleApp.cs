@@ -32,7 +32,7 @@ namespace JN.RabbitMQClient.TestApp
         }
 
 
-        private async Task ProcessError(string routingkeyorqueuename, string consumertag, string exchange, string message, string errormessage)
+        private static async Task ProcessError(string routingkeyorqueuename, string consumertag, string exchange, string message, string errormessage)
         {
             await Console.Out.WriteLineAsync($"Error processing message: {errormessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingkeyorqueuename}' | consumertag: {consumertag} | exchange: {exchange} | message: {message}").ConfigureAwait(false);
         }
@@ -67,7 +67,7 @@ namespace JN.RabbitMQClient.TestApp
 
         private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingkeyorqueuename, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-            await Console.Out.WriteLineAsync($"Message received by '{consumerTag}'. Message: {message} ");
+            await Console.Out.WriteLineAsync($"Message received by '{consumerTag}'. Message: {message} ").ConfigureAwait(false);
 
             var details = _consumerService.GetConsumerDetails();
 
