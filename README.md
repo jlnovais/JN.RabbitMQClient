@@ -1,8 +1,6 @@
 # JN.RabbitMQClient
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/259943d527ba4afc872e2b922ea52321)](https://app.codacy.com/manual/jlnovais/JN.RabbitMQClient?utm_source=github.com&utm_medium=referral&utm_content=jlnovais/JN.RabbitMQClient&utm_campaign=Badge_Grade_Dashboard)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/259943d527ba4afc872e2b922ea52321)](https://app.codacy.com/manual/jlnovais/JN.RabbitMQClient?utm_source=github.com&utm_medium=referral&utm_content=jlnovais/JN.RabbitMQClient&utm_campaign=Badge_Grade_Dashboard)
 
 Simple implementation of RabbitMQ consumer and sender.
 
@@ -20,8 +18,11 @@ To use a retry queue, the method `StartConsumers` should be called with a `Retry
 
 ## Message processing instructions
 `OK` - message is considered as successfully processed
+
 `RequeueMessageWithDelay` - message is removed from the queue, but sent to a retry queue for latter processing (typically with a dead letter configuration)
+
 `IgnoreMessage` - message is removed from the queue and ignored
+
 `IgnoreMessageWithRequeue` - message is rejected and sent back to the queue
 
 ## Example
