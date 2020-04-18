@@ -1,6 +1,6 @@
 # JN.RabbitMQClient
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/259943d527ba4afc872e2b922ea52321)](https://app.codacy.com/manual/jlnovais/JN.RabbitMQClient?utm_source=github.com&utm_medium=referral&utm_content=jlnovais/JN.RabbitMQClient&utm_campaign=Badge_Grade_Dashboard)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Nuget](https://img.shields.io/nuget/v/JN.RabbitMQClient)](https://www.nuget.org/packages/JN.RabbitMQClient/) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/259943d527ba4afc872e2b922ea52321)](https://app.codacy.com/manual/jlnovais/JN.RabbitMQClient?utm_source=github.com&utm_medium=referral&utm_content=jlnovais/JN.RabbitMQClient&utm_campaign=Badge_Grade_Dashboard)
 
 Simple implementation of RabbitMQ consumer and sender.
 

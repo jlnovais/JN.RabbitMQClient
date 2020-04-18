@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JN.RabbitMQClient.Entities;
 
 namespace JN.RabbitMQClient
 {
-    public interface IRabbitMqConsumerService
+    public interface IRabbitMqConsumerService: IDisposable
     {
         /// <summary>
         /// StartConsumers - start consumers and connect them to a queue.
@@ -33,7 +34,6 @@ namespace JN.RabbitMQClient
         void StopConsumers();
         void StopConsumers(string consumerTag);
 
-        void Dispose();
         event ReceiveMessageDelegate ReceiveMessage;
         event ShutdownDelegate ShutdownConsumer;
         event ReceiveMessageErrorDelegate ReceiveMessageError;

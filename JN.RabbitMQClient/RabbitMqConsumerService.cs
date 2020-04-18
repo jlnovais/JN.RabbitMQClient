@@ -12,7 +12,7 @@ using RabbitMQ.Client.Exceptions;
 
 namespace JN.RabbitMQClient
 {
-    public class RabbitMqConsumerService : RabbitMqServiceBase, IRabbitMqConsumerService, IDisposable
+    public class RabbitMqConsumerService : RabbitMqServiceBase, IRabbitMqConsumerService
     {
         private readonly List<AsyncEventingBasicConsumerExtended> _consumers = new List<AsyncEventingBasicConsumerExtended>();
         private List<IConnection> _connections = new List<IConnection>();
@@ -278,7 +278,7 @@ namespace JN.RabbitMQClient
                 deliveryArgs.Body);
         }
 
-        private void SetFirstErrorTimeStampToProperties(long firstErrorTimeStamp, IBasicProperties properties)
+        private static void SetFirstErrorTimeStampToProperties(long firstErrorTimeStamp, IBasicProperties properties)
         {
             properties.Headers.Add(Constants.FirstErrorTimeStampHeaderName,
                 firstErrorTimeStamp > 0 ? firstErrorTimeStamp : DateTime.UtcNow.ToUnixTimestamp());

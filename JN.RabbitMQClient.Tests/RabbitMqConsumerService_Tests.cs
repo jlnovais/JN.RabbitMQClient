@@ -333,7 +333,7 @@ namespace JN.RabbitMQClient.Tests
 
         }
 
-        private RetryQueueDetails GetRetryOptions()
+        private static RetryQueueDetails GetRetryOptions()
         {
             return new RetryQueueDetails
             {
