@@ -38,7 +38,9 @@ namespace JN.RabbitMQClient
             //use copy of list to avoid error: "Collection was modified; enumeration operation may not execute"
             var consumers = _consumers.Select(x => new ConsumerInfo
             {
-                Name = x.ConsumerTag,
+                //2020-05-04
+                //Name = x.ConsumerTag,
+                Name = string.Join(";", x.ConsumerTags),
                 IsRunning = x.IsRunning,
                 ShutdownReason = x.ShutdownReason?.ReplyText ?? "",
                 ConnectedToPort = x.ConnectedToPort,
@@ -148,7 +150,9 @@ namespace JN.RabbitMQClient
         {
             if (!string.IsNullOrWhiteSpace(consumerTag))
             {
-                var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
+                //2020-05-04
+                //var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
+                var consumer = _consumers.First(x => x.ConsumerTags.Contains(consumerTag));
                 consumer?.Model.Abort();
 
                 _consumers.Remove(consumer);
@@ -202,7 +206,9 @@ namespace JN.RabbitMQClient
 
             var errorCode = e.ReplyCode;
             var errorMessage = e.ReplyText;
-            var consumerTag = consumer.ConsumerTag;
+            //2020-05-04
+            //var consumerTag = consumer.ConsumerTag;
+            var consumerTag =  string.Join(";", consumer.ConsumerTags);
             var shutdownInitiator = e.Initiator.ToString();
 
             await OnShutdownConsumer(consumerTag, errorCode, shutdownInitiator, errorMessage).ConfigureAwait(false);
@@ -217,9 +223,11 @@ namespace JN.RabbitMQClient
             var exchange = e.Exchange;
             var message = "";
 
+        
             try
             {
-                message = Encoding.UTF8.GetString(e.Body);
+ 
+                message = Encoding.UTF8.GetString(e.Body.Span);
 
                 var consumer = (AsyncEventingBasicConsumerExtended)sender;
 
