@@ -146,6 +146,7 @@ namespace JN.RabbitMQClient
         {
             StopConsumers(null);
         }
+
         public void StopConsumers(string consumerTag)
         {
             if (!string.IsNullOrWhiteSpace(consumerTag))

@@ -67,7 +67,11 @@ namespace JN.RabbitMQClient.TestApp
 
         private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingkeyorqueuename, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-            await Console.Out.WriteLineAsync($"Message received by '{consumerTag}'. Message: {message} ").ConfigureAwait(false);
+            var debugMessage = $"Message received by '{consumerTag}'. Message: {message} ";
+
+            await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
+
+            _logger.LogInformation(debugMessage);
 
             var details = _consumerService.GetConsumerDetails();
 
@@ -103,16 +107,15 @@ namespace JN.RabbitMQClient.TestApp
                 default:
                     return Constants.MessageProcessInstruction.Unknown;
             }
-
-
-
-
         }
 
 
-        private static async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
+        private async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}").ConfigureAwait(false);
+            var debugMessage = $"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}";
+            await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
+            _logger.LogInformation(debugMessage);
+
         }
     }
 }

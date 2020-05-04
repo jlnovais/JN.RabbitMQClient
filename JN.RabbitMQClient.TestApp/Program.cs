@@ -34,6 +34,9 @@ namespace JN.RabbitMQClient.TestApp
             // Kick off our actual code
             serviceProvider.GetService<ConsoleApp>().Run();
 
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+
         }
 
 

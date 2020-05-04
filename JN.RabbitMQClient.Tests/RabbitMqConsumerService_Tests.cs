@@ -64,7 +64,7 @@ namespace JN.RabbitMQClient.Tests
         private Task ShutDownConsumer(string consumertag, ushort errorcode, string shutdowninitiator,
             string errormessage)
         {
-            _totalStopProcessing++;
+            Interlocked.Increment(ref _totalStopProcessing);
             return Task.CompletedTask;
         }
 
@@ -255,13 +255,13 @@ namespace JN.RabbitMQClient.Tests
 
             _consumerService.StartConsumers("test", null, TotalConsumers);
 
-            Thread.Sleep(100);
+            Thread.Sleep(200);
 
             _consumerService.Dispose();
 
             Thread.Sleep(100);
 
-            Assert.AreEqual(2, _totalStopProcessing);
+            Assert.AreEqual(TotalConsumers, _totalStopProcessing);
         }
 
         [Test]
