@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>JN.RabbitMQClient</id>
-    <version>2.1.1</version>
+    <version>2.2.0</version>
     <authors>José Novais</authors>
     <owners>José Novais</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -11,21 +11,21 @@
     <projectUrl>https://github.com/jlnovais/JN.RabbitMQClient</projectUrl>
     <title>JN.RabbitMQClient</title>
     <tags>RabbitMq;Client;Sender;Consumer;netstandard;csharp;Producer;Broker</tags>
+    <repository type="git" url="https://github.com/jlnovais/JN.RabbitMQClient" />
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
     <copyright>José Novais, 2020</copyright>
     <releaseNotes>
       Release Notes for current version:
 
-      - Add random expiration to messages
-      - Minor update to documentation and examples.
+      - Update RabbitMQ.Client
+      - Upgrade to .NET Standard 2.1
 
       (This version IS NOT compatible with versions 1.x.x.)
     </releaseNotes>
     <dependencies>
-      <group targetFramework=".NETStandard1.5">
-        <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
-        <dependency id="RabbitMQ.Client" version="5.1.2" exclude="Build,Analyzers" />
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="RabbitMQ.Client" version="6.0.0" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

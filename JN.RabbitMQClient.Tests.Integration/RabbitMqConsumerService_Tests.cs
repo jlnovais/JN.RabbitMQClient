@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
@@ -8,7 +10,6 @@ using NUnit.Framework;
 using BrokerConfig = JN.RabbitMQClient.Tests.HelperClasses.BrokerConfig;
 
 
-//[assembly: IgnoresAccessChecksTo("RabbitMQToolsV2.Consumer")]
 namespace JN.RabbitMQClient.Tests
 {
     public class RabbitMqConsumerService_Tests
@@ -64,6 +65,7 @@ namespace JN.RabbitMQClient.Tests
         private Task ShutDownConsumer(string consumertag, ushort errorcode, string shutdowninitiator,
             string errormessage)
         {
+            Console.WriteLine($"shutdown {consumertag}");
             Interlocked.Increment(ref _totalStopProcessing);
             return Task.CompletedTask;
         }
@@ -156,6 +158,23 @@ namespace JN.RabbitMQClient.Tests
             Assert.AreEqual(TotalConsumers, consumerCount);
         }
 
+        [Test]
+        public void ConsumerService_StartConsumers_NamesAreCorrect()
+        {
+            _consumerService = GetConsumerService();
+
+            _consumerService.StartConsumers("test", null, 2);
+
+            Thread.Sleep(100);
+
+            var startedConsumers = _consumerService.GetConsumerDetails();
+
+            Assert.IsTrue(startedConsumers.Any(y => y.Name == "test_0"));
+            Assert.IsTrue(startedConsumers.Any(y => y.Name == "test_1"));
+
+        }
+
+
 
         [Test]
         public void ConsumerService_StartConsumers_ValidNumberOfConsumers_useDefaultConsumers_returnsOk()
@@ -164,7 +183,7 @@ namespace JN.RabbitMQClient.Tests
 
             _consumerService.StartConsumers("test");
 
-            Thread.Sleep(100);
+            Thread.Sleep(300);
 
             var startedConsumers = _consumerService.GetTotalRunningConsumers;
             var totalConsumers = _consumerService.GetTotalConsumers;
@@ -255,13 +274,16 @@ namespace JN.RabbitMQClient.Tests
 
             _consumerService.StartConsumers("test", null, TotalConsumers);
 
-            Thread.Sleep(200);
+            _rabbitMqHelper.SendMessage(queueName, "message 1");
+            _rabbitMqHelper.SendMessage(queueName, "message 2");
+
+            Thread.Sleep(2500);
 
             _consumerService.Dispose();
 
-            Thread.Sleep(100);
+            Thread.Sleep(2500);
 
-            Assert.AreEqual(TotalConsumers, _totalStopProcessing);
+            Assert.AreEqual(TotalConsumers, _totalStopProcessing, $"_totalStopProcessing: {_totalStopProcessing}");
         }
 
         [Test]
@@ -276,7 +298,7 @@ namespace JN.RabbitMQClient.Tests
 
             Thread.Sleep(100);
 
-            Assert.AreEqual(2, _totalErrors);
+            Assert.AreEqual(TotalConsumers, _totalErrors);
         }
 
         [TestCase("ok", 0)]

@@ -32,10 +32,15 @@ namespace JN.RabbitMQClient.TestApp
             var serviceProvider = services.BuildServiceProvider();
 
             // Kick off our actual code
-            serviceProvider.GetService<ConsoleApp>().Run();
+
+            var app = serviceProvider.GetService<ConsoleApp>();
+
+            app.Run();
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
+
+            app.Stop();
 
         }
 

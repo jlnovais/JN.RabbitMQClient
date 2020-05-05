@@ -65,6 +65,11 @@ namespace JN.RabbitMQClient.TestApp
 
         }
 
+        public void Stop()
+        {
+            _consumerService.StopConsumers();
+        }
+
         private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingkeyorqueuename, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
             var debugMessage = $"Message received by '{consumerTag}'. Message: {message} ";
