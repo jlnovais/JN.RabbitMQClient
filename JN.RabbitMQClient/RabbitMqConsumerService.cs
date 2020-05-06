@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
@@ -138,6 +139,23 @@ namespace JN.RabbitMQClient
             }
         }
 
+
+        private async Task Consumer_Shutdown(object sender, ShutdownEventArgs e)
+        {
+            var consumer = (AsyncEventingBasicConsumer)sender;
+
+            var errorCode = e.ReplyCode;
+            var errorMessage = e.ReplyText;
+            //2020-05-04
+            //var consumerTag = consumer.ConsumerTag;
+            var consumerTag = string.Join(";", consumer.ConsumerTags);
+            var shutdownInitiator = e.Initiator.ToString();
+
+            await OnShutdownConsumer(consumerTag, errorCode, shutdownInitiator, errorMessage).ConfigureAwait(false);
+        }
+
+
+
         /// <summary>
         /// Stop consumers
         /// </summary>
@@ -155,19 +173,46 @@ namespace JN.RabbitMQClient
                 //var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
                 var consumer = _consumers.First(x => x.ConsumerTags.Contains(consumerTag));
                 consumer?.Model.Abort();
+                consumer?.Model.Dispose();
 
-                _consumers.Remove(consumer);
+                if (consumer != null)
+                    _consumers.Remove(consumer);
 
                 return;
             }
 
             foreach (var consumer in _consumers)
             {
-                consumer.Model.Abort();
+                consumer?.Model.Abort();
+                consumer?.Model.Dispose();
             }
 
-            _consumers.RemoveAll(x => !x.IsRunning);
+            _consumers.Clear();
+
+            //_consumers.RemoveAll(x => !x.IsRunning);
         }
+
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            //if (_consumers.Any())
+            //{
+            //    StopConsumers();
+            //    _consumers.Clear();
+            //}
+
+            foreach (var connection in _connections)
+            {
+                connection.Abort();
+                connection.Dispose();
+            }
+
+            _disposed = true;
+        }
+
 
         private IConnection GetConnection(string connectionName, int totalConsumers = 0, short maxChannelsPerConnection = 1)
         {
@@ -200,23 +245,7 @@ namespace JN.RabbitMQClient
                 });
         }
 
-
-        private async Task Consumer_Shutdown(object sender, ShutdownEventArgs e)
-        {
-            var consumer = (AsyncEventingBasicConsumer)sender;
-
-            var errorCode = e.ReplyCode;
-            var errorMessage = e.ReplyText;
-            //2020-05-04
-            //var consumerTag = consumer.ConsumerTag;
-            var consumerTag =  string.Join(";", consumer.ConsumerTags);
-            var shutdownInitiator = e.Initiator.ToString();
-
-            await OnShutdownConsumer(consumerTag, errorCode, shutdownInitiator, errorMessage).ConfigureAwait(false);
-        }
-
-
-
+        
         private async Task Consumer_Received(object sender, BasicDeliverEventArgs e)
         {
             var consumerTag = e.ConsumerTag;
@@ -224,10 +253,8 @@ namespace JN.RabbitMQClient
             var exchange = e.Exchange;
             var message = "";
 
-        
             try
             {
- 
                 message = Encoding.UTF8.GetString(e.Body.Span);
 
                 var consumer = (AsyncEventingBasicConsumerExtended)sender;
@@ -309,38 +336,7 @@ namespace JN.RabbitMQClient
             return ShutdownConsumer?.Invoke(consumerTag, errorCode, shutdownInitiator, errorMessage);
         }
 
-        public void Dispose()
-        {
-            if (_disposed)
-                return;
-
-            if (_consumers.Any())
-            {
-                foreach (var consumer in _consumers)
-                {
-                    try
-                    {
-                        consumer.Model.Close();
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
-
-                    consumer.Model.Dispose();
-                }
-                _consumers.Clear();
-            }
-
-
-            foreach (var connection in _connections)
-            {
-                connection.Abort();
-                connection.Dispose();
-            }
-
-            _disposed = true;
-        }
+ 
 
     }
 }

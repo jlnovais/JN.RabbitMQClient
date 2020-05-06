@@ -268,6 +268,25 @@ namespace JN.RabbitMQClient.Tests
         }
 
         [Test]
+        public void ConsumerService_StopConsumers_executesAllDisposeDelegates()
+        {
+            _consumerService = GetConsumerService();
+
+            _consumerService.StartConsumers("test", null, TotalConsumers);
+
+            _rabbitMqHelper.SendMessage(queueName, "message 1");
+            _rabbitMqHelper.SendMessage(queueName, "message 2");
+
+            Thread.Sleep(100);
+
+            _consumerService.StopConsumers();
+
+            Thread.Sleep(100);
+
+            Assert.AreEqual(TotalConsumers, _totalStopProcessing, $"_totalStopProcessing: {_totalStopProcessing}");
+        }
+
+        [Test]
         public void ConsumerService_Dispose_executesAllDisposeDelegates()
         {
             _consumerService = GetConsumerService();
@@ -277,7 +296,7 @@ namespace JN.RabbitMQClient.Tests
             _rabbitMqHelper.SendMessage(queueName, "message 1");
             _rabbitMqHelper.SendMessage(queueName, "message 2");
 
-            Thread.Sleep(2500);
+            Thread.Sleep(100);
 
             _consumerService.Dispose();
 
@@ -285,6 +304,7 @@ namespace JN.RabbitMQClient.Tests
 
             Assert.AreEqual(TotalConsumers, _totalStopProcessing, $"_totalStopProcessing: {_totalStopProcessing}");
         }
+
 
         [Test]
         public void ConsumerService_ProcessErrors_executesAllErrorDelegates()
@@ -371,7 +391,7 @@ namespace JN.RabbitMQClient.Tests
             _consumerService = GetConsumerService();
 
             _consumerService.StartConsumers("test", null, TotalConsumers);
-
+ 
             Thread.Sleep(100);
 
             Assert.AreEqual(TotalConsumers, _consumerService.GetTotalRunningConsumers);
@@ -380,9 +400,13 @@ namespace JN.RabbitMQClient.Tests
 
             _consumerService.StopConsumers();
 
+            Thread.Sleep(100);
 
-            Assert.AreEqual(0, _consumerService.GetTotalRunningConsumers);
-            Assert.AreEqual(0, _consumerService.GetTotalConsumers);
+            var running = _consumerService.GetTotalRunningConsumers;
+            var total = _consumerService.GetTotalConsumers;
+
+            Assert.AreEqual(0, running);
+            Assert.AreEqual(0, total);
         }
 
         [Test]

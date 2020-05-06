@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.TestApp.HelperClasses;
@@ -68,6 +69,7 @@ namespace JN.RabbitMQClient.TestApp
         public void Stop()
         {
             _consumerService.StopConsumers();
+            //_consumerService.Dispose();
         }
 
         private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingkeyorqueuename, string consumerTag, long firstErrorTimestamp, string exchange, string message)
@@ -89,10 +91,7 @@ namespace JN.RabbitMQClient.TestApp
                     await Console.Out.WriteLineAsync($"Consumer '{consumerInfo.Name}'; connected to {consumerInfo.ConnectedToHost}:{consumerInfo.ConnectedToPort}; firstErrorTimestamp: {firstErrorTimestamp}; started at {consumerInfo.ConnectionTime:yyyy-MM-dd HH:mm:ss}; {consumerInfo.LastMessageDate:yyyy-MM-dd HH:mm:ss} ").ConfigureAwait(false);
 
                     Console.ResetColor();
-
-
                 }
-
             }
 
             switch (message)
@@ -117,8 +116,8 @@ namespace JN.RabbitMQClient.TestApp
 
         private async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {
-            var debugMessage = $"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}";
-            await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
+            var debugMessage = $"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage} {Environment.NewLine} TotalConsumers: {_consumerService.GetTotalConsumers} | TotalRunningConsumers: {_consumerService.GetTotalRunningConsumers} ";
+            //await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
             _logger.LogInformation(debugMessage);
 
         }
