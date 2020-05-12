@@ -133,22 +133,28 @@ namespace JN.RabbitMQClient
                 consumer.Received += Consumer_Received;
                 consumer.Shutdown += Consumer_Shutdown;
 
+                var tag = $"{consumerName}_{i}";
+
+                consumer.ConsumerTag = tag;
+
                 _consumers.Add(consumer);
 
-                channel.BasicConsume(routingKeyOrQueueName, false, $"{consumerName}_{i}", consumer);
+                channel.BasicConsume(routingKeyOrQueueName, false, tag, consumer);
             }
         }
 
 
         private async Task Consumer_Shutdown(object sender, ShutdownEventArgs e)
         {
-            var consumer = (AsyncEventingBasicConsumer)sender;
+            var consumer = (AsyncEventingBasicConsumerExtended)sender;
 
             var errorCode = e.ReplyCode;
             var errorMessage = e.ReplyText;
-            //2020-05-04
-            //var consumerTag = consumer.ConsumerTag;
-            var consumerTag = string.Join(";", consumer.ConsumerTags);
+
+            //on shutdown consumer.ConsumerTags (from base class) is empty; can't use it here
+            //var consumerTag = string.Join(";", consumer.ConsumerTags);
+
+            var consumerTag = consumer.ConsumerTag;
             var shutdownInitiator = e.Initiator.ToString();
 
             await OnShutdownConsumer(consumerTag, errorCode, shutdownInitiator, errorMessage).ConfigureAwait(false);
@@ -169,14 +175,14 @@ namespace JN.RabbitMQClient
         {
             if (!string.IsNullOrWhiteSpace(consumerTag))
             {
-                //2020-05-04
-                //var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
-                var consumer = _consumers.First(x => x.ConsumerTags.Contains(consumerTag));
+                var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
+
+                //var consumer = _consumers.First(x => x.ConsumerTags.Contains(consumerTag));
                 consumer?.Model.Abort();
                 consumer?.Model.Dispose();
 
-                if (consumer != null)
-                    _consumers.Remove(consumer);
+                //if (consumer != null)
+                //    _consumers.Remove(consumer);
 
                 return;
             }
@@ -187,7 +193,7 @@ namespace JN.RabbitMQClient
                 consumer?.Model.Dispose();
             }
 
-            _consumers.Clear();
+            //_consumers.Clear();
 
             //_consumers.RemoveAll(x => !x.IsRunning);
         }

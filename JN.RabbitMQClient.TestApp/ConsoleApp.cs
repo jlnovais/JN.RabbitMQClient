@@ -33,9 +33,9 @@ namespace JN.RabbitMQClient.TestApp
         }
 
 
-        private static async Task ProcessError(string routingkeyorqueuename, string consumertag, string exchange, string message, string errormessage)
+        private static async Task ProcessError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Error processing message: {errormessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingkeyorqueuename}' | consumertag: {consumertag} | exchange: {exchange} | message: {message}").ConfigureAwait(false);
+            await Console.Out.WriteLineAsync($"Error processing message: {errorMessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingKeyOrQueueName}' | consumertag: {consumerTag} | exchange: {exchange} | message: {message}").ConfigureAwait(false);
         }
 
 
@@ -68,11 +68,11 @@ namespace JN.RabbitMQClient.TestApp
 
         public void Stop()
         {
-            _consumerService.StopConsumers();
-            //_consumerService.Dispose();
+            //_consumerService.StopConsumers();
+            _consumerService.Dispose();
         }
 
-        private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingkeyorqueuename, string consumerTag, long firstErrorTimestamp, string exchange, string message)
+        private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
             var debugMessage = $"Message received by '{consumerTag}'. Message: {message} ";
 
@@ -120,6 +120,7 @@ namespace JN.RabbitMQClient.TestApp
             //await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
             _logger.LogInformation(debugMessage);
 
+            await Task.CompletedTask;
         }
     }
 }

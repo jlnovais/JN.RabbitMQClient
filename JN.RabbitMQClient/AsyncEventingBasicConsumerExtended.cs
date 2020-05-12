@@ -17,6 +17,8 @@ namespace JN.RabbitMQClient
         public int RetentionPeriodInRetryQueueMilliseconds { get; set; }
         public int RetentionPeriodInRetryQueueMillisecondsMax { get; set; }
 
+        public string ConsumerTag { get; set; }
+
         public AsyncEventingBasicConsumerExtended(IModel model) : base(model)
         {
         }

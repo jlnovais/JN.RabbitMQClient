@@ -406,7 +406,7 @@ namespace JN.RabbitMQClient.Tests
             var total = _consumerService.GetTotalConsumers;
 
             Assert.AreEqual(0, running);
-            Assert.AreEqual(0, total);
+            Assert.AreEqual(TotalConsumers, total);
         }
 
         [Test]
@@ -422,10 +422,10 @@ namespace JN.RabbitMQClient.Tests
 
             _consumerService.StopConsumers("test_0");
 
-            Thread.Sleep(100);
+            Thread.Sleep(200);
 
             Assert.AreEqual(1, _consumerService.GetTotalRunningConsumers);
-            Assert.AreEqual(1, _consumerService.GetTotalConsumers);
+            Assert.AreEqual(TotalConsumers, _consumerService.GetTotalConsumers);
         }
 
     }
