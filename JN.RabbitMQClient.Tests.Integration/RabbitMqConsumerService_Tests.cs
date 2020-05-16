@@ -62,10 +62,8 @@ namespace JN.RabbitMQClient.Tests
 
 
 
-        private Task ShutDownConsumer(string consumertag, ushort errorcode, string shutdowninitiator,
-            string errormessage)
+        private Task ShutDownConsumer(string consumertag, ushort errorcode, string shutdowninitiator, string errormessage)
         {
-            Console.WriteLine($"shutdown {consumertag}");
             Interlocked.Increment(ref _totalStopProcessing);
             return Task.CompletedTask;
         }

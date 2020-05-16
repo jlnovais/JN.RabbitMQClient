@@ -39,8 +39,6 @@ namespace JN.RabbitMQClient
             //use copy of list to avoid error: "Collection was modified; enumeration operation may not execute"
             var consumers = _consumers.Select(x => new ConsumerInfo
             {
-                //2020-05-04
-                //Name = x.ConsumerTag,
                 Name = string.Join(";", x.ConsumerTags),
                 IsRunning = x.IsRunning,
                 ShutdownReason = x.ShutdownReason?.ReplyText ?? "",
@@ -177,12 +175,8 @@ namespace JN.RabbitMQClient
             {
                 var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
 
-                //var consumer = _consumers.First(x => x.ConsumerTags.Contains(consumerTag));
                 consumer?.Model.Abort();
                 consumer?.Model.Dispose();
-
-                //if (consumer != null)
-                //    _consumers.Remove(consumer);
 
                 return;
             }
@@ -192,10 +186,6 @@ namespace JN.RabbitMQClient
                 consumer?.Model.Abort();
                 consumer?.Model.Dispose();
             }
-
-            //_consumers.Clear();
-
-            //_consumers.RemoveAll(x => !x.IsRunning);
         }
 
 
@@ -203,12 +193,6 @@ namespace JN.RabbitMQClient
         {
             if (_disposed)
                 return;
-
-            //if (_consumers.Any())
-            //{
-            //    StopConsumers();
-            //    _consumers.Clear();
-            //}
 
             foreach (var connection in _connections)
             {

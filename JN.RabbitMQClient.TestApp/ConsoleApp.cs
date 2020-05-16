@@ -68,13 +68,12 @@ namespace JN.RabbitMQClient.TestApp
 
         public void Stop()
         {
-            //_consumerService.StopConsumers();
             _consumerService.Dispose();
         }
 
         private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
         {
-            var debugMessage = $"Message received by '{consumerTag}'. Message: {message} ";
+            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message} ";
 
             await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
 
@@ -117,10 +116,8 @@ namespace JN.RabbitMQClient.TestApp
         private async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {
             var debugMessage = $"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage} {Environment.NewLine} TotalConsumers: {_consumerService.GetTotalConsumers} | TotalRunningConsumers: {_consumerService.GetTotalRunningConsumers} ";
-            //await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
+            await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
             _logger.LogInformation(debugMessage);
-
-            await Task.CompletedTask;
         }
     }
 }
