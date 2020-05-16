@@ -150,7 +150,6 @@ namespace JN.RabbitMQClient
             var errorMessage = e.ReplyText;
 
             //on shutdown consumer.ConsumerTags (from base class) is empty; can't use it here
-            //var consumerTag = string.Join(";", consumer.ConsumerTags);
 
             var consumerTag = consumer.ConsumerTag;
             var shutdownInitiator = e.Initiator.ToString();
