@@ -31,7 +31,7 @@ namespace JN.RabbitMQClient.Tests
             Password = "123",
             Host = "localhost",
             RoutingKeyOrQueueName = queueName,
-            VirtualHost = "/",
+            VirtualHost = "/"
             //Exchange = ""
         };
 

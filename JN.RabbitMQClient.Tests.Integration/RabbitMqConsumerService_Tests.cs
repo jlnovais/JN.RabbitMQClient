@@ -41,6 +41,7 @@ namespace JN.RabbitMQClient.Tests
             RoutingKeyOrQueueName = queueName,
             VirtualHost = "/",
             TotalInstances = DefaultTotalConsumers
+            //Port = 9999
         };
 
         private IRabbitMqConsumerService _consumerService;
