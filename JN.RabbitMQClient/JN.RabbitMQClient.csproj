@@ -10,7 +10,7 @@
     <Product>JN.RabbitMQClient - Simple RabbitMQ client</Product>
     <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <FileVersion>2.2.0.0</FileVersion>
-    <Version>2.2.0-beta</Version>
+    <Version>2.2.0-beta.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

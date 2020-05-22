@@ -29,12 +29,10 @@ namespace JN.RabbitMQClient
 
             if (!string.IsNullOrEmpty(_config.VirtualHost))
                 factory.VirtualHost = _config.VirtualHost;
-            if (_config.Port > 0)
-                factory.Port = _config.Port;
 
-
+ 
             factory.EndpointResolverFactory = GetEndpointResolver;
-            var conn = factory.CreateConnection(connectionName);
+            var conn = factory.CreateConnection( connectionName);
 
             return conn;
         }
@@ -46,8 +44,13 @@ namespace JN.RabbitMQClient
             if (hosts.Count == 0)
                 throw new ArgumentException("No hosts defined for connection.");
 
+            var port = AmqpTcpEndpoint.UseDefaultPort;
+
+            if (_config.Port > 0)
+                port = _config.Port;
+
             var endpoints = from host in hosts
-                select new AmqpTcpEndpoint(host);
+                select new AmqpTcpEndpoint(host, port);
 
             if (_config.ShuffleHostList)
                 return new DefaultEndpointResolver(endpoints);
