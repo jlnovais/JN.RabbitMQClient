@@ -1,0 +1,16 @@
+.jn-noBorder{
+    border: none;
+    color: chocolate;
+}
+
+.jn-codeLines{
+    line-height: 110%;
+
+}
+
+h1.jn-Title {
+	color: #ffffff;
+	font-size: 25px;
+	font-weight: bold;
+}
+

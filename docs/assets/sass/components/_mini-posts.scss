@@ -1,0 +1,121 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Mini Posts */
+
+	.mini-posts {
+		article {
+			@include vendor('display','flex');
+			@include vendor('align-items','center');
+			border-bottom: 1px solid;
+			margin-bottom: _size(element-margin) * 1.5;
+			padding-bottom: _size(element-margin) * 1.5;
+
+			&:last-of-type {
+				border: none;
+				padding-bottom: 0;
+			}
+
+			a {
+				text-decoration: none;
+			}
+
+			.image {
+				margin-bottom: 0;
+				margin-right: 3rem;
+			}
+
+			.timestamp {
+				margin-top: 1rem;
+			}
+
+			> .content {
+				> :last-child {
+					margin-bottom: 0;
+				}
+			}
+		}
+
+		&.small {
+			article {
+				margin-bottom: _size(element-margin);
+				padding-bottom: _size(element-margin);
+
+				.image {
+					margin-right: _size(element-margin);
+				}
+
+				&:last-of-type {
+					padding-bottom: 0;
+				}
+			}
+		}
+
+		&.minimal {
+			article {
+				display: block;
+				margin-bottom: _size(element-margin);
+				padding-bottom: _size(element-margin);
+
+				&:last-of-type {
+					padding-bottom: 0;
+				}
+			}
+		}
+
+		@include breakpoint('<=small') {
+			article {
+				@include vendor('align-items', 'flex-start');
+
+				.image {
+					margin-right: _size(element-margin);
+					width: 60%;
+
+					img {
+						width: 100%;
+					}
+				}
+			}
+
+			&.small {
+				article {
+					@include vendor('align-items','center');
+
+					.image {
+						margin-bottom: 0;
+						margin-right: _size(element-margin);
+						width: auto;
+
+						img {
+							width: auto;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@mixin color-mini-posts($p: null) {
+		.mini-posts {
+			article {
+				border-color: _palette($p, border);
+
+				a {
+					color: _palette($p, fg);
+
+					&:hover {
+						color: _palette(accent1);
+					}
+				}
+
+				.timestamp {
+					color: _palette($p, fg-light);
+				}
+			}
+		}
+	}
+
+	@include color-mini-posts;

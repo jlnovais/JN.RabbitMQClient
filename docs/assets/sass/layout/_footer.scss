@@ -1,0 +1,90 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Footer */
+
+	#footer {
+		@include padding(7rem, 0);
+		background: _palette(bg-alt);
+		border-top: 1px solid _palette(border);
+
+		.content {
+			@include vendor('display', 'flex');
+			@include vendor('justify-content', 'space-between');
+
+			> section {
+				&:last-child {
+					min-width: 25rem;
+					width: 25rem;
+				}
+			}
+
+			a {
+				color: _palette(fg);
+
+				&:hover {
+					color: _palette(accent1);
+				}
+			}
+		}
+
+		.copyright {
+			border-top: 1px solid _palette(border);
+			color: _palette(fg-light);
+			margin: _size(element-margin) * 2 0;
+			padding-top: _size(element-margin) * 2;
+			text-align:center;
+		}
+
+		@include breakpoint('<=large') {
+			@include padding(4rem, 0);
+
+			.content {
+				> section {
+					min-width: 25%;
+					width: 25%;
+				}
+			}
+		}
+
+		@include breakpoint('<=medium') {
+			.content {
+				@include vendor('flex-wrap', 'wrap');
+				@include vendor('flex-direction', 'row');
+
+				> section {
+					width: 48%;
+					margin-bottom: _size(element-margin);
+
+					&:last-child {
+						width: 100%;
+						margin-bottom: 0;
+					}
+				}
+			}
+
+			.copyright {
+				margin-top: _size(element-margin) * 1;
+				padding-top: _size(element-margin) * 1.5;
+			}
+		}
+
+		@include breakpoint('<=small') {
+			@include padding(3rem, 0);
+
+			.content {
+				> section {
+					min-width: 100%;
+					width: 100%;
+
+					&:last-child {
+						min-width: 100%;
+						width: 100%;
+					}
+				}
+			}
+		}
+	}

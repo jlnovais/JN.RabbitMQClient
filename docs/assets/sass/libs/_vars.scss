@@ -1,0 +1,60 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+// Misc.
+	$misc: (
+		z-index-base:		100
+	);
+
+// Duration.
+	$duration: (
+		menu:				0.5s,
+		transition:			0.2s,
+		slider:				0.75s
+	);
+
+// Size.
+	$size: (
+		border-radius:		0,
+		element-height:		3.25rem,
+		element-margin:		2rem,
+		container-width:	80rem,
+		inner-width:		80rem,
+		header-height:		4.25rem,
+		menu-width:			20rem
+	);
+
+// Font.
+	$font: (
+		family:				('Open Sans', Arial, Helvetica, sans-serif),
+		family-fixed:		('Courier New', monospace),
+		weight:				300,
+		weight-bold:		400
+	);
+
+// Palette.
+	$palette: (
+		bg:					#ffffff,
+		bg-alt:				#f3f3f3,
+		fg:					#171717,
+		fg-bold:			#373737,
+		fg-light:			#aeaeae,
+		border:				rgba(224,224,224,1),
+		border-bg:			rgba(144,144,144,0.075),
+
+		accent1:			#0ba9eb,	// Cyan
+		accent2:			#74b84a,	// Green
+		accent3:			#41494e,	// Dark Grey
+
+		invert: (
+			bg:				#3B3B3B,
+			fg:				rgba(255,255,255,0.75),
+			fg-bold:		#ffffff,
+			fg-light:		rgba(255,255,255,0.4),
+			border:			rgba(255,255,255,0.25),
+			border-bg:		rgba(255,255,255,0.075),
+		)
+	);

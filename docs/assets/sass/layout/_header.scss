@@ -1,0 +1,212 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Header */
+
+	$accent: invert;
+
+	body {
+		padding-top: _size(header-height);
+	}
+
+	#header {
+		background: _palette(accent1);
+		color: _palette($accent, fg);
+		cursor: default;
+		height: _size(header-height);
+		left: 0;
+		line-height: _size(header-height);
+		position: fixed;
+		top: 0;
+		width: 100%;
+		z-index: _misc(z-index-base) + 10;
+
+		.inner {
+			@include vendor('align-items', 'center');
+			@include vendor('display', 'flex');
+			@include vendor('justify-content', 'space-between');
+			line-height: inherit;
+		}
+
+		.logo {
+			color: _palette($accent, fg-bold);
+			font-size: 1.15rem;
+			height: inherit;
+			line-height: inherit;
+			text-decoration: none;
+
+			strong {
+				color: _palette($accent, fg-bold);
+			}
+		}
+
+		a[href="#navPanel"] {
+			@include icon(false, solid);
+			background: darken(_palette(accent1), 3);
+			color: _palette($accent, fg-bold);
+			display: none;
+			padding: 0 1.25em;
+			height: 2.5rem;
+			line-height: 2.5rem;
+
+			.label {
+				display: none;
+			}
+
+			&:before {
+				content: '\f0c9';
+			}
+		}
+
+		nav {
+			@include vendor('flex', '0 1 auto');
+			line-height: inherit;
+
+			> ul {
+				@include vendor('align-items', 'center');
+				@include vendor('display', 'flex');
+				line-height: inherit;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+
+				> li {
+					line-height: inherit;
+					padding: 0;
+
+					&.opener {
+						a {
+							&:before {
+								content: "\f0d7";
+								font-family: 'Font Awesome 5 Free';
+								font-weight: 900;
+								padding-right: 0.5rem;
+							}
+						}
+
+						&.active {
+							a {
+								background-color: darken(_palette(accent1), 3);
+							}
+						}
+					}
+
+					&:hover {
+						a {
+							background-color: darken(_palette(accent1), 3);
+						}
+					}
+
+					> ul {
+						display: none;
+					}
+
+					a {
+						color: _palette($accent, fg);
+						display: block;
+						line-height: 1rem;
+						margin-left: 0.5rem;
+						padding: 0.75rem 1rem;
+						text-decoration: none;
+
+						&:hover, &:focus {
+							color: _palette($accent, fg-bold);
+						}
+					}
+
+					&:last-child {
+						a {
+							margin-right: 0 !important;
+						}
+					}
+				}
+			}
+
+			@at-root {
+				.dropotron {
+					background-color: transparentize(_palette(accent1), 0.05);
+					list-style-type: none;
+					margin: 0;
+					min-width: 10em;
+					padding: 0.5rem;
+
+					&.level-0 {
+						margin: 0;
+					}
+
+					li {
+						padding: 0;
+						position: relative;
+
+						&.opener {
+							> a {
+								&:after {
+									content: "\f0da";
+									font-family: 'Font Awesome 5 Free';
+									font-weight: 900;
+									padding-left: 1rem;
+								}
+							}
+						}
+
+						&.active {
+							> a {
+								background-color: darken(_palette(accent1), 3);
+								color: _palette($accent, fg-bold) !important;
+							}
+						}
+					}
+
+					a {
+						@include vendor('transition', 'none');
+						border-bottom: 0;
+						color: _palette($accent, fg);
+						padding: 0.5em 1em;
+						text-decoration: none;
+
+						&:hover {
+							background-color: darken(_palette(accent1), 3);
+							color: _palette($accent, fg-bold) !important;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@include breakpoint('<=medium') {
+		nav {
+			display: none;
+		}
+
+		#header {
+			a[href="#navPanel"] {
+				display: block;
+			}
+		}
+	}
+
+	@include breakpoint('<=small') {
+		body {
+			padding-top: 44px;
+		}
+
+		#header {
+			height: 44px;
+			line-height: 44px;
+
+			a[href="#navPanel"] {
+				height: 2rem;
+				line-height: 2rem;
+			}
+		}
+	}
+
+	@include breakpoint('<=xsmall') {
+		#header {
+			min-width: 320px;
+		}
+	}

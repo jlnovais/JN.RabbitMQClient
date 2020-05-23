@@ -1,0 +1,45 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Search */
+
+	#search {
+		background: _palette(bg-alt);
+		border-bottom: 1px solid _palette(border);
+		padding: 1rem 0;
+
+		.content {
+			@include vendor('display', 'flex');
+			@include vendor('align-items', 'center');
+			@include vendor('flex-wrap', 'no-wrap');
+			@include vendor('justify-content', 'space-between');
+			position: relative;
+
+			> * {
+				margin-bottom: 0;
+			}
+
+			form {
+				margin: 0;
+				min-width: 25rem;
+				width: 25rem;
+			}
+		}
+
+		@include breakpoint('<=medium') {
+			.content {
+				form {
+					max-width: 100%;
+					width: 100%;
+					min-width: 100%;
+				}
+
+				p {
+					display: none;
+				}
+			}
+		}
+	}

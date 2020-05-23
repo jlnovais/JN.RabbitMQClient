@@ -1,0 +1,56 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Contact Icons */
+
+	ul.contact-icons {
+		list-style: none;
+		padding: 0;
+
+		li {
+			@include vendor('display','flex');
+			@include vendor('align-items','center');
+			margin-bottom: _size(element-margin);
+
+			&:first-child {
+				@include vendor('align-items','flex-start');
+			}
+
+			&.icon {
+				&:before {
+					background: _palette(accent3);
+					color: _palette(invert, fg-bold);
+					display: block;
+					font-size: 1.75rem;
+					height: 3.5rem;
+					line-height: 3.5rem;
+					margin-right: _size(element-margin);
+					text-align: center;
+					width: 3.5rem;
+				}
+			}
+		}
+
+		@include breakpoint('<=medium') {
+			@include vendor('display','flex');
+			@include vendor('flex-wrap','wrap');
+			@include vendor('align-items','flex-start');
+			min-width: 100%;
+			width: 100%;
+
+			li {
+				width: 50%;
+			}
+		}
+
+		@include breakpoint('<=small') {
+			display: block;
+
+			li {
+				width: 100%;
+			}
+		}
+	}

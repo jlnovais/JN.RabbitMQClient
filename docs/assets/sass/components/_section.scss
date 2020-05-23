@@ -1,0 +1,36 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Section */
+
+	section {
+		header {
+			margin-bottom: _size(element-margin) * 1.25;
+
+			h1 {
+				margin-bottom: 1rem;
+
+				& + p {
+					font-size: 1.75rem;
+					letter-spacing: -0.025em;
+
+					@include breakpoint('<=small') {
+						font-size: 1.25rem;
+					}
+				}
+			}
+		}
+	}
+
+	@mixin color-section($p: null) {
+		header {
+			h1 + p {
+				color: _palette($p, fg-light);
+			}
+		}
+	}
+
+	@include color-section;

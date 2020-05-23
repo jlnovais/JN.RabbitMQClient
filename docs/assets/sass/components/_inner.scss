@@ -1,0 +1,21 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Inner */
+
+	.inner {
+		margin: 0 auto;
+		max-width: calc(100% - 10rem);
+		width: _size(inner-width);
+
+		@include breakpoint('<=large') {
+			max-width: calc(100% - 6rem);
+		}
+
+		@include breakpoint('<=small') {
+			max-width: calc(100% - 3rem);
+		}
+	}

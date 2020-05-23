@@ -1,0 +1,141 @@
+///
+/// Apex by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Features */
+
+	.features {
+		> a {
+			@include vendor('transition', (
+				'background-color #{_duration(transition)} ease-in-out'
+			));
+			@include vendor('display', 'flex');
+			@include vendor('flex-wrap', 'wrap');
+			max-width: 100%;
+			padding: _size(element-margin) * 1.5;
+			position: relative;
+			text-decoration: none;
+			z-index: _misc(z-index-base) + 3;
+
+			h2 {
+				@include vendor('flex-grow', '0');
+				@include vendor('flex-shrink', '0');
+				color: _palette(invert, fg-bold);
+				width: 100%;
+
+				@include breakpoint('<=small') {
+					margin-bottom: 0.75rem;
+				}
+			}
+
+			p {
+				@include vendor('flex-grow', '1');
+				@include vendor('flex-shrink', '1');
+				@include vendor('align-self', 'center');
+				color: _palette(invert, fg-bold);
+				width: calc(100% - 5rem);
+
+				&:last-child {
+					margin: 0;
+				}
+			}
+
+			&:after {
+				@include vendor('flex-grow', '0');
+				@include vendor('flex-shrink', '0');
+				@include vendor('align-self', 'center');
+				color: _palette(invert, fg-bold);
+				content: '\f0a9';
+				font-family: 'Font Awesome 5 Free';
+				font-size: 3.5rem;
+				font-weight: 900;
+				line-height: 1;
+				margin-left: 1.5rem;
+				text-align: right;
+				width: 3.5rem;
+
+				@include breakpoint('<=small') {
+					font-size: 3rem;
+				}
+			}
+
+			&.accent1 {
+				background: _palette(accent1);
+
+				&:hover {
+					background: lighten(_palette(accent1), 5);
+				}
+			}
+
+			&.accent2 {
+				background: _palette(accent2);
+
+				&:hover {
+					background: lighten(_palette(accent2), 5);
+				}
+			}
+
+			&.accent3 {
+				background: _palette(accent3);
+
+				&:hover {
+					background: lighten(_palette(accent3), 5);
+				}
+			}
+
+			&.alt {
+				background: transparentize(_palette(accent1), 0.05);
+				padding: 3rem;
+				width: 47rem;
+
+				h2 {
+					font-size: 3rem;
+				}
+
+				p {
+					font-size: 1.25rem;
+					width: calc(100% - 6rem);
+				}
+
+				&:after {
+					font-size: 4.5rem;
+					line-height: 1;
+					width: 4.5rem;
+				}
+
+				@include breakpoint('<=small') {
+					padding: 2rem;
+					width: 100%;
+
+					h2 {
+						font-size: 2.5rem;
+					}
+
+					p {
+						font-size: 1rem;
+					}
+
+					&:after {
+						font-size: 3.5rem;
+						text-align: right;
+					}
+				}
+
+				@include breakpoint('<=xsmall') {
+					h2 {
+						font-size: 2rem;
+					}
+
+					&:after {
+						display: none;
+					}
+				}
+			}
+
+			@include breakpoint('<=small') {
+					padding: 2rem;
+			}
+		}
+	}
