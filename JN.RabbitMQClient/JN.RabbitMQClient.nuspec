@@ -11,7 +11,7 @@
     <icon>packageIcon.png</icon>
     <projectUrl>https://jn-rabbitmqclient.josenovais.com/</projectUrl>
     <title>JN.RabbitMQClient</title>
-    <tags>RabbitMq;Client;Sender;Consumer;netstandard;csharp;Producer;Broker;microservice</tags>
+    <tags>RabbitMq;Client;Sender;Consumer;netstandard;netstandard2.1;csharp;netcore;service;Producer;Broker;microservice</tags>
     <repository type="git" url="https://github.com/jlnovais/JN.RabbitMQClient" />
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>

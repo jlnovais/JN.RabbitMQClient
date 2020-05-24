@@ -4,10 +4,12 @@
 
 Simple implementation of RabbitMQ consumer and sender.
 
+More details available on the [project website](https://jn-rabbitmqclient.josenovais.com/)
+
 ## Install
 Download the package from NuGet:
 
-`Install-Package JN.RabbitMQClient`
+`Install-Package JN.RabbitMQClient -Version [version number]`
 
 ## Usage
 First, you must create the `RabbitMqConsumerService` and then define delegates for `ReceiveMessage`, `ShutdownConsumer` and `ReceiveMessageError`. The service will start the required number of consumers when `StartConsumers` is called. 

@@ -30,7 +30,7 @@
 		<!-- Header -->
 			<header id="header">
 				<div class="inner">
-					<a class="logo" href="https://github.com/jlnovais/JN.RabbitMQClient"><strong>JN</strong>.RabbitMQClient</a>
+					<a class="logo" target="_blank" href="https://github.com/jlnovais/JN.RabbitMQClient"><strong>JN</strong>.RabbitMQClient</a>
 					<nav id="nav">
 						<ul>
 							<li><a href="https://github.com/jlnovais" class="icon brands fa-github"><span class="label">Github</span></a></li>
@@ -60,7 +60,7 @@
 								<h1>JN.RabbitMQClient</h1>
 								<p>Simple implementation of RabbitMQ consumer and sender.</p>
 							</header>
-							<p>
+							<p><a target="_blank" href="https://www.nuget.org/packages/JN.RabbitMQClient/"><image src="assets-jn/images/packageIcon.png" style="width: 50px; float: left; margin-right: 10px "></a>
 This is a simple implementation of RabbitMQ consumer and sender. It was initially developed with the aim of learning how to use the official RabbitMQ c# library in simple scenarios. It is in use in several projects in production environments and has proved to be stable. These projects include Rest APIs, windows services, .net Core services (windows and Linux) and others.
 </p>			
 
@@ -76,6 +76,19 @@ Current version is 2.2.0-beta.1
 <li>Solved bug in connect port</li>
 </ul>
 </p>
+
+<h2>To do list</h2>
+<p>
+Some new features will be added to future releases because they are needed by some of the projects that use this package.
+
+<h3 style="font-style: italic;"><i>Planned features</i></h3>
+
+<ul>
+<li>Optimization of the connection at the sender.</li>
+<li>Processing limiter - process only a limited number of messages per minute</li>
+</ul>
+
+</p>
 <h2>Install</h2>
 
 <p>
@@ -83,7 +96,7 @@ Download the package from NuGet: <br/><br/>
 
 <code class="jn-noBorder">Install-Package JN.RabbitMQClient -version [version number]</code> <br/><br/>
 
-The package is available <a target="_blank" href="https://www.nuget.org/packages/JN.RabbitMQClient/">here</a>.
+The package is available <a target="_blank" href="https://www.nuget.org/packages/JN.RabbitMQClient/">here</a> and source code is available <a target="_blank" href="https://github.com/jlnovais/JN.RabbitMQClient">here</a>.
 
 </p>
 
@@ -97,8 +110,9 @@ To use a retry queue, the method <code class="jn-noBorder">StartConsumers</code>
 <h2>Message processing instructions</h2>
 <p>
 The <code class="jn-noBorder">ReceiveMessage</code> delegate receives and processes the message. After the message is processed it returns a message processing instruction.
-</p>
-<p>
+
+<h3 style="font-style: italic;"><i>Instructions</i></h3>
+
 <code class="jn-noBorder">OK</code> - message is considered as successfully processed<br/><br/>
 
 <code class="jn-noBorder">RequeueMessageWithDelay</code> - message is removed from the queue, but sent to a retry queue for later processing (typically with a dead letter configuration)<br/><br/>
@@ -106,6 +120,50 @@ The <code class="jn-noBorder">ReceiveMessage</code> delegate receives and proces
 <code class="jn-noBorder">IgnoreMessage</code> - message is removed from the queue and ignored<br/><br/>
 
 <code class="jn-noBorder">IgnoreMessageWithRequeue</code> - message is rejected and sent back to the queue
+</p>
+
+<h2>Requeue message with delay</h2>
+<p>
+The <code class="jn-noBorder">RequeueMessageWithDelay</code> processing instructions allows a message to be processed later. This is to be used with a secondary queue that will receive the message to be processed. When the message is sent to that queue the timestamp and expiration properties are set. Later, when the message expires on the secondary queue, it is sent back to the main queue. When that happens, the timestamp can be verified and if the elapsed time is longer than allowed, then the message can be ignored (with <code class="jn-noBorder">IgnoreMessage</code> instruction).
+</p>
+<p>
+For this to work, a configuration like the following could be used.
+
+<h3 style="font-style: italic;"><i>Example</i></h3>
+<ul>
+<li><strong>MainQeue</strong> - main queue where consumers are connected</li>
+<li><strong>HoldingQueue</strong> - secondary queue to hold retry messages; when a message needs to be processed later it will be sent to this queue.</li>
+<li><strong>TestExchangeHolding</strong> - a dead letter exchange to redirect messages from <strong>HoldingQueue</strong> to <strong>MainQeue</strong> when they expire</li>
+</ul>
+
+<h3 style="font-style: italic;"><i>Configuration</i></h3>
+<ul>
+<li><strong>HoldingQueue</strong> should be configured with <strong>"x-dead-letter-exchange"</strong> parameter as <strong>"TestExchangeHolding"</strong>.</li>
+<li><strong>TestExchangeHolding</strong> exchange should have a binding to <strong>MainQeue</strong></li>
+</ul>
+
+<h3 style="font-style: italic;"><i>Consumer configuration</i></h3>
+<p>
+To use a retry queue, consumers must be configured. When consumers are started a <code class="jn-noBorder">RetryQueueDetails</code> object must be provided.
+</p>
+<p><strong>Example:</strong></p>
+<pre>
+<code class="csharp jn-codeLines">var details = new RetryQueueDetails
+{
+    RetryQueue="HoldingQueue",
+    RetentionPeriodInRetryQueueMilliseconds = 1000,
+    RetentionPeriodInRetryQueueMillisecondsMax = 5000
+};
+</code></pre>
+<p>
+This will define the retry queue as "HoldingQueue" and the retention period for each message will be a random value from 1 to 5 seconds. To disabled the random value <code class="jn-noBorder">RetentionPeriodInRetryQueueMillisecondsMax</code> can be set to 0 or to same value as <code class="jn-noBorder">RetentionPeriodInRetryQueueMilliseconds</code>.
+</p>
+
+
+</p>
+<h2>Utilites service</h2>
+<p>
+A small utilites service class <code class="jn-noBorder">RabbitMqUtilitiesService</code> is provided with methods to create, delete and get the total number of items in a queue.
 </p>
 
 <h2>Example</h2>
