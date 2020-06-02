@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Other;
 using RabbitMQ.Client;
@@ -24,7 +25,7 @@ namespace JN.RabbitMQClient
                 //HostName = host,
                 UserName = _config.Username,
                 Password = _config.Password,
-                DispatchConsumersAsync = true,
+                DispatchConsumersAsync = true
             };
 
             if (!string.IsNullOrEmpty(_config.VirtualHost))
@@ -39,6 +40,9 @@ namespace JN.RabbitMQClient
 
         private IEndpointResolver GetEndpointResolver(IEnumerable<AmqpTcpEndpoint> arg)
         {
+
+            var useSSL = true;
+
             var hosts = Utils.GetHostsList(_config.Host);
 
             if (hosts.Count == 0)
@@ -49,7 +53,21 @@ namespace JN.RabbitMQClient
             if (_config.Port > 0)
                 port = _config.Port;
 
-            var endpoints = from host in hosts
+            var endpoints = useSSL
+                ? from host in hosts
+                select new AmqpTcpEndpoint()
+                {
+                    HostName = host,
+                    Port = port,
+                    Ssl = new SslOption()
+                    {
+                        ServerName = host,
+                        Enabled = true,
+                        AcceptablePolicyErrors = System.Net.Security.SslPolicyErrors.RemoteCertificateChainErrors,
+                        //Version = SslProtocols.Tls11
+                    }
+                }
+                : from host in hosts
                 select new AmqpTcpEndpoint(host, port);
 
             if (_config.ShuffleHostList)
