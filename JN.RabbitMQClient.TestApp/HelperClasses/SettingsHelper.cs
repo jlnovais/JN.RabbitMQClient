@@ -15,6 +15,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             byte.TryParse(section["TotalInstances"], out var totalInstances);
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
 
+            bool.TryParse(section["UseTLS"], out var useTls);
+
             var conf = new BrokerConfigConsumers
             {
                 Host = section["Host"],
@@ -24,7 +26,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 Username = section["Username"],
                 RoutingKeyOrQueueName = section["RoutingKeyOrQueueName"],
                 TotalInstances = totalInstances,
-                ShuffleHostList = shuffleHostList
+                ShuffleHostList = shuffleHostList,
+                UseTLS = useTls
 
             };
 
@@ -36,6 +39,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             var section = configuration.GetSection(sectionName);
 
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
+            bool.TryParse(section["UseTLS"], out var useTls);
 
             var conf = new BrokerConfigSender
             {
@@ -46,7 +50,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 Username = section["Username"],
                 Exchange = section["Exchange"],
                 RoutingKeyOrQueueName = section["RoutingKeyOrQueueName"],
-                ShuffleHostList = shuffleHostList
+                ShuffleHostList = shuffleHostList,
+                UseTLS = useTls
 
             };
 

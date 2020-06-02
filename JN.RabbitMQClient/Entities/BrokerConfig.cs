@@ -10,6 +10,7 @@ namespace JN.RabbitMQClient.Entities
         public string VirtualHost { get; set; }
         public int Port { get; set; }
         public bool ShuffleHostList { get; set; }
+        public bool UseTLS { get; set; }
     }
 
     public class BrokerConfigSender : BrokerConfig, IBrokerConfigSender

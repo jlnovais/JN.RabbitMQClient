@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Tests.HelperClasses;
 using NUnit.Framework;
 
-namespace JN.RabbitMQClient.Tests
+namespace JN.RabbitMQClient.Tests.Integration
 {
     class RabbitMqSenderService_Tests
     {

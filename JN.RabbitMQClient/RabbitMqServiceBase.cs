@@ -40,9 +40,6 @@ namespace JN.RabbitMQClient
 
         private IEndpointResolver GetEndpointResolver(IEnumerable<AmqpTcpEndpoint> arg)
         {
-
-            var useSSL = true;
-
             var hosts = Utils.GetHostsList(_config.Host);
 
             if (hosts.Count == 0)
@@ -53,7 +50,7 @@ namespace JN.RabbitMQClient
             if (_config.Port > 0)
                 port = _config.Port;
 
-            var endpoints = useSSL
+            var endpoints = _config.UseTLS
                 ? from host in hosts
                 select new AmqpTcpEndpoint()
                 {

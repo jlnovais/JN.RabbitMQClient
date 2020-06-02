@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
@@ -10,13 +9,16 @@ using NUnit.Framework;
 using BrokerConfig = JN.RabbitMQClient.Tests.HelperClasses.BrokerConfig;
 
 
-namespace JN.RabbitMQClient.Tests
+namespace JN.RabbitMQClient.Tests.Integration
 {
     public class RabbitMqConsumerService_Tests
     {
         private int _totalMessagesReceived;
         private int _totalStopProcessing;
         private int _totalErrors;
+
+        private const bool useTLS = false;
+        private const string host = "localhost";
 
         private const int TotalConsumers = 2;
         private const int DefaultTotalConsumers = 5;
@@ -27,20 +29,22 @@ namespace JN.RabbitMQClient.Tests
 
         private readonly RabbitMqHelper _rabbitMqHelper = new RabbitMqHelper(new BrokerConfig
         {
-            HostName = "localhost",
+            HostName = host,
             Password = "123",
             UserName = "test",
-            VirtualHost = "/"
+            VirtualHost = "/",
+
         });
 
         private readonly IBrokerConfigConsumers _brokerConfig = new Entities.BrokerConfigConsumers
         {
             Username = "test",
             Password = "123",
-            Host = "localhost",
+            Host = host,
             RoutingKeyOrQueueName = queueName,
             VirtualHost = "/",
-            TotalInstances = DefaultTotalConsumers
+            TotalInstances = DefaultTotalConsumers,
+            UseTLS =  useTLS
             //Port = 9999
         };
 

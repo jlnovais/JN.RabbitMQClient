@@ -51,6 +51,9 @@ namespace JN.RabbitMQClient.TestApp
 
             _consumerService.StartConsumers("consumer", retryQueueDetails);
 
+            //start more consumers, if needed
+            _consumerService.StartConsumers("consumer", retryQueueDetails, totalConsumers: 3);
+
             _logger.LogInformation($"Starting consumers...");
 
             var details = _consumerService.GetConsumerDetails();

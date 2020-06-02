@@ -8,6 +8,7 @@
         string VirtualHost { get; set; }
         int Port { get; set; }
         bool ShuffleHostList { get; set; }
+        bool UseTLS { get; set; }
     }
 
     public interface IBrokerConfigSender : IBrokerConfig

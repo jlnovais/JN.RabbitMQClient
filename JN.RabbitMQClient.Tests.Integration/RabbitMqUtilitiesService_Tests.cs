@@ -2,7 +2,7 @@
 using JN.RabbitMQClient.Tests.HelperClasses;
 using NUnit.Framework;
 
-namespace JN.RabbitMQClient.Tests
+namespace JN.RabbitMQClient.Tests.Integration
 {
     class RabbitMqUtilitiesService_Tests
     {
