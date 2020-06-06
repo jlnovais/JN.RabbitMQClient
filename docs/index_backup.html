@@ -66,14 +66,15 @@ This is a simple implementation of RabbitMQ consumer and sender. It was initiall
 
 <h2>Current version</h2>
 <p>
-Current version is 2.2.0-beta.1
+Current version is 2.2.1
 
 <h3 style="font-style: italic;"><i>Release notes for current version</i></h3>
 
 <ul>
-<li>Update RabbitMQ.Client Library to 6.0.0</li>
-<li>Upgrade to .NET Standard 2.1</li>
-<li>Solved bug in connect port</li>
+    <li>Update RabbitMQ.Client Library to 6.0.0</li>
+    <li>Upgrade to .NET Standard 2.1</li>
+    <li>Solved bug in connect port</li>
+    <li>TLS connection support</li>
 </ul>
 </p>
 
@@ -158,9 +159,14 @@ To use a retry queue, consumers must be configured. When consumers are started a
 <p>
 This will define the retry queue as "HoldingQueue" and the retention period for each message will be a random value from 1 to 5 seconds. To disabled the random value <code class="jn-noBorder">RetentionPeriodInRetryQueueMillisecondsMax</code> can be set to 0 or to same value as <code class="jn-noBorder">RetentionPeriodInRetryQueueMilliseconds</code>.
 </p>
-
-
+<h2>About TLS connect support</h2>
+<p>
+It is possible to connect to a RabbitMQ using TLS. For this, <code class="jn-noBorder">UseTLS</code>  must be <code class="jn-noBorder">true</code> in the configuration object. See the example below.
 </p>
+<p>
+Client certificates are not supported.
+</p>
+
 <h2>Utilites service</h2>
 <p>
 A small utilites service class <code class="jn-noBorder">RabbitMqUtilitiesService</code> is provided with methods to create, delete and get the total number of items in a queue.
@@ -220,7 +226,8 @@ Example for consumer and sender services:
             RoutingKeyOrQueueName = "MyTestQueue",
             ShuffleHostList = false,
             Port = 0, // use default port
-            TotalInstances = 3
+            TotalInstances = 3,
+            UseTLS = true
         };
         return configConsumers;
     }
