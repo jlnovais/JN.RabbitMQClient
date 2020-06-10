@@ -4,6 +4,14 @@
 
 Simple implementation of RabbitMQ consumer and sender.
 
+**Features**
+
+* sender implementation
+* multiple consumer instances supported
+* multiple processing options for received messages
+* random expiration for messages sent to an holding queue (depending on the processing option)
+* TLS connection support 
+
 More details available on the [project website](https://jn-rabbitmqclient.josenovais.com/)
 
 ## Install
