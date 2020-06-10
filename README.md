@@ -6,13 +6,13 @@ Simple implementation of RabbitMQ consumer and sender.
 
 **Features**
 
-* sender implementation
-* multiple consumer instances supported
-* multiple processing options for received messages
-* random expiration for messages sent to an holding queue (depending on the processing option)
-* TLS connection support 
+*   sender implementation
+*   multiple consumer instances supported
+*   multiple processing options for received messages
+*   random expiration for messages sent to an holding queue (depending on the processing option)
+*   TLS connection support 
 
-More details available on the [project website](https://jn-rabbitmqclient.josenovais.com/)
+More details available on the [project website](https://jn-rabbitmqclient.josenovais.com/).
 
 ## Install
 Download the package from NuGet:
@@ -27,7 +27,7 @@ To use a retry queue, the method `StartConsumers` should be called with a `Retry
 ## Message processing instructions
 `OK` - message is considered as successfully processed
 
-`RequeueMessageWithDelay` - message is removed from the queue, but sent to a retry queue for later processing (typically with a dead letter configuration)
+`RequeueMessageWithDelay` - message is removed from the queue, but sent to a holding queue for later processing (typically with a dead letter configuration)
 
 `IgnoreMessage` - message is removed from the queue and ignored
 
