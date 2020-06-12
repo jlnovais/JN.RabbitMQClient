@@ -60,10 +60,19 @@
 								<h1>JN.RabbitMQClient</h1>
 								<p>Simple implementation of RabbitMQ consumer and sender.</p>
 							</header>
-							<p><a target="_blank" href="https://www.nuget.org/packages/JN.RabbitMQClient/"><image src="assets-jn/images/packageIcon.png" style="width: 50px; float: left; margin-right: 10px "></a>
+							<p><a target="_blank" href="https://www.nuget.org/packages/JN.RabbitMQClient/"><image src="assets-jn/images/packageIcon.png" style="width: 50px; float: left; margin-right: 10px "/></a>
 This is a simple implementation of RabbitMQ consumer and sender. It was initially developed with the aim of learning how to use the official RabbitMQ c# library in simple scenarios. It is in use in several projects in production environments and has proved to be stable. These projects include Rest APIs, windows services, .net Core services (windows and Linux) and others.
 </p>			
-
+<h2>Features</h2>
+<p>
+	<ul>
+		<li>Sender implementation</li>
+		<li>Multiple consumer instances supported</li>
+		<li>Multiple processing options for received messages</li>
+		<li>Random expiration for messages sent to an holding queue (depending on the processing option)</li>
+		<li>TLS connection support</li>
+	</ul>
+</p>
 <h2>Current version</h2>
 <p>
 Current version is 2.2.1
