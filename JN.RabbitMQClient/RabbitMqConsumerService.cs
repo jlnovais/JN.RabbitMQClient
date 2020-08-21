@@ -162,7 +162,7 @@ namespace JN.RabbitMQClient
         /// <summary>
         /// Stop consumers
         /// </summary>
-        /// <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
+        /// <param name="consumerTag">Consumer tag (optional). If specified, all consumers with tag starting with this value will be stopped" </param>
         public void StopConsumers()
         {
             StopConsumers(null);
@@ -172,10 +172,11 @@ namespace JN.RabbitMQClient
         {
             if (!string.IsNullOrWhiteSpace(consumerTag))
             {
-                var consumer = _consumers.First(x => x.ConsumerTag == consumerTag);
-
-                consumer?.Model.Abort();
-                consumer?.Model.Dispose();
+                foreach (var consumer in _consumers.Where(x => x.ConsumerTag.StartsWith(consumerTag)))
+                {
+                    consumer.Model.Abort();
+                    consumer.Model.Dispose();
+                }
 
                 return;
             }

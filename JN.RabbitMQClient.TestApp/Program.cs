@@ -41,6 +41,8 @@ namespace JN.RabbitMQClient.TestApp
             Console.ReadKey();
 
             app.Stop();
+
+            Console.WriteLine("Finished!!");
         }
 
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.TestApp.HelperClasses;
@@ -49,10 +48,8 @@ namespace JN.RabbitMQClient.TestApp
                 RetryQueue = _config.BrokerRetryQueue
             };
 
-            _consumerService.StartConsumers("consumer", retryQueueDetails);
-
-            //start more consumers, if needed
-            _consumerService.StartConsumers("consumer", retryQueueDetails, totalConsumers: 3);
+            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, totalConsumers: 2);
+            _consumerService.StartConsumers("consumers_Tag_B", retryQueueDetails, totalConsumers: 2);
 
             _logger.LogInformation($"Starting consumers...");
 
@@ -71,7 +68,9 @@ namespace JN.RabbitMQClient.TestApp
 
         public void Stop()
         {
-            _consumerService.Dispose();
+            _consumerService.StopConsumers("consumers_Tag_A");
+            _consumerService.StopConsumers("consumers_Tag_B");
+
         }
 
         private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
