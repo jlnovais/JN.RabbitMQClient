@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace JN.RabbitMQClient
+namespace JN.RabbitMQClient.Interfaces
 {
     public interface IRabbitMqSenderService
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
+using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.TestApp.HelperClasses;
 using Microsoft.Extensions.Logging;
 

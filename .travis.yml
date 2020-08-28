@@ -6,3 +6,6 @@ script:
  - cd JN.RabbitMQClient
  - dotnet restore
  - dotnet build
+ - cd ..
+ - cd JN.RabbitMQClient.Tests
+ - dotnet test

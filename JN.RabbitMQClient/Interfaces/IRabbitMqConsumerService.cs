@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using JN.RabbitMQClient.Entities;
 
-namespace JN.RabbitMQClient
+namespace JN.RabbitMQClient.Interfaces
 {
     public interface IRabbitMqConsumerService: IDisposable
     {
