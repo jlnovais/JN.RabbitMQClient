@@ -18,8 +18,10 @@ namespace JN.RabbitMQClient.Limiter
             Constants.MessageProcessInstruction deniedProcessInstruction)
         {
             if (maxAllowed <= 0 || windowSeconds <= 0)
+            {
                 throw new ArgumentException("Invalid parameters; cannot be 0");
- 
+            }
+
             MaxAllowed = maxAllowed;
             WindowSeconds = windowSeconds;
             AllowedProcessInstruction = allowedProcessInstruction;
@@ -42,7 +44,9 @@ namespace JN.RabbitMQClient.Limiter
             lock (_lockObj)
             {
                 if (processingTime < Start)
+                {
                     return false;
+                }
 
                 if (processingTime > End)
                 {
@@ -54,7 +58,9 @@ namespace JN.RabbitMQClient.Limiter
                 var result = WindowCount < MaxAllowed;
 
                 if (result)
+                {
                     WindowCount++;
+                }
 
                 return result;
             }

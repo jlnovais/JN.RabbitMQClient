@@ -26,7 +26,7 @@ namespace JN.RabbitMQClient.Tests
         private const int windowSecondsGlobal = 1;
         private LimiterAux limiterGlobal;
 
-        private int maxExecuted = 0;
+        private int maxExecuted;
 
         private void Execute()
         {
@@ -35,7 +35,9 @@ namespace JN.RabbitMQClient.Tests
                 limiterGlobal.IsAllowed();
 
                 if (maxExecuted < limiterGlobal.WindowCount)
+                {
                     maxExecuted = limiterGlobal.WindowCount;
+                }
             }
         }
 
@@ -50,7 +52,7 @@ namespace JN.RabbitMQClient.Tests
                 Task.Run(Execute), Task.Run(Execute), Task.Run(Execute), Task.Run(Execute)
             };
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             Assert.AreEqual(maxAllowedGlobal, maxExecuted);
         }

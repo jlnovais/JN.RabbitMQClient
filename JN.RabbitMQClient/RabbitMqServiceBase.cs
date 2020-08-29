@@ -52,11 +52,11 @@ namespace JN.RabbitMQClient
 
             var endpoints = _config.UseTLS
                 ? from host in hosts
-                select new AmqpTcpEndpoint()
+                select new AmqpTcpEndpoint
                 {
                     HostName = host,
                     Port = port,
-                    Ssl = new SslOption()
+                    Ssl = new SslOption
                     {
                         ServerName = host,
                         Enabled = true,
