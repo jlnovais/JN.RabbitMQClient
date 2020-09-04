@@ -260,7 +260,7 @@ namespace JN.RabbitMQClient
 
                 var model = consumer.Model;
 
-                var messageProcessInstruction = await GetMessageProcessInstruction(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message);
+                var messageProcessInstruction = await GetMessageProcessInstruction(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message).ConfigureAwait(false);
                     
                 switch (messageProcessInstruction)
                 {
