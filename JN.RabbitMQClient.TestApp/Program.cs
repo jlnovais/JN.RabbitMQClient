@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using JN.RabbitMQClient.Interfaces;
+using JN.RabbitMQClient.Limiter;
 using JN.RabbitMQClient.TestApp.HelperClasses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,17 +72,19 @@ namespace JN.RabbitMQClient.TestApp
 
             services.AddSingleton<AppConfig>(configuration.GetAppConfig("BrokerConfigConsumersRetry"));
 
+            services.AddSingleton<ILimiter>(GetLimiter());
+
 
             return services;
         }
 
- 
+        private static WindowLimiter GetLimiter()
+        {
+            const int maxAllowed = 1; // number of items to process in the time window
+            const int windowSeconds = 1;
+            const Constants.MessageProcessInstruction deniedInstruction = Constants.MessageProcessInstruction.RequeueMessageWithDelay;
 
-
-
-
-
-
-
+            return new WindowLimiter(maxAllowed, windowSeconds, deniedInstruction);
+        }
     }
 }

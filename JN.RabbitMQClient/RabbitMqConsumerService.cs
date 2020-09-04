@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
+using JN.RabbitMQClient.Limiter;
 using JN.RabbitMQClient.Other;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -30,6 +31,10 @@ namespace JN.RabbitMQClient
         {
             _config = config;
         }
+
+
+        public ILimiter Limiter { get; set; }
+
 
         public IEnumerable<ConsumerInfo> GetConsumerDetails()
         {
@@ -235,7 +240,7 @@ namespace JN.RabbitMQClient
                 });
         }
 
-        
+
         private async Task Consumer_Received(object sender, BasicDeliverEventArgs e)
         {
             var consumerTag = e.ConsumerTag;
@@ -255,8 +260,8 @@ namespace JN.RabbitMQClient
 
                 var model = consumer.Model;
 
-                var messageProcessInstruction = await OnReceiveMessage(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message).ConfigureAwait(false);
-
+                var messageProcessInstruction = await GetMessageProcessInstruction(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message);
+                    
                 switch (messageProcessInstruction)
                 {
                     case Constants.MessageProcessInstruction.OK:
@@ -283,6 +288,24 @@ namespace JN.RabbitMQClient
                 await OnMessageReceiveError(routingKeyOrQueueName, consumerTag, exchange, message, ex.Message)
                     .ConfigureAwait(false);
             }
+        }
+
+        private async Task<Constants.MessageProcessInstruction> GetMessageProcessInstruction(string routingKeyOrQueueName, string consumerTag,
+            long firstErrorTimestamp, string exchange, string message)
+        {
+            var isAllowed = true;
+
+            if (Limiter != null)
+                isAllowed = Limiter.IsAllowed(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message);
+
+            if (!isAllowed)
+                return Limiter.DeniedProcessInstruction;
+
+            var messageProcessInstruction =
+                await OnReceiveMessage(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message)
+                    .ConfigureAwait(false);
+            
+            return messageProcessInstruction;
         }
 
         private void RequeueMessageWithDelay(AsyncEventingBasicConsumerExtended consumer, BasicDeliverEventArgs deliveryArgs)

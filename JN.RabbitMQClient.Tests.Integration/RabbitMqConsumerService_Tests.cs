@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
+using JN.RabbitMQClient.Limiter;
 using JN.RabbitMQClient.Tests.HelperClasses;
+using JN.RabbitMQClient.Tests.Integration.HelperClasses;
 using NUnit.Framework;
 using BrokerConfig = JN.RabbitMQClient.Tests.HelperClasses.BrokerConfig;
 
@@ -323,6 +325,31 @@ namespace JN.RabbitMQClient.Tests.Integration
 
             Assert.AreEqual(TotalConsumers, _totalErrors);
         }
+
+        [Test]
+        public void ConsumerService_ProcessMessage_WithLimiter_limiterIsCalled()
+        {
+            const string messageType = "ok";
+            const int expectedCalls = 1;
+
+            var limiter = new LimiterHelper(Constants.MessageProcessInstruction.OK);
+            
+            _consumerService = GetConsumerService();
+
+            _consumerService.Limiter = limiter;
+
+            _rabbitMqHelper.SendMessage(queueName, messageType);
+
+            _consumerService.StartConsumers("test", null, TotalConsumers);
+
+            Thread.Sleep(100);
+
+            _consumerService.Dispose();
+
+            Assert.AreEqual(expectedCalls, limiter.TotalCalls);
+
+        }
+
 
         [TestCase("ok", 0)]
         [TestCase("ignore", 0)]

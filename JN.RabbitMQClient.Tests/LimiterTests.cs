@@ -9,7 +9,7 @@ namespace JN.RabbitMQClient.Tests
 
     public class LimiterAux : WindowLimiter
     {
-        public LimiterAux(int maxAllowed, int windowSeconds) : base(maxAllowed, windowSeconds, Constants.MessageProcessInstruction.OK, Constants.MessageProcessInstruction.RequeueMessageWithDelay)
+        public LimiterAux(int maxAllowed, int windowSeconds) : base(maxAllowed, windowSeconds, Constants.MessageProcessInstruction.RequeueMessageWithDelay)
         {
         }
 
@@ -32,7 +32,7 @@ namespace JN.RabbitMQClient.Tests
         {
             for (var i = 0; i < 100; i++)
             {
-                limiterGlobal.IsAllowed();
+                limiterGlobal.IsAllowed("not used", "not used", 0, "not used", "not used");
 
                 if (maxExecuted < limiterGlobal.WindowCount)
                 {
@@ -74,11 +74,11 @@ namespace JN.RabbitMQClient.Tests
 
             var limiter = new LimiterAux(maxAllowed, windowSeconds);
 
-            var totalExecuted = Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
+            var totalExecuted = Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
 
             Assert.AreEqual(maxAllowed, totalExecuted);
         }
@@ -92,11 +92,11 @@ namespace JN.RabbitMQClient.Tests
 
             var limiter = new LimiterAux(maxAllowed, windowSeconds);
 
-            totalExecuted = Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
+            totalExecuted = Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
 
             Assert.AreEqual(maxAllowed, totalExecuted);
 
@@ -113,11 +113,11 @@ namespace JN.RabbitMQClient.Tests
 
             var limiter = new LimiterAux(maxAllowed, windowSeconds);
 
-            var totalExecuted = Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
-            totalExecuted += Convert.ToInt32(limiter.IsAllowed());
+            var totalExecuted = Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
+            totalExecuted += Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used"));
 
             Assert.AreEqual(totalExecuted, limiter.WindowCount, $"totalExecuted: {totalExecuted} | limiter.WindowCount: {limiter.WindowCount}");
         }
@@ -131,7 +131,7 @@ namespace JN.RabbitMQClient.Tests
 
             var limiter = new LimiterAux(maxAllowed, windowSeconds);
 
-            var totalExecuted = Convert.ToInt32(limiter.IsAllowed()); Console.WriteLine(limiter.WindowCount);
+            var totalExecuted = Convert.ToInt32(limiter.IsAllowed("not used", "not used", 0, "not used", "not used")); Console.WriteLine(limiter.WindowCount);
 
             Assert.AreEqual(1, totalExecuted);
             Assert.AreEqual(1, limiter.WindowCount);

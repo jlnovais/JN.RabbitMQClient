@@ -14,7 +14,6 @@ namespace JN.RabbitMQClient.Limiter
         private readonly object _lockObj = new object();
 
         public WindowLimiter(int maxAllowed, int windowSeconds, 
-            Constants.MessageProcessInstruction allowedProcessInstruction, 
             Constants.MessageProcessInstruction deniedProcessInstruction)
         {
             if (maxAllowed <= 0 || windowSeconds <= 0)
@@ -24,20 +23,19 @@ namespace JN.RabbitMQClient.Limiter
 
             MaxAllowed = maxAllowed;
             WindowSeconds = windowSeconds;
-            AllowedProcessInstruction = allowedProcessInstruction;
             DeniedProcessInstruction = deniedProcessInstruction;
 
             Start = DateTime.Now;
             End = Start.AddSeconds(windowSeconds);
         }
 
-        public bool IsAllowed()
+        public Constants.MessageProcessInstruction DeniedProcessInstruction { get; }
+
+        public bool IsAllowed(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange,
+            string message)
         {
             return IsAllowed(DateTime.Now);
         }
-
-        public Constants.MessageProcessInstruction AllowedProcessInstruction { get; }
-        public Constants.MessageProcessInstruction DeniedProcessInstruction { get; }
 
         protected bool IsAllowed(DateTime processingTime)
         {

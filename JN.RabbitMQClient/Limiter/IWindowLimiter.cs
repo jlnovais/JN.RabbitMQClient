@@ -2,7 +2,7 @@
 
 namespace JN.RabbitMQClient.Limiter
 {
-    public interface IWindowLimiter : ILimiterBase
+    public interface IWindowLimiter : ILimiter
     {
         DateTime Start { get; }
         DateTime End { get; }

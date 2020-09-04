@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JN.RabbitMQClient.Entities;
+using JN.RabbitMQClient.Limiter;
 
 namespace JN.RabbitMQClient.Interfaces
 {
@@ -40,6 +41,7 @@ namespace JN.RabbitMQClient.Interfaces
         string ServiceDescription { get; set; }
         byte GetTotalRunningConsumers { get; }
         short GetTotalConsumers { get; }
+        ILimiter Limiter { get; set; }
         IEnumerable<ConsumerInfo> GetConsumerDetails();
 
 

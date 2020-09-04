@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
+using JN.RabbitMQClient.Limiter;
 using JN.RabbitMQClient.TestApp.HelperClasses;
 using Microsoft.Extensions.Logging;
 
@@ -14,7 +15,9 @@ namespace JN.RabbitMQClient.TestApp
         private readonly IRabbitMqSenderService _senderService;
         private readonly AppConfig _config;
 
-        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, AppConfig config)
+        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, 
+            ILimiter limiter,
+            AppConfig config)
         {
             _logger = logger;
 
@@ -27,6 +30,8 @@ namespace JN.RabbitMQClient.TestApp
             _consumerService.ReceiveMessage += ProcessMessage;
             _consumerService.ShutdownConsumer += ProcessShutdown;
             _consumerService.ReceiveMessageError += ProcessError;
+
+            _consumerService.Limiter = limiter;
 
             _senderService.ServiceDescription = "Sender Service";
 
