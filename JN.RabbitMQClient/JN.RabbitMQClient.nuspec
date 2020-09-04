@@ -22,7 +22,7 @@
       - Update RabbitMQ.Client to latest version
       - Changed namespace for IRabbitMqConsumerService and IRabbitMqSenderService
       - Changed behavior for StopConsumers(consumerTag) - now stops all consumers with tag starting with 'consumerTag'
-      - Added limiter feature
+      - Added limiter feature for processing messages.
 
     </releaseNotes>
     <dependencies>
