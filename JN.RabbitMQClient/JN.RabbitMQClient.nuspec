@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>JN.RabbitMQClient</id>
-    <version>2.3.0</version>
+    <version>2.3.1</version>
     <authors>José Novais</authors>
     <owners>José Novais</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -15,9 +15,13 @@
     <repository type="git" url="https://github.com/jlnovais/JN.RabbitMQClient" />
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
-    <copyright>José Novais, 2020</copyright>
+    <copyright>José Novais, 2021</copyright>
     <releaseNotes>
       Release Notes for current version:
+
+      - Added sender service that keeps connection open.
+
+      Release Notes for previous version:
 
       - Update RabbitMQ.Client to latest version
       - Changed namespace for IRabbitMqConsumerService and IRabbitMqSenderService
