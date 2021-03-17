@@ -14,12 +14,25 @@ using RabbitMQ.Client.Exceptions;
 
 namespace JN.RabbitMQClient
 {
+    /// <summary>
+    /// Service for consuming messages.
+    /// </summary>
     public class RabbitMqConsumerService : RabbitMqServiceBase, IRabbitMqConsumerService
     {
         private readonly List<AsyncEventingBasicConsumerExtended> _consumers = new List<AsyncEventingBasicConsumerExtended>();
         private List<IConnection> _connections = new List<IConnection>();
+        
+        /// <summary>
+        /// Delegate executed when a message is received
+        /// </summary>
         public event ReceiveMessageDelegate ReceiveMessage;
+        /// <summary>
+        /// Delegate to execute when consumer is shut down
+        /// </summary>
         public event ShutdownDelegate ShutdownConsumer;
+        /// <summary>
+        /// Delegate to execute when an error occurs
+        /// </summary>
         public event ReceiveMessageErrorDelegate ReceiveMessageError;
 
 

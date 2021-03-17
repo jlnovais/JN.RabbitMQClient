@@ -2,6 +2,9 @@
 
 namespace JN.RabbitMQClient.Limiter
 {
+    /// <summary>
+    /// Limits the number of items to be processed
+    /// </summary>
     public class WindowLimiter : IWindowLimiter
     {
         public DateTime Start { get; private set; }
@@ -13,6 +16,13 @@ namespace JN.RabbitMQClient.Limiter
 
         private readonly object _lockObj = new object();
 
+        /// <summary>
+        /// Limits the number of items to be processed. It allows processing 'maxAllowed' items every 'windowSeconds' seconds and if that
+        /// limit is exceeded then the processing instruction that should be considered is 'deniedProcessInstruction' 
+        /// </summary>
+        /// <param name="maxAllowed">max items allowed</param>
+        /// <param name="windowSeconds"></param>
+        /// <param name="deniedProcessInstruction"></param>
         public WindowLimiter(int maxAllowed, int windowSeconds, 
             Constants.MessageProcessInstruction deniedProcessInstruction)
         {

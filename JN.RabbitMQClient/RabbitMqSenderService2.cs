@@ -13,7 +13,8 @@ namespace JN.RabbitMQClient
         private IConnection _connection;
         private IModel _channel;
 
-        public bool IsConnected => _connection != null && _connection.IsOpen;
+        private readonly object _lockObj = new object();
+        public bool IsConnected => _connection != null && _connection.IsOpen && _channel !=null && _channel.IsOpen;
 
         public RabbitMqSenderService2(IBrokerConfigSender config) : base(config)
         {
@@ -28,11 +29,16 @@ namespace JN.RabbitMQClient
 
         public void SetupConnection()
         {
-            if (IsConnected) 
-                return;
-            
-            _connection = GetConnection(ServiceDescription + "_sender", false);
-            _channel = _connection.CreateModel();
+            lock (_lockObj)
+            {
+                if (IsConnected)
+                    return;
+
+                CloseConnection();
+                
+                _connection = GetConnection(ServiceDescription + "_sender", false);
+                _channel = _connection.CreateModel();
+            }
         }
 
         /// <summary>

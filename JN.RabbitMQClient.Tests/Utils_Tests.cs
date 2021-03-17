@@ -1,4 +1,5 @@
 ﻿using System;
+using JN.RabbitMQClient.Other;
 using NUnit.Framework;
 
 namespace JN.RabbitMQClient.Tests

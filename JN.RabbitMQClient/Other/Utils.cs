@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JN.RabbitMQClient
+namespace JN.RabbitMQClient.Other
 {
+    /// <summary>
+    /// Utilities class
+    /// </summary>
     public static class Utils
     {
         /// <summary>

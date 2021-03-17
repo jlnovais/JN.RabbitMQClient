@@ -6,6 +6,10 @@ using RabbitMQ.Client;
 
 namespace JN.RabbitMQClient
 {
+    
+    /// <summary>
+    /// Utilities service
+    /// </summary>
     public class RabbitMqUtilitiesService : RabbitMqServiceBase, IRabbitMqUtilitiesService
     {
         public RabbitMqUtilitiesService(IBrokerConfig config)

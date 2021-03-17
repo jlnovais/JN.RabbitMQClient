@@ -1,0 +1,302 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JN.RabbitMQClient</name>
+    </assembly>
+    <members>
+        <member name="T:JN.RabbitMQClient.Constants.MessageProcessInstruction">
+            <summary>
+            OK - message is considered as successfully processed
+            RequeueMessageWithDelay - message is removed from the queue, but sent to a retry queue for latter processing (typically with a dead letter configuration)
+            IgnoreMessage - message is removed from the queue and ignored
+            IgnoreMessageWithRequeue - message is rejected and sent back to the queue
+            </summary>
+        </member>
+        <member name="P:JN.RabbitMQClient.Entities.RetryQueueDetails.RetryQueue">
+            <summary>
+            Retry queue name
+            </summary>
+        </member>
+        <member name="P:JN.RabbitMQClient.Entities.RetryQueueDetails.RetentionPeriodInRetryQueueMilliseconds">
+            <summary>
+            This is the message expiration
+            </summary>
+        </member>
+        <member name="P:JN.RabbitMQClient.Entities.RetryQueueDetails.RetentionPeriodInRetryQueueMillisecondsMax">
+            <summary>
+            This is the message expiration - max value; if specified, a random value between RetentionPeriodInRetryQueueMilliseconds and RetentionPeriodInRetryQueueMillisecondsMax will be used
+            </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.StartConsumers(System.String,System.String,System.Nullable{System.Byte},System.Boolean)">
+            <summary>
+            StartConsumers - start consumers and connect them to a queue.
+            </summary>
+            <param name="consumerName">Consumer name</param>
+            <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
+            <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
+            <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.StartConsumers(System.String,JN.RabbitMQClient.Entities.RetryQueueDetails,System.String,System.Nullable{System.Byte},System.Boolean)">
+            <summary>
+            StartConsumers - start consumers and connect them to a queue.
+            </summary>
+            <param name="consumerName">Consumer name.</param>
+            <param name="retryQueueDetails">Retry queue details if a message needs to be requeued with a delay (a Dead letter exchange must be defined)</param>
+            <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
+            <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
+            <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.StopConsumers">
+            <summary>
+            Stop consumers
+            </summary>
+            <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String)">
+            <summary>
+            Send message using default settings
+            </summary>
+            <param name="message">Message to send.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.Boolean)">
+            <summary>
+            Send message using default settings
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="createQueue">Try to create the queue - optional.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String)">
+            <summary>
+            Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.String)">
+            <summary>
+            Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encodingName">Message encoding name.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encodingName">Message encoding name.</param>
+            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding)">
+            <summary>
+            Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encoding">Message encoding.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean)">
+            <summary>
+            Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encoding">Message encoding.</param>
+            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+        </member>
+        <member name="T:JN.RabbitMQClient.Limiter.WindowLimiter">
+            <summary>
+            Limits the number of items to be processed
+            </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.Limiter.WindowLimiter.#ctor(System.Int32,System.Int32,JN.RabbitMQClient.Constants.MessageProcessInstruction)">
+            <summary>
+            Limits the number of items to be processed. It allows processing 'maxAllowed' items every 'windowSeconds' seconds and if that
+            limit is exceeded then the processing instruction that should be considered is 'deniedProcessInstruction' 
+            </summary>
+            <param name="maxAllowed">max items allowed</param>
+            <param name="windowSeconds"></param>
+            <param name="deniedProcessInstruction"></param>
+        </member>
+        <member name="T:JN.RabbitMQClient.Other.Utils">
+            <summary>
+            Utilities class
+            </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.Other.Utils.ToUnixTimestamp(System.DateTime)">
+            <summary>
+            convert to unixTimeStamp; usage: var timestamp = currentDate.ToUnixTimestamp();
+            </summary>
+            <param name="target"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JN.RabbitMQClient.Other.Utils.ToDateTime(System.DateTime,System.Int64)">
+            <summary>
+            convert to datetime; usage: var dateTime = DateTime.UtcNow.ToDateTime(timestamp);
+            </summary>
+            <param name="target"></param>
+            <param name="timestamp"></param>
+            <returns></returns>
+        </member>
+        <member name="T:JN.RabbitMQClient.RabbitMqConsumerService">
+            <summary>
+            Service for consuming messages.
+            </summary>
+        </member>
+        <member name="E:JN.RabbitMQClient.RabbitMqConsumerService.ReceiveMessage">
+            <summary>
+            Delegate executed when a message is received
+            </summary>
+        </member>
+        <member name="E:JN.RabbitMQClient.RabbitMqConsumerService.ShutdownConsumer">
+            <summary>
+            Delegate to execute when consumer is shut down
+            </summary>
+        </member>
+        <member name="E:JN.RabbitMQClient.RabbitMqConsumerService.ReceiveMessageError">
+            <summary>
+            Delegate to execute when an error occurs
+            </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqConsumerService.StartConsumers(System.String,System.String,System.Nullable{System.Byte},System.Boolean)">
+            <summary>
+            StartConsumers - start consumers and connect them to a queue.
+            </summary>
+            <param name="consumerName">Consumer name</param>
+            <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
+            <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
+            <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqConsumerService.StartConsumers(System.String,JN.RabbitMQClient.Entities.RetryQueueDetails,System.String,System.Nullable{System.Byte},System.Boolean)">
+            <summary>
+            StartConsumers - start consumers and connect them to a queue.
+            </summary>
+            <param name="consumerName">Consumer name</param>
+            <param name="retryQueueDetails">Retry queue details if a message needs to be requeued with a delay (a Dead letter exchange must be defined)</param>
+            <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
+            <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
+            <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+            <exception cref="T:RabbitMQ.Client.Exceptions.RabbitMQClientException"></exception>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqConsumerService.StopConsumers">
+            <summary>
+            Stop consumers
+            </summary>
+            <param name="consumerTag">Consumer tag (optional). If specified, all consumers with tag starting with this value will be stopped" </param>
+        </member>
+        <member name="T:JN.RabbitMQClient.RabbitMqSenderService">
+            <summary>
+            Service for sending messages - each message will create one connection
+            </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String)">
+            <summary>
+            Send message using default settings
+            </summary>
+            <param name="message">Message to send.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.Boolean)">
+            <summary>
+            Send message using default settings
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="createQueue">Try to create the queue - optional.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String)">
+            <summary>
+            Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.String)">
+            <summary>
+            Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encodingName">Message encoding name.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encodingName">Message encoding name.</param>
+            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding)">
+            <summary>
+            Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encoding">Message encoding.</param>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean)">
+            <summary>
+            Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encoding">Message encoding.</param>
+            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+        </member>
+        <member name="T:JN.RabbitMQClient.RabbitMqSenderService2">
+            <summary>
+            Service for sending messages - keeps connection open
+            </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService2.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean)">
+            <summary>
+            Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
+            </summary>
+            <param name="message">Message to send.</param>
+            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
+            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="encoding">Message encoding.</param>
+            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+        </member>
+        <member name="P:JN.RabbitMQClient.RabbitMqServiceBase.ServiceDescription">
+            <summary>
+            Service description - it will be used when a connection is setup - it will be visible on RabbitMq
+            </summary>
+        </member>
+        <member name="T:JN.RabbitMQClient.RabbitMqUtilitiesService">
+            <summary>
+            Utilities service
+            </summary>
+        </member>
+    </members>
+</doc>

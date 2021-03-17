@@ -12,6 +12,9 @@ namespace JN.RabbitMQClient
     {
         private protected IBrokerConfig _config;
 
+        /// <summary>
+        /// Service description - it will be used when a connection is setup - it will be visible on RabbitMq
+        /// </summary>
         public string ServiceDescription { get; set; }
 
 
