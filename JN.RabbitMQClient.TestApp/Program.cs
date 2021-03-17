@@ -26,7 +26,13 @@ namespace JN.RabbitMQClient.TestApp
 
             configuration = builder.Build();
 
+            bool useSenderKeepConnection = false;
 
+            if (args?.Length>=1)
+            {
+                useSenderKeepConnection = args[0] == "keepConnection";
+            }
+            
             // Create service collection and configure our services
             var services = ConfigureServices();
             // Generate a provider
@@ -36,7 +42,7 @@ namespace JN.RabbitMQClient.TestApp
 
             var app = serviceProvider.GetService<ConsoleApp>();
 
-            app.Run();
+            app.Run(useSenderKeepConnection);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
@@ -65,6 +71,7 @@ namespace JN.RabbitMQClient.TestApp
 
             services.AddSingleton<IRabbitMqConsumerService, RabbitMqConsumerService>();
             services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService>();
+            services.AddSingleton<IRabbitMqSenderServiceKeepConnection, RabbitMqSenderService2>();
             services.AddSingleton<IBrokerConfigSender>(
                 configuration.GetBrokerConfigSender("BrokerConfigSender"));
             services.AddSingleton<IBrokerConfigConsumers>(

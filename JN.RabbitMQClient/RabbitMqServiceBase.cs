@@ -15,7 +15,7 @@ namespace JN.RabbitMQClient
         public string ServiceDescription { get; set; }
 
 
-        internal IConnection GetConnection(string connectionName)
+        internal IConnection GetConnection(string connectionName, bool automaticRecovery = true)
         {
             if (string.IsNullOrEmpty(_config.Host))
                 throw new ArgumentException("Invalid host.");
@@ -25,15 +25,15 @@ namespace JN.RabbitMQClient
                 //HostName = host,
                 UserName = _config.Username,
                 Password = _config.Password,
-                DispatchConsumersAsync = true
+                DispatchConsumersAsync = true,
+                AutomaticRecoveryEnabled = automaticRecovery
             };
 
             if (!string.IsNullOrEmpty(_config.VirtualHost))
                 factory.VirtualHost = _config.VirtualHost;
-
  
             factory.EndpointResolverFactory = GetEndpointResolver;
-            var conn = factory.CreateConnection( connectionName);
+            var conn = factory.CreateConnection(connectionName);
 
             return conn;
         }

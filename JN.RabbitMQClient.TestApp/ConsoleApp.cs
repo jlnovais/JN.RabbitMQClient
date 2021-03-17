@@ -13,16 +13,20 @@ namespace JN.RabbitMQClient.TestApp
         private readonly ILogger<ConsoleApp> _logger;
         private readonly IRabbitMqConsumerService _consumerService;
         private readonly IRabbitMqSenderService _senderService;
+        private readonly IRabbitMqSenderServiceKeepConnection _senderServiceKeepConnection;
         private readonly AppConfig _config;
+        private bool _useSenderServiceKeepConnection;
 
-        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, 
-            ILimiter limiter,
-            AppConfig config)
+
+
+        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, IRabbitMqSenderServiceKeepConnection senderServiceKeepConnection,
+            ILimiter limiter, AppConfig config)
         {
             _logger = logger;
 
             _consumerService = consumerService;
             _senderService = senderService;
+            _senderServiceKeepConnection = senderServiceKeepConnection;
             _config = config;
 
 
@@ -45,8 +49,13 @@ namespace JN.RabbitMQClient.TestApp
 
 
         // Application starting point
-        public void Run()
+        public void Run(bool useSenderServiceKeepConnection)
         {
+            _useSenderServiceKeepConnection = useSenderServiceKeepConnection;
+
+            _senderServiceKeepConnection.ServiceDescription = $"service to send message - keep connection created at {DateTime.Now}";
+            _senderService.ServiceDescription = "service to send messages";
+
             var retryQueueDetails = new RetryQueueDetails
             {
                 RetentionPeriodInRetryQueueMilliseconds = _config.BrokerRetentionPeriodInRetryQueueSeconds * 1000,
@@ -104,7 +113,12 @@ namespace JN.RabbitMQClient.TestApp
             switch (message)
             {
                 case "ok":
-                    _senderService.Send(message);
+
+                    if (_useSenderServiceKeepConnection)
+                        _senderServiceKeepConnection.Send(message);
+                    else
+                        _senderService.Send(message);
+                    
                     await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
                     return Constants.MessageProcessInstruction.OK;
                 case "ignore":
