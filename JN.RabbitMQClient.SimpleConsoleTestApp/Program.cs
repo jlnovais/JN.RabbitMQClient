@@ -7,6 +7,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 {
     public static class Program
     {
+        private static string hostName = "localhost";
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
@@ -18,8 +19,22 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
             consumerService.ReceiveMessage += ReceiveMessage;
             consumerService.ShutdownConsumer += ShutdownConsumer;
             consumerService.ReceiveMessageError += ReceiveMessageError;
+            consumerService.MaxChannelsPerConnection = 100;
+            consumerService.ServiceDescription = "test consumer service";
 
-            consumerService.StartConsumers("my consumer");
+            try
+            {
+                consumerService.StartConsumers("my consumer");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error starting consumers: {e.Message}");
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
+                Environment.Exit(-1);
+            }
+            
+            
 
             // sender
 
@@ -39,7 +54,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
             {
                 Username = "test",
                 Password = "123",
-                Host = "localhost",
+                Host = hostName,
                 VirtualHost = "/",
                 RoutingKeyOrQueueName = "MyTestQueue"
             };
@@ -52,12 +67,12 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
             {
                 Username = "test",
                 Password = "123",
-                Host = "localhost",
+                Host = hostName,
                 VirtualHost = "/",
                 RoutingKeyOrQueueName = "MyTestQueue",
                 ShuffleHostList = false,
                 Port = 0,
-                TotalInstances = 3
+                TotalInstances = 255
             };
             return configConsumers;
         }

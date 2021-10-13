@@ -35,8 +35,10 @@ namespace JN.RabbitMQClient
         /// </summary>
         public event ReceiveMessageErrorDelegate ReceiveMessageError;
 
-
-        private const short MaxChannelsPerConnection = 3;
+        /// <summary>
+        /// Number of channels per connection
+        /// </summary>
+        public short MaxChannelsPerConnection { get; set; } = 3;
         private bool _disposed;
 
 
@@ -263,7 +265,7 @@ namespace JN.RabbitMQClient
 
             try
             {
-                message = Encoding.UTF8.GetString(e.Body.Span);
+                message = Encoding.UTF8.GetString(e.Body.Span.ToArray());
 
                 var consumer = (AsyncEventingBasicConsumerExtended)sender;
 
