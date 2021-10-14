@@ -5,7 +5,7 @@ dist: bionic
 script:
  - cd JN.RabbitMQClient
  - dotnet restore
- - dotnet build
+ - dotnet build --configuration Release --no-restore --framework netstandard2.0
  - cd ..
  - cd JN.RabbitMQClient.Tests
  - dotnet test
