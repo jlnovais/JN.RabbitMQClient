@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <Description>Simple implementation of RabbitMQ consumer and sender.</Description>
     <Authors>José Novais</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/jlnovais/JN.RabbitMQClient</PackageProjectUrl>
     <Copyright>José Novais, 2021</Copyright>
     <Product>JN.RabbitMQClient - Simple RabbitMQ client</Product>
-    <AssemblyVersion>2.3.2.1</AssemblyVersion>
-    <FileVersion>2.3.2.1</FileVersion>
-    <Version>2.3.2.1</Version>
+    <AssemblyVersion>2.3.3</AssemblyVersion>
+    <FileVersion>2.3.3</FileVersion>
+    <Version>2.3.3</Version>
     <PackageIcon>packageIcon.png</PackageIcon>
   </PropertyGroup>
 

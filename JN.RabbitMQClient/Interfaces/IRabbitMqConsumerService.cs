@@ -42,6 +42,12 @@ namespace JN.RabbitMQClient.Interfaces
         byte GetTotalRunningConsumers { get; }
         short GetTotalConsumers { get; }
         ILimiter Limiter { get; set; }
+
+        /// <summary>
+        /// Number of channels per connection
+        /// </summary>
+        short MaxChannelsPerConnection { get; set; }
+
         IEnumerable<ConsumerInfo> GetConsumerDetails();
 
 

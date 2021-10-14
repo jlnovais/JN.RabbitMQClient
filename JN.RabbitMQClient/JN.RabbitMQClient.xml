@@ -52,6 +52,11 @@
             </summary>
             <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
         </member>
+        <member name="P:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.MaxChannelsPerConnection">
+            <summary>
+            Number of channels per connection
+            </summary>
+        </member>
         <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String)">
             <summary>
             Send message using default settings
@@ -172,6 +177,11 @@
         <member name="E:JN.RabbitMQClient.RabbitMqConsumerService.ReceiveMessageError">
             <summary>
             Delegate to execute when an error occurs
+            </summary>
+        </member>
+        <member name="P:JN.RabbitMQClient.RabbitMqConsumerService.MaxChannelsPerConnection">
+            <summary>
+            Number of channels per connection
             </summary>
         </member>
         <member name="M:JN.RabbitMQClient.RabbitMqConsumerService.StartConsumers(System.String,System.String,System.Nullable{System.Byte},System.Boolean)">

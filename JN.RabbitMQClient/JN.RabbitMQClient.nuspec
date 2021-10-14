@@ -19,9 +19,15 @@
     <releaseNotes>
       Release Notes for current version:
 
-      - Added sender service that keeps connection open.
+      - Update target frameworks; added .NETFramework4.6.1
+      - Update RabbitMQ.Client to latest version
+      - Update consumer to expose MaxChannelsPerConnection property
 
       Release Notes for previous version:
+
+      - Added sender service that keeps connection open.
+
+      Release Notes for other previous version:
 
       - Update RabbitMQ.Client to latest version
       - Changed namespace for IRabbitMqConsumerService and IRabbitMqSenderService
@@ -30,8 +36,11 @@
 
     </releaseNotes>
     <dependencies>
-      <group targetFramework=".NETStandard2.1">
-        <dependency id="RabbitMQ.Client" version="6.2.1" exclude="Build,Analyzers" />
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="RabbitMQ.Client" version="6.2.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="RabbitMQ.Client" version="6.2.2" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

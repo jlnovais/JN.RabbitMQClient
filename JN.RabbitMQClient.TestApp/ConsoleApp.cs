@@ -37,6 +37,8 @@ namespace JN.RabbitMQClient.TestApp
 
             _consumerService.Limiter = limiter;
 
+            _consumerService.MaxChannelsPerConnection = 3;
+            
             _senderService.ServiceDescription = "Sender Service";
 
         }
@@ -63,7 +65,9 @@ namespace JN.RabbitMQClient.TestApp
                 RetryQueue = _config.BrokerRetryQueue
             };
 
-            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, totalConsumers: 2);
+            
+            
+            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, totalConsumers: 4);
             _consumerService.StartConsumers("consumers_Tag_B", retryQueueDetails, totalConsumers: 2);
 
             _logger.LogInformation($"Starting consumers...");
