@@ -21,9 +21,9 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore --framework netstandard2.0 JN.RabbitMQClient/JN.RabbitMQClient.csproj
-        dotnet build --configuration Release --no-restore JN.RabbitMQClient.SimpleConsoleTestApp/JN.RabbitMQClient.SimpleConsoleTestApp.csproj
-        dotnet build --configuration Release --no-restore JN.RabbitMQClient.TestApp/JN.RabbitMQClient.TestApp.csproj
-        dotnet build --configuration Release --no-restore JN.RabbitMQClient.Tests/JN.RabbitMQClient.Tests.csproj
-        dotnet build --configuration Release --no-restore JN.RabbitMQClient.Tests.Integration/JN.RabbitMQClient.Tests.Integration.csproj
+    - name: Build_2
+      run: dotnet build --configuration Release --no-restore JN.RabbitMQClient.SimpleConsoleTestApp/JN.RabbitMQClient.SimpleConsoleTestApp.csproj
+    - name: Build_3
+      run: dotnet build --configuration Release --no-restore JN.RabbitMQClient.TestApp/JN.RabbitMQClient.TestApp.csproj
     - name: Test
       run: dotnet test --no-restore --verbosity normal JN.RabbitMQClient.Tests/JN.RabbitMQClient.Tests.csproj
