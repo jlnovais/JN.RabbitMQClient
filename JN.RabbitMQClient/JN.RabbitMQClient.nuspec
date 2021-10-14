@@ -16,7 +16,7 @@
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
     <copyright>José Novais, 2021</copyright>
-    <releaseNotes>
+    <releaseNotes> 
       Release Notes for current version:
 
       - Update target frameworks; added .NETFramework4.6.1
