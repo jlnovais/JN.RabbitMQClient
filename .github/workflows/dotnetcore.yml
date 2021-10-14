@@ -20,6 +20,10 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore --framework netstandard2.0
+      run: dotnet build --configuration Release --no-restore --framework netstandard2.0 JN.RabbitMQClient/JN.RabbitMQClient.csproj
+        dotnet build --configuration Release --no-restore JN.RabbitMQClient.SimpleConsoleTestApp/JN.RabbitMQClient.SimpleConsoleTestApp.csproj
+        dotnet build --configuration Release --no-restore JN.RabbitMQClient.TestApp/JN.RabbitMQClient.TestApp.csproj
+        dotnet build --configuration Release --no-restore JN.RabbitMQClient.Tests/JN.RabbitMQClient.Tests.csproj
+        dotnet build --configuration Release --no-restore JN.RabbitMQClient.Tests.Integration/JN.RabbitMQClient.Tests.Integration.csproj
     - name: Test
       run: dotnet test --no-restore --verbosity normal JN.RabbitMQClient.Tests/JN.RabbitMQClient.Tests.csproj
