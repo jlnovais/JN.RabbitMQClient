@@ -50,6 +50,11 @@
             <summary>
             Stop consumers
             </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.StopConsumers(System.String)">
+            <summary>
+            Stop consumers
+            </summary>
             <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
         </member>
         <member name="P:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.MaxChannelsPerConnection">
@@ -205,6 +210,11 @@
             <exception cref="T:RabbitMQ.Client.Exceptions.RabbitMQClientException"></exception>
         </member>
         <member name="M:JN.RabbitMQClient.RabbitMqConsumerService.StopConsumers">
+            <summary>
+            Stop consumers
+            </summary>
+        </member>
+        <member name="M:JN.RabbitMQClient.RabbitMqConsumerService.StopConsumers(System.String)">
             <summary>
             Stop consumers
             </summary>

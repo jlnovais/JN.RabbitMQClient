@@ -182,12 +182,15 @@ namespace JN.RabbitMQClient
         /// <summary>
         /// Stop consumers
         /// </summary>
-        /// <param name="consumerTag">Consumer tag (optional). If specified, all consumers with tag starting with this value will be stopped" </param>
         public void StopConsumers()
         {
             StopConsumers(null);
         }
 
+        /// <summary>
+        /// Stop consumers
+        /// </summary>
+        /// <param name="consumerTag">Consumer tag (optional). If specified, all consumers with tag starting with this value will be stopped" </param>
         public void StopConsumers(string consumerTag)
         {
             if (!string.IsNullOrWhiteSpace(consumerTag))

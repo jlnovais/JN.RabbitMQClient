@@ -31,8 +31,12 @@ namespace JN.RabbitMQClient.Interfaces
         /// <summary>
         /// Stop consumers
         /// </summary>
-        /// <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
         void StopConsumers();
+
+        /// <summary>
+        /// Stop consumers
+        /// </summary>
+        /// <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
         void StopConsumers(string consumerTag);
 
         event ReceiveMessageDelegate ReceiveMessage;
