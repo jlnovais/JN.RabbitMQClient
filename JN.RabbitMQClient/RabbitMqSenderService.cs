@@ -142,6 +142,9 @@ namespace JN.RabbitMQClient
 
             var routingKey = GetRoutingKey(routingKeyOrQueueName, config);
 
+            if (channel.IsClosed)
+                throw new Exception("Channel is closed");
+
             channel.BasicPublish(
                 exchange,
                 routingKey,
