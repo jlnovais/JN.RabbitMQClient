@@ -82,7 +82,7 @@ namespace JN.RabbitMQClient.Tests.Integration
             return Task.CompletedTask;
         }
 
-        private Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename, string consumertag, long firsterrortimestamp, string exchange, string message)
+        private Task<MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename, string consumertag, long firsterrortimestamp, string exchange, string message, string additionalInfo)
         {
             _totalMessagesReceived++;
 
@@ -91,15 +91,15 @@ namespace JN.RabbitMQClient.Tests.Integration
                 case "error":
                     throw new RabbitMqClientException("error");
                 case "ok":
-                    return Task.FromResult(Constants.MessageProcessInstruction.OK);
+                    return Task.FromResult(new MessageProcessInstruction(Constants.MessageProcessInstruction.OK));
                 case "ignore":
-                    return Task.FromResult(Constants.MessageProcessInstruction.IgnoreMessage);
+                    return Task.FromResult(new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage));
                 case "ignoreRequeue":
-                    return Task.FromResult(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
+                    return Task.FromResult(new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue));
                 case "RequeueDelay":
-                    return Task.FromResult(Constants.MessageProcessInstruction.RequeueMessageWithDelay);
+                    return Task.FromResult(new MessageProcessInstruction(Constants.MessageProcessInstruction.RequeueMessageWithDelay, "message delay"));
                 default:
-                    return Task.FromResult(Constants.MessageProcessInstruction.Unknown);
+                    return Task.FromResult(new MessageProcessInstruction(Constants.MessageProcessInstruction.Unknown));
             }
         }
 

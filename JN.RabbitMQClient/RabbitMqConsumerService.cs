@@ -275,12 +275,13 @@ namespace JN.RabbitMQClient
                 consumer.LastMessageDate = DateTime.Now;
 
                 var firstErrorTimestamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(e.BasicProperties);
+                var additionalInfo = RabbitMqUtilities.GetAdditionalInfoFromMessageArgs(e.BasicProperties);
 
                 var model = consumer.Model;
 
-                var messageProcessInstruction = await GetMessageProcessInstruction(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message).ConfigureAwait(false);
+                var messageProcessInstruction = await GetMessageProcessInstruction(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message, additionalInfo).ConfigureAwait(false);
                     
-                switch (messageProcessInstruction)
+                switch (messageProcessInstruction.Value)
                 {
                     case Constants.MessageProcessInstruction.OK:
                         model.BasicAck(e.DeliveryTag, false);
@@ -292,7 +293,7 @@ namespace JN.RabbitMQClient
                         model.BasicReject(e.DeliveryTag, true);
                         break;
                     case Constants.MessageProcessInstruction.RequeueMessageWithDelay:
-                        RequeueMessageWithDelay(consumer, e);
+                        RequeueMessageWithDelay(consumer, e, messageProcessInstruction.AdditionalInfo);
                         model.BasicReject(e.DeliveryTag, false);
                         break;
                     default:
@@ -308,8 +309,8 @@ namespace JN.RabbitMQClient
             }
         }
 
-        private async Task<Constants.MessageProcessInstruction> GetMessageProcessInstruction(string routingKeyOrQueueName, string consumerTag,
-            long firstErrorTimestamp, string exchange, string message)
+        private async Task<MessageProcessInstruction> GetMessageProcessInstruction(string routingKeyOrQueueName, string consumerTag,
+            long firstErrorTimestamp, string exchange, string message, string messageAdditionalInfo)
         {
             var isAllowed = true;
 
@@ -317,16 +318,16 @@ namespace JN.RabbitMQClient
                 isAllowed = Limiter.IsAllowed(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message);
 
             if (!isAllowed)
-                return Limiter.DeniedProcessInstruction;
+                return new MessageProcessInstruction {Value = Limiter.DeniedProcessInstruction};
 
             var messageProcessInstruction =
-                await OnReceiveMessage(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message)
+                await OnReceiveMessage(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message, messageAdditionalInfo)
                     .ConfigureAwait(false);
             
             return messageProcessInstruction;
         }
 
-        private void RequeueMessageWithDelay(AsyncEventingBasicConsumerExtended consumer, BasicDeliverEventArgs deliveryArgs)
+        private void RequeueMessageWithDelay(AsyncEventingBasicConsumerExtended consumer, BasicDeliverEventArgs deliveryArgs, string messageAdditionalInfo)
         {
 
             if (string.IsNullOrWhiteSpace(consumer.RetryQueue))
@@ -337,6 +338,7 @@ namespace JN.RabbitMQClient
 
             var firstErrorTimeStamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
             SetFirstErrorTimeStampToProperties(firstErrorTimeStamp, properties);
+            SetMessageAdditionalInfoToProperties(messageAdditionalInfo, properties);
 
             consumer.Model.BasicPublish(
                 "",
@@ -351,15 +353,22 @@ namespace JN.RabbitMQClient
                 firstErrorTimeStamp > 0 ? firstErrorTimeStamp : DateTime.UtcNow.ToUnixTimestamp());
         }
 
+        private static void SetMessageAdditionalInfoToProperties(string additionalInfo, IBasicProperties properties)
+        {
+            if(!string.IsNullOrEmpty(additionalInfo))
+                properties.Headers.Add(Constants.MessageAdditionalInfoHeaderName, additionalInfo);
+                
+        }
+
 
         protected virtual Task OnMessageReceiveError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
         {
             return ReceiveMessageError?.Invoke(routingKeyOrQueueName, consumerTag, exchange, message, errorMessage);
         }
 
-        protected virtual Task<Constants.MessageProcessInstruction> OnReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
+        protected virtual Task<MessageProcessInstruction> OnReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string messageAdditionalInfo)
         {
-            return ReceiveMessage?.Invoke(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message);
+            return ReceiveMessage?.Invoke(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message, messageAdditionalInfo);
         }
 
         protected virtual Task OnShutdownConsumer(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)

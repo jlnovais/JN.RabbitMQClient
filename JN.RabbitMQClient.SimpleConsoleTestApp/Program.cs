@@ -87,10 +87,10 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
             await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}").ConfigureAwait(false);
         }
 
-        private static async Task<Constants.MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
+        private static async Task<MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo)
         {
             await Console.Out.WriteLineAsync($"Message received from '{consumerTag}' ({exchange}): {message} ").ConfigureAwait(false);
-            return Constants.MessageProcessInstruction.OK;
+            return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
         }
     }
 }

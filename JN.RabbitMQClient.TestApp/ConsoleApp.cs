@@ -5,6 +5,7 @@ using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Limiter;
 using JN.RabbitMQClient.TestApp.HelperClasses;
 using Microsoft.Extensions.Logging;
+using JN.RabbitMQClient.Other;
 
 namespace JN.RabbitMQClient.TestApp
 {
@@ -67,7 +68,7 @@ namespace JN.RabbitMQClient.TestApp
 
             
             
-            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, totalConsumers: 4);
+            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, totalConsumers: 2);
             _consumerService.StartConsumers("consumers_Tag_B", retryQueueDetails, totalConsumers: 2);
 
             _logger.LogInformation($"Starting consumers...");
@@ -92,14 +93,30 @@ namespace JN.RabbitMQClient.TestApp
 
         }
 
-        private async Task<Constants.MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message)
+        private bool Expired(long firstErrorTimestamp)
         {
-            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message} ";
+            if (firstErrorTimestamp == 0)
+                return false;
+
+            var elapsedTime = (DateTime.UtcNow.ToUnixTimestamp() - firstErrorTimestamp);
+
+            return elapsedTime > _config.BrokerMessageTTLSeconds;
+        }
+        
+        private async Task<MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo)
+        {
+            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Additional info: {additionalInfo} ";
 
             await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
 
             _logger.LogInformation(debugMessage);
 
+            if (Expired(firstErrorTimestamp))
+            {
+                await Console.Out.WriteLineAsync("Message expired.").ConfigureAwait(false);
+                return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);
+            }
+            
             var details = _consumerService.GetConsumerDetails();
 
             if (details != null)
@@ -124,17 +141,17 @@ namespace JN.RabbitMQClient.TestApp
                         _senderService.Send(message);
                     
                     await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
-                    return Constants.MessageProcessInstruction.OK;
+                    return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":
-                    return Constants.MessageProcessInstruction.IgnoreMessage;
+                    return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);
                 case "requeue":
-                    return Constants.MessageProcessInstruction.IgnoreMessageWithRequeue;
+                    return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
                 case "delay":
-                    return Constants.MessageProcessInstruction.RequeueMessageWithDelay;
+                    return new MessageProcessInstruction(Constants.MessageProcessInstruction.RequeueMessageWithDelay,$"message delayed {DateTime.Now}");
                 case "error":
                     throw new ErrorProcessingException("error processing message");
                 default:
-                    return Constants.MessageProcessInstruction.Unknown;
+                    return new MessageProcessInstruction(Constants.MessageProcessInstruction.Unknown);
             }
         }
 

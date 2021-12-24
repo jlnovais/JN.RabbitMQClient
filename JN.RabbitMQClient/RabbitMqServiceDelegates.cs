@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
+using JN.RabbitMQClient.Entities;
 
 namespace JN.RabbitMQClient
 {
-    public delegate Task<Constants.MessageProcessInstruction> ReceiveMessageDelegate(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message);
+    public delegate Task<MessageProcessInstruction> ReceiveMessageDelegate(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string messageAdditionalInfo);
 
     public delegate Task ShutdownDelegate(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage);
 

@@ -19,5 +19,7 @@
         };
 
         internal const string FirstErrorTimeStampHeaderName = "firstErrorTimeStamp";
+
+        internal const string MessageAdditionalInfoHeaderName = "additionalInfo";
     }
 }

@@ -9,6 +9,7 @@ namespace JN.RabbitMQClient.Other
     {
         private static readonly Random Random = new Random();
 
+    
         internal static long GetFirstErrorTimeStampFromMessageArgs(IBasicProperties properties)
         {
             long res = 0;
@@ -25,6 +26,25 @@ namespace JN.RabbitMQClient.Other
             return res;
         }
 
+
+        internal static string GetAdditionalInfoFromMessageArgs(IBasicProperties properties)
+        {
+            string res = null;
+
+            if (properties?.Headers == null)
+                return null;
+
+            if (!properties.Headers.ContainsKey(Constants.MessageAdditionalInfoHeaderName)) 
+                return null;
+
+            if (properties.Headers[Constants.MessageAdditionalInfoHeaderName] == null) 
+                return null;
+            
+            var value = (byte[]) properties.Headers[Constants.MessageAdditionalInfoHeaderName];
+            res = Encoding.UTF8.GetString(value);
+            
+            return res;
+        }
 
         internal static QueueDeclareOk CreateQueueOrGetInfo(string queueName, IModel channel)
         {
