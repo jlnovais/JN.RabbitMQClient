@@ -29,8 +29,6 @@ namespace JN.RabbitMQClient.Other
 
         internal static string GetAdditionalInfoFromMessageArgs(IBasicProperties properties)
         {
-            string res = null;
-
             if (properties?.Headers == null)
                 return null;
 
@@ -41,7 +39,7 @@ namespace JN.RabbitMQClient.Other
                 return null;
             
             var value = (byte[]) properties.Headers[Constants.MessageAdditionalInfoHeaderName];
-            res = Encoding.UTF8.GetString(value);
+            var res = Encoding.UTF8.GetString(value);
             
             return res;
         }

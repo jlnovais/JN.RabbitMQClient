@@ -11,7 +11,7 @@ Simple implementation of RabbitMQ consumer and sender.
 *   Multiple processing options for received messages
 *   Random expiration for messages sent to an holding queue (depending on the processing option)
 *   TLS connection support 
-*   [Limiter for message processing](https://josenovais.azurewebsites.net/JN-RabbitMQClient/#limiter)
+*   [Limiter for message processing](https://jn-rabbitmqclient.josenovais.com/#limiter)
 
 More details available on the [project website](https://jn-rabbitmqclient.josenovais.com/).
 

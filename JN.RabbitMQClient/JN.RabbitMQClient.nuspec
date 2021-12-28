@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>JN.RabbitMQClient</id>
-    <version>2.3.3</version>
+    <version>2.3.4</version>
     <authors>José Novais</authors>
     <owners>José Novais</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -16,18 +16,22 @@
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
     <copyright>José Novais, 2021</copyright>
-    <releaseNotes> 
-      Release Notes for current version:
+    <releaseNotes>
+      Release Notes for current version (2.3.4):
+
+      - Added support for additional information to be passed to the processing delegate; the processing instruction is now an object 'MessageProcessInstruction' where that additional information can be passed. Useful for when a message is requeued with delay to pass information to the next processing attempt.
+
+      Release Notes for version 2.3.3:
 
       - Update target frameworks; added .NETFramework4.6.1
       - Update RabbitMQ.Client to latest version
       - Update consumer to expose MaxChannelsPerConnection property
 
-      Release Notes for previous version:
+      Release Notes for version 2.3.2:
 
       - Added sender service that keeps connection open.
 
-      Release Notes for other previous version:
+      Release Notes for version 2.3.0:
 
       - Update RabbitMQ.Client to latest version
       - Changed namespace for IRabbitMqConsumerService and IRabbitMqSenderService

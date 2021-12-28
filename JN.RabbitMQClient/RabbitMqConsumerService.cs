@@ -318,7 +318,7 @@ namespace JN.RabbitMQClient
                 isAllowed = Limiter.IsAllowed(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message);
 
             if (!isAllowed)
-                return new MessageProcessInstruction {Value = Limiter.DeniedProcessInstruction};
+                return new MessageProcessInstruction(Limiter.DeniedProcessInstruction, messageAdditionalInfo);
 
             var messageProcessInstruction =
                 await OnReceiveMessage(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message, messageAdditionalInfo)
