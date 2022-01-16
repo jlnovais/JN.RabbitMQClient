@@ -276,7 +276,7 @@ namespace JN.RabbitMQClient
 
                 var firstErrorTimestamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(e.BasicProperties);
                 var additionalInfo = RabbitMqUtilities.GetAdditionalInfoFromMessageArgs(e.BasicProperties);
-
+               
                 var model = consumer.Model;
 
                 var messageProcessInstruction = await GetMessageProcessInstruction(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message, additionalInfo).ConfigureAwait(false);
@@ -334,7 +334,7 @@ namespace JN.RabbitMQClient
                 return;
 
             var properties = consumer.Model.CreateBasicProperties();
-            RabbitMqUtilities.SetPropertiesConsumer(properties, consumer.RetentionPeriodInRetryQueueMilliseconds, consumer.RetentionPeriodInRetryQueueMillisecondsMax);
+            RabbitMqUtilities.SetPropertiesSenderRequeueMessageWithDelay(properties, consumer.RetentionPeriodInRetryQueueMilliseconds, consumer.RetentionPeriodInRetryQueueMillisecondsMax);
 
             var firstErrorTimeStamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
             SetFirstErrorTimeStampToProperties(firstErrorTimeStamp, properties);

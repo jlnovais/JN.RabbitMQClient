@@ -50,9 +50,7 @@ namespace JN.RabbitMQClient.Other
         }
 
 
-
-
-        internal static void SetPropertiesConsumer(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds, int retentionPeriodInRetryQueueMillisecondsMax)
+        internal static void SetPropertiesSenderRequeueMessageWithDelay(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds, int retentionPeriodInRetryQueueMillisecondsMax)
         {
             properties.Persistent = true; 
             properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
@@ -69,10 +67,7 @@ namespace JN.RabbitMQClient.Other
 
         private static int GetNumber(int min, int max)
         {
-            if (min>=max)
-                return min;
-            
-            return Random.Next(min, max + 1);
+            return min>=max ? min : Random.Next(min, max + 1);
         }
     }
 }

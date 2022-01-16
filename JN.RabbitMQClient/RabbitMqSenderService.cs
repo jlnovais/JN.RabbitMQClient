@@ -134,6 +134,7 @@ namespace JN.RabbitMQClient
             string encodingName, IBrokerConfigSender config, byte[] body)
         {
             var properties = channel.CreateBasicProperties();
+            
             RabbitMqUtilities.SetPropertiesSender(properties, encodingName);
 
             var exchange = GetExchange(exchangeName, config);

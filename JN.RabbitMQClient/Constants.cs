@@ -18,8 +18,8 @@
             Unknown
         };
 
-        internal const string FirstErrorTimeStampHeaderName = "firstErrorTimeStamp";
+        internal const string FirstErrorTimeStampHeaderName = "JN-firstErrorTimeStamp";
 
-        internal const string MessageAdditionalInfoHeaderName = "additionalInfo";
+        internal const string MessageAdditionalInfoHeaderName = "JN-additionalInfo";
     }
 }
