@@ -4,6 +4,7 @@ updates:
   directory: "/"
   schedule:
     interval: daily
+  target-branch: Dev
   open-pull-requests-limit: 10
   ignore:
   - dependency-name: NLog.Extensions.Logging
