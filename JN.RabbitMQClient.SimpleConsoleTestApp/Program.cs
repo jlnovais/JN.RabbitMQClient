@@ -34,7 +34,6 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
                 Environment.Exit(-1);
             }
             
-            
 
             // sender
 
