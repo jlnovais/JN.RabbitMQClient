@@ -77,5 +77,7 @@ namespace JN.RabbitMQClient.Interfaces
 
         string ServiceDescription { get; set; }
 
+        bool IsConnected { get; }
+
     }
 }

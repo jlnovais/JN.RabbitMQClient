@@ -14,20 +14,14 @@ namespace JN.RabbitMQClient.TestApp
         private readonly ILogger<ConsoleApp> _logger;
         private readonly IRabbitMqConsumerService _consumerService;
         private readonly IRabbitMqSenderService _senderService;
-        private readonly IRabbitMqSenderServiceKeepConnection _senderServiceKeepConnection;
         private readonly AppConfig _config;
-        private bool _useSenderServiceKeepConnection;
 
-
-
-        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, IRabbitMqSenderServiceKeepConnection senderServiceKeepConnection,
-            ILimiter limiter, AppConfig config)
+        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, ILimiter limiter, AppConfig config)
         {
             _logger = logger;
 
             _consumerService = consumerService;
             _senderService = senderService;
-            _senderServiceKeepConnection = senderServiceKeepConnection;
             _config = config;
 
 
@@ -50,14 +44,10 @@ namespace JN.RabbitMQClient.TestApp
             await Console.Out.WriteLineAsync($"Error processing message: {errorMessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingKeyOrQueueName}' | consumertag: {consumerTag} | exchange: {exchange} | message: {message}").ConfigureAwait(false);
         }
 
-
         // Application starting point
-        public void Run(bool useSenderServiceKeepConnection)
+        public void Run()
         {
-            _useSenderServiceKeepConnection = useSenderServiceKeepConnection;
-
-            _senderServiceKeepConnection.ServiceDescription = $"service to send message - keep connection created at {DateTime.Now}";
-            _senderService.ServiceDescription = "service to send messages";
+            _senderService.ServiceDescription = $"service to send messages - {DateTime.Now}";
 
             var retryQueueDetails = new RetryQueueDetails
             {
@@ -134,12 +124,7 @@ namespace JN.RabbitMQClient.TestApp
             switch (message)
             {
                 case "ok":
-
-                    if (_useSenderServiceKeepConnection)
-                        _senderServiceKeepConnection.Send(message);
-                    else
-                        _senderService.Send(message);
-                    
+                    _senderService.Send(message);
                     await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":

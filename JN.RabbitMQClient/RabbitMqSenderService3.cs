@@ -8,18 +8,23 @@ using RabbitMQ.Client;
 namespace JN.RabbitMQClient
 {
     /// <summary>
-    /// Service for sending messages - each message will create one connection
+    /// Service for sending messages - keeps connection open
     /// </summary>
-    public class RabbitMqSenderService : RabbitMqServiceBase, IRabbitMqSenderService
+    public class RabbitMqSenderService3 : RabbitMqServiceBase, IRabbitMqSenderService, IDisposable
     {
- 
-        public RabbitMqSenderService(IBrokerConfigSender config)
+        private IConnection _connection;
+        private IModel _channel;
+
+        private readonly object _lockObj = new object();
+        public bool IsConnected => _connection != null && _connection.IsOpen && _channel !=null && _channel.IsOpen;
+
+
+        public RabbitMqSenderService3(IBrokerConfigSender config)
         {
             _config = config;
+            
         }
 
-
-        public bool IsConnected { get; }
 
         /// <summary>
         /// Send message using default settings
@@ -117,27 +122,43 @@ namespace JN.RabbitMQClient
         /// <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
         /// <param name="encoding">Message encoding.</param>
         /// <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
-        public virtual void Send(string message, string exchangeName, string routingKeyOrQueueName, Encoding encoding, bool createQueue)
+        public void Send(string message, string exchangeName, string routingKeyOrQueueName, Encoding encoding,
+            bool createQueue)
         {
             var config = (IBrokerConfigSender)_config;
+
 
             var body = encoding.GetBytes(message);
 
             var encodingName = encoding.EncodingName;
 
-            using (var connection = GetConnection(ServiceDescription + "_sender"))
-            using (var channel = connection.CreateModel())
+            if (config.KeepConnectionOpen)
             {
-                _Send(exchangeName, routingKeyOrQueueName, createQueue, channel, encodingName, config, body);
+                if (!IsConnected)
+                {
+                    SetupConnection();
+                }
+
+                _Send(exchangeName, routingKeyOrQueueName, createQueue, _channel, encodingName, config, body);
             }
+
+            else
+            {
+                using (var connection = GetConnection(ServiceDescription + "_sender"))
+                using (var channel = connection.CreateModel())
+                {
+                    _Send(exchangeName, routingKeyOrQueueName, createQueue, channel, encodingName, config, body);
+                }
+            }
+
+
         }
-
-
+        
         protected void _Send(string exchangeName, string routingKeyOrQueueName, bool createQueue, IModel channel,
             string encodingName, IBrokerConfigSender config, byte[] body)
         {
             var properties = channel.CreateBasicProperties();
-            
+
             RabbitMqUtilities.SetPropertiesSender(properties, encodingName);
 
             var exchange = GetExchange(exchangeName, config);
@@ -192,6 +213,53 @@ namespace JN.RabbitMQClient
             if (string.IsNullOrWhiteSpace(exchange))
                 exchange = "";
             return exchange;
+        }
+
+
+        private void CloseConnection()
+        {
+            var config = (IBrokerConfigSender)_config;
+
+            if (!config.KeepConnectionOpen)
+                return;
+
+            _connection?.Dispose();
+            _channel?.Dispose();
+        }
+
+        public void SetupConnection()
+        {
+            lock (_lockObj)
+            {
+                if (IsConnected)
+                    return;
+
+                CloseConnection();
+                
+                _connection = GetConnection(ServiceDescription + "_sender", false);
+                _channel = _connection.CreateModel();
+            }
+        }
+
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                CloseConnection();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~RabbitMqSenderService3()
+        {
+            Dispose(false);
         }
     }
 }
