@@ -7,7 +7,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 {
     public static class Program
     {
-        private static string hostName = "localhost";
+        private static readonly string hostName = "localhost";
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
