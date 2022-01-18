@@ -74,7 +74,7 @@ namespace JN.RabbitMQClient.TestApp
             configSender.KeepConnectionOpen = _useSenderKeepConnection;
 
             services.AddSingleton<IRabbitMqConsumerService, RabbitMqConsumerService>();
-            services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService3>();
+            services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService>();
             services.AddSingleton<IBrokerConfigSender>(configSender);
             services.AddSingleton<IBrokerConfigConsumers>(
                 configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));

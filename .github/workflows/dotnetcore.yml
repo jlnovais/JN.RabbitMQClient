@@ -2,9 +2,9 @@ name: Compile & Test .NET
 
 on:
   push:
-    branches: [ master ]
+    branches: [ Dev, master ]
   pull_request:
-    branches: [ master ]
+    branches: [ Dev, master ]
 
 jobs:
   build:
