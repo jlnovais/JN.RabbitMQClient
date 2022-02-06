@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
@@ -121,10 +123,25 @@ namespace JN.RabbitMQClient.TestApp
                 }
             }
 
+            var msgProperties = new MessageProperties()
+            {
+                Headers = new Dictionary<string, object>()
+                {
+                    {"key", "vale"},
+                    {"key2", "value2"}
+                },
+
+                Persistent = true,
+                //ContentEncoding = System.Text.Encoding.UTF8.HeaderName,
+                Priority = 5,
+                CorrelationId = "123456ABC"
+            };
+
+
             switch (message)
             {
                 case "ok":
-                    _senderService.Send(message);
+                    _senderService.Send(message, msgProperties);
                     await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":

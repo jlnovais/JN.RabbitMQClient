@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -268,15 +269,16 @@ namespace JN.RabbitMQClient
 
             try
             {
-                message = Encoding.UTF8.GetString(e.Body.Span.ToArray());
+                var properties = e.BasicProperties;
+
+                message = GetEncoding(properties).GetString(e.Body.Span.ToArray());
 
                 var consumer = (AsyncEventingBasicConsumerExtended)sender;
 
                 consumer.LastMessageDate = DateTime.Now;
 
                 var firstErrorTimestamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(e.BasicProperties);
-                var additionalInfo = RabbitMqUtilities.GetAdditionalInfoFromMessageArgs(e.BasicProperties);
-               
+                var additionalInfo = properties.CorrelationId;
                 var model = consumer.Model;
 
                 var messageProcessInstruction = await GetMessageProcessInstruction(routingKeyOrQueueName, consumerTag, firstErrorTimestamp, exchange, message, additionalInfo).ConfigureAwait(false);
@@ -309,6 +311,21 @@ namespace JN.RabbitMQClient
             }
         }
 
+        private static Encoding GetEncoding(IBasicProperties properties)
+        {
+            try
+            {
+                var encoding = string.IsNullOrWhiteSpace(properties.ContentEncoding)
+                    ? Encoding.UTF8
+                    : Encoding.GetEncoding(properties.ContentEncoding);
+                return encoding;
+            }
+            catch
+            {
+                return Encoding.UTF8;
+            }
+        }
+
         private async Task<MessageProcessInstruction> GetMessageProcessInstruction(string routingKeyOrQueueName, string consumerTag,
             long firstErrorTimestamp, string exchange, string message, string messageAdditionalInfo)
         {
@@ -333,12 +350,15 @@ namespace JN.RabbitMQClient
             if (string.IsNullOrWhiteSpace(consumer.RetryQueue))
                 return;
 
-            var properties = consumer.Model.CreateBasicProperties();
+            var properties = deliveryArgs.BasicProperties; //consumer.Model.CreateBasicProperties();
             RabbitMqUtilities.SetPropertiesSenderRequeueMessageWithDelay(properties, consumer.RetentionPeriodInRetryQueueMilliseconds, consumer.RetentionPeriodInRetryQueueMillisecondsMax);
 
             var firstErrorTimeStamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
             SetFirstErrorTimeStampToProperties(firstErrorTimeStamp, properties);
-            SetMessageAdditionalInfoToProperties(messageAdditionalInfo, properties);
+
+            properties.CorrelationId = messageAdditionalInfo;
+
+            //SetMessageAdditionalInfoToProperties(messageAdditionalInfo, properties);
 
             consumer.Model.BasicPublish(
                 "",
@@ -349,15 +369,14 @@ namespace JN.RabbitMQClient
 
         private static void SetFirstErrorTimeStampToProperties(long firstErrorTimeStamp, IBasicProperties properties)
         {
-            properties.Headers.Add(Constants.FirstErrorTimeStampHeaderName,
-                firstErrorTimeStamp > 0 ? firstErrorTimeStamp : DateTime.UtcNow.ToUnixTimestamp());
-        }
+            if (properties.Headers is null)
+                properties.Headers = new ConcurrentDictionary<string, object>();
 
-        private static void SetMessageAdditionalInfoToProperties(string additionalInfo, IBasicProperties properties)
-        {
-            if(!string.IsNullOrEmpty(additionalInfo))
-                properties.Headers.Add(Constants.MessageAdditionalInfoHeaderName, additionalInfo);
-                
+            if (properties.Headers.ContainsKey(Constants.FirstErrorTimeStampHeaderName))
+                return;
+
+            properties.Headers. Add(Constants.FirstErrorTimeStampHeaderName,
+                firstErrorTimeStamp > 0 ? firstErrorTimeStamp : DateTime.UtcNow.ToUnixTimestamp());
         }
 
 
