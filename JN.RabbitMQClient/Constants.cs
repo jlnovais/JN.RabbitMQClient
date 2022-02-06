@@ -19,7 +19,5 @@
         };
 
         internal const string FirstErrorTimeStampHeaderName = "JN-firstErrorTimeStamp";
-
-        internal const string MessageAdditionalInfoHeaderName = "JN-additionalInfo";
     }
 }

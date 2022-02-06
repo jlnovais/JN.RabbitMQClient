@@ -159,8 +159,6 @@ namespace JN.RabbitMQClient
                     _Send(exchangeName, routingKeyOrQueueName, createQueue, channel, config, body, msgProperties);
                 }
             }
-
-
         }
 
  

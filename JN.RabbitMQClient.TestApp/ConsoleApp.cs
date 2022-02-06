@@ -25,25 +25,21 @@ namespace JN.RabbitMQClient.TestApp
             _consumerService = consumerService;
             _senderService = senderService;
             _config = config;
-
-
+            
             _consumerService.ServiceDescription = "Consumer Service";
             _consumerService.ReceiveMessage += ProcessMessage;
             _consumerService.ShutdownConsumer += ProcessShutdown;
             _consumerService.ReceiveMessageError += ProcessError;
 
             _consumerService.Limiter = limiter;
-
             _consumerService.MaxChannelsPerConnection = 3;
-            
             _senderService.ServiceDescription = "Sender Service";
-
         }
 
 
         private static async Task ProcessError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Error processing message: {errorMessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingKeyOrQueueName}' | consumertag: {consumerTag} | exchange: {exchange} | message: {message}").ConfigureAwait(false);
+            await Console.Out.WriteLineAsync($"Error processing message: {errorMessage} {Environment.NewLine}Details. routingKeyOrQueueName: '{routingKeyOrQueueName}' | consumerTag: {consumerTag} | exchange: {exchange} | message: {message} | Error: {errorMessage}").ConfigureAwait(false);
         }
 
         // Application starting point
@@ -95,9 +91,12 @@ namespace JN.RabbitMQClient.TestApp
             return elapsedTime > _config.BrokerMessageTTLSeconds;
         }
         
-        private async Task<MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo)
+        private async Task<MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo, IMessageProperties properties)
         {
-            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Additional info: {additionalInfo} ";
+            var priorityReceived = properties.Priority;
+            var newPriority = (byte)(priorityReceived <= 3 ? 5 : priorityReceived);
+
+            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Priority: {priorityReceived} Additional info: {additionalInfo} ";
 
             await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
 
@@ -133,7 +132,7 @@ namespace JN.RabbitMQClient.TestApp
 
                 Persistent = true,
                 //ContentEncoding = System.Text.Encoding.UTF8.HeaderName,
-                Priority = 5,
+                Priority = newPriority,
                 CorrelationId = "123456ABC"
             };
 
@@ -149,7 +148,12 @@ namespace JN.RabbitMQClient.TestApp
                 case "requeue":
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
                 case "delay":
-                    return new MessageProcessInstruction(Constants.MessageProcessInstruction.RequeueMessageWithDelay,$"message delayed {DateTime.Now}");
+                    return new MessageProcessInstruction
+                    {
+                        Value = Constants.MessageProcessInstruction.RequeueMessageWithDelay,
+                        AdditionalInfo = $"message delayed {DateTime.Now}",
+                        Priority = newPriority
+                    };
                 case "error":
                     throw new ErrorProcessingException("error processing message");
                 default:

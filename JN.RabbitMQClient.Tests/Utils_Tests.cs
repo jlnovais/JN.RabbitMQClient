@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace JN.RabbitMQClient.Tests
 {
     [TestFixture]
-    public class Utils_Tests
+    public class UtilsTests
     {
         [Test]
         public void ToUnixTimestamp_validDate_returnsCorrectTimestamp()

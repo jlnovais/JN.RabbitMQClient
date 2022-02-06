@@ -13,7 +13,7 @@ using BrokerConfig = JN.RabbitMQClient.Tests.HelperClasses.BrokerConfig;
 
 namespace JN.RabbitMQClient.Tests.Integration
 {
-    public class RabbitMqConsumerService_Tests
+    public class RabbitMqConsumerServiceTests
     {
         private int _totalMessagesReceived;
         private int _totalStopProcessing;
@@ -82,7 +82,7 @@ namespace JN.RabbitMQClient.Tests.Integration
             return Task.CompletedTask;
         }
 
-        private Task<MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename, string consumertag, long firsterrortimestamp, string exchange, string message, string additionalInfo)
+        private Task<MessageProcessInstruction> ReceiveMessage(string routingkeyorqueuename, string consumertag, long firsterrortimestamp, string exchange, string message, string additionalInfo, IMessageProperties properties)
         {
             _totalMessagesReceived++;
 
