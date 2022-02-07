@@ -203,9 +203,9 @@ namespace JN.RabbitMQClient
                 body);
         }
 
-        protected static void CreateQueue(string routingKeyOrQueueName, bool createQueue, string exchange, IModel channel)
+        protected static void CreateQueue(string routingKeyOrQueueName, bool create, string exchange, IModel channel)
         {
-            if (string.IsNullOrWhiteSpace(exchange) && createQueue)
+            if (string.IsNullOrWhiteSpace(exchange) && create)
             {
                 try
                 {
