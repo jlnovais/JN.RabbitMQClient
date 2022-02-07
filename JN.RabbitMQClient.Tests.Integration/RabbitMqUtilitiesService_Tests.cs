@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace JN.RabbitMQClient.Tests.Integration
 {
-    class RabbitMqUtilitiesService_Tests
+    class RabbitMqUtilitiesServiceTests
     {
         private const string queueName = "TestQueue_created";
         private const string exchangeName = "TestExchange_created";

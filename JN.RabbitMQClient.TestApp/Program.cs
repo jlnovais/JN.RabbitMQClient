@@ -12,7 +12,7 @@ namespace JN.RabbitMQClient.TestApp
 {
     public static class Program
     {
-        private static IConfigurationRoot configuration;
+        private static IConfigurationRoot _configuration;
         private static bool _useSenderKeepConnection = false;
 
         static void Main(string[] args)
@@ -23,7 +23,7 @@ namespace JN.RabbitMQClient.TestApp
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            configuration = builder.Build();
+            _configuration = builder.Build();
 
 
 
@@ -70,16 +70,16 @@ namespace JN.RabbitMQClient.TestApp
             // IMPORTANT! Register our application entry point
             services.AddTransient<ConsoleApp>();
 
-            var configSender = configuration.GetBrokerConfigSender("BrokerConfigSender");
+            var configSender = _configuration.GetBrokerConfigSender("BrokerConfigSender");
             configSender.KeepConnectionOpen = _useSenderKeepConnection;
 
             services.AddSingleton<IRabbitMqConsumerService, RabbitMqConsumerService>();
             services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService>();
             services.AddSingleton<IBrokerConfigSender>(configSender);
             services.AddSingleton<IBrokerConfigConsumers>(
-                configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
+                _configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
 
-            services.AddSingleton<AppConfig>(configuration.GetAppConfig("BrokerConfigConsumersRetry"));
+            services.AddSingleton<AppConfig>(_configuration.GetAppConfig("BrokerConfigConsumersRetry"));
 
             services.AddSingleton<ILimiter>(GetLimiter());
 

@@ -19,7 +19,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
             consumerService.ReceiveMessage += ReceiveMessage;
             consumerService.ShutdownConsumer += ShutdownConsumer;
             consumerService.ReceiveMessageError += ReceiveMessageError;
-            consumerService.MaxChannelsPerConnection = 100;
+            consumerService.MaxChannelsPerConnection = 5;
             consumerService.ServiceDescription = "test consumer service";
 
             try

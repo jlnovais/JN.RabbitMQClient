@@ -81,28 +81,19 @@ namespace JN.RabbitMQClient.TestApp
 
         }
 
-        private bool Expired(long firstErrorTimestamp)
-        {
-            if (firstErrorTimestamp == 0)
-                return false;
-
-            var elapsedTime = (DateTime.UtcNow.ToUnixTimestamp() - firstErrorTimestamp);
-
-            return elapsedTime > _config.BrokerMessageTTLSeconds;
-        }
+ 
         
         private async Task<MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo, IMessageProperties properties)
         {
             var priorityReceived = properties.Priority;
-            var newPriority = (byte)(priorityReceived <= 3 ? 5 : priorityReceived);
 
-            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Priority: {priorityReceived} Additional info: {additionalInfo} ";
+            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Priority: {priorityReceived}. Additional info: {additionalInfo} ";
 
             await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
 
             _logger.LogInformation(debugMessage);
 
-            if (Expired(firstErrorTimestamp))
+            if (MessageHelper.HasExpired(firstErrorTimestamp, _config.BrokerMessageTTLSeconds))
             {
                 await Console.Out.WriteLineAsync("Message expired.").ConfigureAwait(false);
                 return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);
@@ -110,44 +101,22 @@ namespace JN.RabbitMQClient.TestApp
             
             var details = _consumerService.GetConsumerDetails();
 
-            if (details != null)
-            {
-                foreach (var consumerInfo in details)
-                {
-                    Console.ForegroundColor = consumerInfo.Id % 2 == 0 ? ConsoleColor.Blue : ConsoleColor.DarkGreen;
-
-                    await Console.Out.WriteLineAsync($"Consumer '{consumerInfo.Name}'; connected to {consumerInfo.ConnectedToHost}:{consumerInfo.ConnectedToPort}; firstErrorTimestamp: {firstErrorTimestamp}; started at {consumerInfo.ConnectionTime:yyyy-MM-dd HH:mm:ss}; {consumerInfo.LastMessageDate:yyyy-MM-dd HH:mm:ss} ").ConfigureAwait(false);
-
-                    Console.ResetColor();
-                }
-            }
-
-            var msgProperties = new MessageProperties()
-            {
-                Headers = new Dictionary<string, object>()
-                {
-                    {"key", "vale"},
-                    {"key2", "value2"}
-                },
-
-                Persistent = true,
-                //ContentEncoding = System.Text.Encoding.UTF8.HeaderName,
-                Priority = newPriority,
-                CorrelationId = "123456ABC"
-            };
-
+            await MessageHelper.ShowConsumerDetailsOnConsole(firstErrorTimestamp, details);
 
             switch (message)
             {
                 case "ok":
-                    _senderService.Send(message, msgProperties);
-                    await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
+                    await _senderService.SendTestMessage(message);
+
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);
                 case "requeue":
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
                 case "delay":
+                    
+                    var newPriority = (byte)(priorityReceived <= 3 ? 5 : priorityReceived);
+
                     return new MessageProcessInstruction
                     {
                         Value = Constants.MessageProcessInstruction.RequeueMessageWithDelay,
@@ -160,7 +129,6 @@ namespace JN.RabbitMQClient.TestApp
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.Unknown);
             }
         }
-
 
         private async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {

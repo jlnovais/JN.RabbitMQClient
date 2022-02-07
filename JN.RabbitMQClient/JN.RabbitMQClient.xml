@@ -62,28 +62,31 @@
             Number of channels per connection
             </summary>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default settings
             </summary>
             <param name="message">Message to send.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default settings
             </summary>
             <param name="message">Message to send.</param>
             <param name="createQueue">Try to create the queue - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
             <param name="message">Message to send.</param>
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -91,8 +94,9 @@
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.String)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.String,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -100,8 +104,9 @@
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encodingName">Message encoding name.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.String,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -110,8 +115,9 @@
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encodingName">Message encoding name.</param>
             <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -119,8 +125,9 @@
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encoding">Message encoding.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -129,6 +136,7 @@
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encoding">Message encoding.</param>
             <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
         <member name="T:JN.RabbitMQClient.Limiter.WindowLimiter">
             <summary>
@@ -222,31 +230,34 @@
         </member>
         <member name="T:JN.RabbitMQClient.RabbitMqSenderService">
             <summary>
-            Service for sending messages - each message will create one connection
+            Service for sending messages
             </summary>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default settings
             </summary>
             <param name="message">Message to send.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default settings
             </summary>
             <param name="message">Message to send.</param>
             <param name="createQueue">Try to create the queue - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
             <param name="message">Message to send.</param>
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using default encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -254,8 +265,9 @@
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.String)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.String,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -263,8 +275,9 @@
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encodingName">Message encoding name.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.String,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding by name (ex: utf-8, utf-7, utf-32, utf-16, iso-8859-1, etc). To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -273,8 +286,9 @@
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encodingName">Message encoding name.</param>
             <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -282,23 +296,9 @@
             <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encoding">Message encoding.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean)">
-            <summary>
-            Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
-            </summary>
-            <param name="message">Message to send.</param>
-            <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
-            <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
-            <param name="encoding">Message encoding.</param>
-            <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
-        </member>
-        <member name="T:JN.RabbitMQClient.RabbitMqSenderService2">
-            <summary>
-            Service for sending messages - keeps connection open
-            </summary>
-        </member>
-        <member name="M:JN.RabbitMQClient.RabbitMqSenderService2.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean)">
+        <member name="M:JN.RabbitMQClient.RabbitMqSenderService.Send(System.String,System.String,System.String,System.Text.Encoding,System.Boolean,JN.RabbitMQClient.Interfaces.IMessageProperties)">
             <summary>
             Send message using custom encoding. To send to an exchange: exchange = [exchange name], routing key= [routing key]. To send to a queue: exchange = "", routing key= [queue name].
             </summary>
@@ -307,6 +307,7 @@
             <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
             <param name="encoding">Message encoding.</param>
             <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
+            <param name="properties">Message properties (optional)</param>
         </member>
         <member name="P:JN.RabbitMQClient.RabbitMqServiceBase.ServiceDescription">
             <summary>
