@@ -8,14 +8,21 @@ using RabbitMQ.Client;
 namespace JN.RabbitMQClient
 {
     /// <summary>
-    /// Service for sending messages - each message will create one connection
+    /// Service for sending messages
     /// </summary>
-    public class RabbitMqSenderService : RabbitMqServiceBase, IRabbitMqSenderService
+    public class RabbitMqSenderService : RabbitMqServiceBase, IRabbitMqSenderService, IDisposable
     {
- 
+        private IConnection _connection;
+        private IModel _channel;
+
+        private readonly object _lockObj = new object();
+        public bool IsConnected => _connection != null && _connection.IsOpen && _channel !=null && _channel.IsOpen;
+
+
         public RabbitMqSenderService(IBrokerConfigSender config)
         {
             _config = config;
+            
         }
 
 
@@ -23,9 +30,10 @@ namespace JN.RabbitMQClient
         /// Send message using default settings
         /// </summary>
         /// <param name="message">Message to send.</param>
-        public void Send(string message)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, IMessageProperties properties = null)
         {
-            Send(message, false);
+            Send(message, false, properties);
         }
 
 
@@ -34,9 +42,10 @@ namespace JN.RabbitMQClient
         /// </summary>
         /// <param name="message">Message to send.</param>
         /// <param name="createQueue">Try to create the queue - optional.</param>
-        public void Send(string message, bool createQueue)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, bool createQueue, IMessageProperties properties = null)
         {
-            Send(message, null, null, createQueue);
+            Send(message, null, null, createQueue, properties);
         }
 
         /// <summary>
@@ -45,11 +54,12 @@ namespace JN.RabbitMQClient
         /// <param name="message">Message to send.</param>
         /// <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
         /// <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
-        public void Send(string message, string exchangeName, string routingKeyOrQueueName)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, string exchangeName, string routingKeyOrQueueName, IMessageProperties properties = null)
         {
             var encoding = Encoding.UTF8;
 
-            Send(message, exchangeName, routingKeyOrQueueName, encoding, false);
+            Send(message, exchangeName, routingKeyOrQueueName, encoding, false, properties);
         }
 
         /// <summary>
@@ -59,11 +69,12 @@ namespace JN.RabbitMQClient
         /// <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
         /// <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
         /// <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
-        public void Send(string message, string exchangeName, string routingKeyOrQueueName, bool createQueue)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, string exchangeName, string routingKeyOrQueueName, bool createQueue, IMessageProperties properties = null)
         {
             var encoding = Encoding.UTF8;
 
-            Send(message, exchangeName, routingKeyOrQueueName, encoding, createQueue);
+            Send(message, exchangeName, routingKeyOrQueueName, encoding, createQueue, properties);
         }
 
         /// <summary>
@@ -73,11 +84,12 @@ namespace JN.RabbitMQClient
         /// <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
         /// <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
         /// <param name="encodingName">Message encoding name.</param>
-        public void Send(string message, string exchangeName, string routingKeyOrQueueName, string encodingName)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, string exchangeName, string routingKeyOrQueueName, string encodingName, IMessageProperties properties = null)
         {
             var encoding = Encoding.GetEncoding(encodingName);
 
-            Send(message, exchangeName, routingKeyOrQueueName, encoding, false);
+            Send(message, exchangeName, routingKeyOrQueueName, encoding, false, properties);
         }
 
         /// <summary>
@@ -88,11 +100,12 @@ namespace JN.RabbitMQClient
         /// <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
         /// <param name="encodingName">Message encoding name.</param>
         /// <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
-        public void Send(string message, string exchangeName, string routingKeyOrQueueName, string encodingName, bool createQueue)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, string exchangeName, string routingKeyOrQueueName, string encodingName, bool createQueue, IMessageProperties properties = null)
         {
             var encoding = Encoding.GetEncoding(encodingName);
 
-            Send(message, exchangeName, routingKeyOrQueueName, encoding, createQueue);
+            Send(message, exchangeName, routingKeyOrQueueName, encoding, createQueue, properties);
         }
 
         /// <summary>
@@ -102,9 +115,10 @@ namespace JN.RabbitMQClient
         /// <param name="exchangeName">Name of the exchange to which the message will be sent.</param>
         /// <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
         /// <param name="encoding">Message encoding.</param>
-        public void Send(string message, string exchangeName, string routingKeyOrQueueName, Encoding encoding)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, string exchangeName, string routingKeyOrQueueName, Encoding encoding, IMessageProperties properties = null)
         {
-            Send(message, exchangeName, routingKeyOrQueueName, encoding, false);
+            Send(message, exchangeName, routingKeyOrQueueName, encoding, false, properties);
         }
 
         /// <summary>
@@ -115,27 +129,63 @@ namespace JN.RabbitMQClient
         /// <param name="routingKeyOrQueueName">Routing key or queue name to which the message will be sent.</param>
         /// <param name="encoding">Message encoding.</param>
         /// <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
-        public virtual void Send(string message, string exchangeName, string routingKeyOrQueueName, Encoding encoding, bool createQueue)
+        /// <param name="properties">Message properties (optional)</param>
+        public void Send(string message, string exchangeName, string routingKeyOrQueueName, Encoding encoding, bool createQueue, IMessageProperties properties = null)
         {
             var config = (IBrokerConfigSender)_config;
 
-            var body = encoding.GetBytes(message);
+            var msgProperties = GetMessageProperties(encoding, properties);
+            
+            var encodingFromProperties = Encoding.GetEncoding(msgProperties.ContentEncoding);
 
-            var encodingName = encoding.EncodingName;
+            var body = encodingFromProperties.GetBytes(message);
 
-            using (var connection = GetConnection(ServiceDescription + "_sender"))
-            using (var channel = connection.CreateModel())
+            if (config.KeepConnectionOpen)
             {
-                _Send(exchangeName, routingKeyOrQueueName, createQueue, channel, encodingName, config, body);
+                if (!IsConnected)
+                {
+                    SetupConnection();
+                }
+
+                _Send(exchangeName, routingKeyOrQueueName, createQueue, _channel, config, body, msgProperties);
+            }
+
+            else
+            {
+                //create and dispose connection here
+                using (var connection = GetConnection(ServiceDescription + "_sender"))
+                using (var channel = connection.CreateModel())
+                {
+                    _Send(exchangeName, routingKeyOrQueueName, createQueue, channel, config, body, msgProperties);
+                }
             }
         }
 
+ 
+        private IMessageProperties GetMessageProperties(Encoding encoding, IMessageProperties properties)
+        {
+            if (properties is null)
+            {
+                return new MessageProperties
+                {
+                    ContentEncoding = encoding.HeaderName,
+                    Persistent = true
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(properties.ContentEncoding))
+                properties.ContentEncoding = encoding.HeaderName;
+
+            return properties;
+        }
+
+
         protected void _Send(string exchangeName, string routingKeyOrQueueName, bool createQueue, IModel channel,
-            string encodingName, IBrokerConfigSender config, byte[] body)
+             IBrokerConfigSender config, byte[] body, IMessageProperties msgProperties)
         {
             var properties = channel.CreateBasicProperties();
-            
-            RabbitMqUtilities.SetPropertiesSender(properties, encodingName);
+
+            RabbitMqUtilities.SetProperties(properties, msgProperties);
 
             var exchange = GetExchange(exchangeName, config);
 
@@ -170,9 +220,9 @@ namespace JN.RabbitMQClient
 
         protected string GetRoutingKey(string routingKeyOrQueueName, IBrokerConfigSender config)
         {
-            var routingKey = (string.IsNullOrWhiteSpace(routingKeyOrQueueName)
+            var routingKey = string.IsNullOrWhiteSpace(routingKeyOrQueueName)
                 ? config.RoutingKeyOrQueueName
-                : routingKeyOrQueueName);
+                : routingKeyOrQueueName;
 
             if (string.IsNullOrWhiteSpace(routingKey))
             {
@@ -189,6 +239,53 @@ namespace JN.RabbitMQClient
             if (string.IsNullOrWhiteSpace(exchange))
                 exchange = "";
             return exchange;
+        }
+
+
+        private void CloseConnection()
+        {
+            var config = (IBrokerConfigSender)_config;
+
+            if (!config.KeepConnectionOpen)
+                return;
+
+            _connection?.Dispose();
+            _channel?.Dispose();
+        }
+
+        public void SetupConnection()
+        {
+            lock (_lockObj)
+            {
+                if (IsConnected)
+                    return;
+
+                CloseConnection();
+                
+                _connection = GetConnection(ServiceDescription + "_sender", false);
+                _channel = _connection.CreateModel();
+            }
+        }
+
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                CloseConnection();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~RabbitMqSenderService()
+        {
+            Dispose(false);
         }
     }
 }

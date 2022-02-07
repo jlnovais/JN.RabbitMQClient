@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace JN.RabbitMQClient.Tests.Integration
 {
-    class RabbitMqSenderService_Tests
+    class RabbitMqSenderServiceTests
     {
         private const string queueName = "TestQueue";
 

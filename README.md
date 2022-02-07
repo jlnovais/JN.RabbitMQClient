@@ -12,6 +12,7 @@ Simple implementation of RabbitMQ consumer and sender.
 *   Random expiration for messages sent to an holding queue (depending on the processing option)
 *   TLS connection support 
 *   [Limiter for message processing](https://jn-rabbitmqclient.josenovais.com/#limiter)
+*   Message properties for more advanced scenarios such as queues with support for priority messages, messages Headers, etc.
 
 More details available on the [project website](https://jn-rabbitmqclient.josenovais.com/).
 
@@ -43,6 +44,8 @@ Example for consumer and sender services:
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello World!");
+
             // consumer
 
             var consumerService = new RabbitMqConsumerService(GetBrokerConfigConsumers());
@@ -50,14 +53,18 @@ Example for consumer and sender services:
             consumerService.ReceiveMessage += ReceiveMessage;
             consumerService.ShutdownConsumer += ShutdownConsumer;
             consumerService.ReceiveMessageError += ReceiveMessageError;
+            consumerService.MaxChannelsPerConnection = 5;
+            consumerService.ServiceDescription = "test consumer service";
 
             consumerService.StartConsumers("my consumer");
-
+ 
             // sender
 
             var senderService = new RabbitMqSenderService(GetBrokerConfigSender());
 
-            senderService.Send("my message");
+            IMessageProperties properties = new MessageProperties { Priority = 3 };
+
+            senderService.Send("my message", properties);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
@@ -67,47 +74,58 @@ Example for consumer and sender services:
 
         private static IBrokerConfigSender GetBrokerConfigSender()
         {
-            IBrokerConfigSender configSender = new BrokerConfigSender()
+            IBrokerConfigSender configSender = new BrokerConfigSender
             {
                 Username = "test",
                 Password = "123",
-                Host = "localhost",
-                VirtualHost = "/",
-                RoutingKeyOrQueueName = "MyTestQueue"
+                Host = hostName,
+                VirtualHost = "MyVirtualHost",
+                RoutingKeyOrQueueName = "MyTestQueue",
+                KeepConnectionOpen = true
             };
             return configSender;
         }
 
         private static IBrokerConfigConsumers GetBrokerConfigConsumers()
         {
-            IBrokerConfigConsumers configConsumers = new BrokerConfigConsumers()
+            IBrokerConfigConsumers configConsumers = new BrokerConfigConsumers
             {
                 Username = "test",
                 Password = "123",
-                Host = "localhost",
-                VirtualHost = "/",
+                Host = hostName,
+                VirtualHost = "MyVirtualHost",
                 RoutingKeyOrQueueName = "MyTestQueue",
                 ShuffleHostList = false,
                 Port = 0,
-                TotalInstances = 3
+                TotalInstances = 4
             };
             return configConsumers;
         }
 
         private static async Task ReceiveMessageError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Error: '{consumerTag}' | {errorMessage}");
+            await Console.Out.WriteLineAsync($"Error: '{consumerTag}' | Queued message: {message} | Error message: {errorMessage}").ConfigureAwait(false);
         }
 
         private static async Task ShutdownConsumer(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}");
+            await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}").ConfigureAwait(false);
         }
 
-        private static async Task<MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo)
+        private static async Task<MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo, IMessageProperties properties)
         {
-            await Console.Out.WriteLineAsync($"Message received from '{consumerTag}' ({exchange}): {message} ").ConfigureAwait(false);
-            return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
+            var priorityReceived = properties.Priority;
+
+            var newPriority = (byte)(priorityReceived <= 3 ? 5 : priorityReceived);
+
+            await Console.Out.WriteLineAsync($"Message received by '{consumerTag}' from queue '{routingKeyOrQueueName}': {message}; Priority received: {properties.Priority} ").ConfigureAwait(false);
+            
+            return new MessageProcessInstruction
+            {
+                Value = Constants.MessageProcessInstruction.OK,
+                Priority = newPriority,
+                AdditionalInfo = "id: 123"
+            };
         }
     }
 

@@ -15,6 +15,7 @@
     {
         string RoutingKeyOrQueueName { get; set; }
         string Exchange { get; set; }
+        bool KeepConnectionOpen { get; set; }
     }
 
     public interface IBrokerConfigConsumers : IBrokerConfig

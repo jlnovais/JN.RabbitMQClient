@@ -7,7 +7,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 {
     public static class Program
     {
-        private static string hostName = "localhost";
+        private static readonly string hostName = "localhost";
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
@@ -19,7 +19,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
             consumerService.ReceiveMessage += ReceiveMessage;
             consumerService.ShutdownConsumer += ShutdownConsumer;
             consumerService.ReceiveMessageError += ReceiveMessageError;
-            consumerService.MaxChannelsPerConnection = 100;
+            consumerService.MaxChannelsPerConnection = 5;
             consumerService.ServiceDescription = "test consumer service";
 
             try
@@ -39,7 +39,9 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
             var senderService = new RabbitMqSenderService(GetBrokerConfigSender());
 
-            senderService.Send("my message");
+            IMessageProperties properties = new MessageProperties { Priority = 3 };
+
+            senderService.Send("my message", properties);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
@@ -54,8 +56,9 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
                 Username = "test",
                 Password = "123",
                 Host = hostName,
-                VirtualHost = "/",
-                RoutingKeyOrQueueName = "MyTestQueue"
+                VirtualHost = "MyVirtualHost",
+                RoutingKeyOrQueueName = "MyTestQueue",
+                KeepConnectionOpen = true
             };
             return configSender;
         }
@@ -67,11 +70,11 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
                 Username = "test",
                 Password = "123",
                 Host = hostName,
-                VirtualHost = "/",
+                VirtualHost = "MyVirtualHost",
                 RoutingKeyOrQueueName = "MyTestQueue",
                 ShuffleHostList = false,
                 Port = 0,
-                TotalInstances = 255
+                TotalInstances = 100
             };
             return configConsumers;
         }
@@ -86,10 +89,20 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
             await Console.Out.WriteLineAsync($"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage}").ConfigureAwait(false);
         }
 
-        private static async Task<MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo)
+        private static async Task<MessageProcessInstruction> ReceiveMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo, IMessageProperties properties)
         {
-            await Console.Out.WriteLineAsync($"Message received from '{consumerTag}' ({exchange}): {message} ").ConfigureAwait(false);
-            return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
+            var priorityReceived = properties.Priority;
+
+            var newPriority = (byte)(priorityReceived <= 3 ? 5 : priorityReceived);
+
+            await Console.Out.WriteLineAsync($"Message received by '{consumerTag}' from queue '{routingKeyOrQueueName}': {message}; Priority received: {properties.Priority} ").ConfigureAwait(false);
+            
+            return new MessageProcessInstruction
+            {
+                Value = Constants.MessageProcessInstruction.OK,
+                Priority = newPriority,
+                AdditionalInfo = "id: 123"
+            };
         }
     }
 }

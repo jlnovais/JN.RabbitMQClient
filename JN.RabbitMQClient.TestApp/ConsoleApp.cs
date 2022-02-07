@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
@@ -14,50 +16,36 @@ namespace JN.RabbitMQClient.TestApp
         private readonly ILogger<ConsoleApp> _logger;
         private readonly IRabbitMqConsumerService _consumerService;
         private readonly IRabbitMqSenderService _senderService;
-        private readonly IRabbitMqSenderServiceKeepConnection _senderServiceKeepConnection;
         private readonly AppConfig _config;
-        private bool _useSenderServiceKeepConnection;
 
-
-
-        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, IRabbitMqSenderServiceKeepConnection senderServiceKeepConnection,
-            ILimiter limiter, AppConfig config)
+        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, ILimiter limiter, AppConfig config)
         {
             _logger = logger;
 
             _consumerService = consumerService;
             _senderService = senderService;
-            _senderServiceKeepConnection = senderServiceKeepConnection;
             _config = config;
-
-
+            
             _consumerService.ServiceDescription = "Consumer Service";
             _consumerService.ReceiveMessage += ProcessMessage;
             _consumerService.ShutdownConsumer += ProcessShutdown;
             _consumerService.ReceiveMessageError += ProcessError;
 
             _consumerService.Limiter = limiter;
-
             _consumerService.MaxChannelsPerConnection = 3;
-            
             _senderService.ServiceDescription = "Sender Service";
-
         }
 
 
         private static async Task ProcessError(string routingKeyOrQueueName, string consumerTag, string exchange, string message, string errorMessage)
         {
-            await Console.Out.WriteLineAsync($"Error processing message: {errorMessage} {Environment.NewLine}Details. routingkeyorqueuename: '{routingKeyOrQueueName}' | consumertag: {consumerTag} | exchange: {exchange} | message: {message}").ConfigureAwait(false);
+            await Console.Out.WriteLineAsync($"Error processing message: {errorMessage} {Environment.NewLine}Details. routingKeyOrQueueName: '{routingKeyOrQueueName}' | consumerTag: {consumerTag} | exchange: {exchange} | message: {message} | Error: {errorMessage}").ConfigureAwait(false);
         }
 
-
         // Application starting point
-        public void Run(bool useSenderServiceKeepConnection)
+        public void Run()
         {
-            _useSenderServiceKeepConnection = useSenderServiceKeepConnection;
-
-            _senderServiceKeepConnection.ServiceDescription = $"service to send message - keep connection created at {DateTime.Now}";
-            _senderService.ServiceDescription = "service to send messages";
+            _senderService.ServiceDescription = $"service to send messages - {DateTime.Now}";
 
             var retryQueueDetails = new RetryQueueDetails
             {
@@ -93,25 +81,19 @@ namespace JN.RabbitMQClient.TestApp
 
         }
 
-        private bool Expired(long firstErrorTimestamp)
-        {
-            if (firstErrorTimestamp == 0)
-                return false;
-
-            var elapsedTime = (DateTime.UtcNow.ToUnixTimestamp() - firstErrorTimestamp);
-
-            return elapsedTime > _config.BrokerMessageTTLSeconds;
-        }
+ 
         
-        private async Task<MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo)
+        private async Task<MessageProcessInstruction> ProcessMessage(string routingKeyOrQueueName, string consumerTag, long firstErrorTimestamp, string exchange, string message, string additionalInfo, IMessageProperties properties)
         {
-            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Additional info: {additionalInfo} ";
+            var priorityReceived = properties.Priority;
+
+            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Priority: {priorityReceived}. Additional info: {additionalInfo} ";
 
             await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
 
             _logger.LogInformation(debugMessage);
 
-            if (Expired(firstErrorTimestamp))
+            if (MessageHelper.HasExpired(firstErrorTimestamp, _config.BrokerMessageTTLSeconds))
             {
                 await Console.Out.WriteLineAsync("Message expired.").ConfigureAwait(false);
                 return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);
@@ -119,42 +101,34 @@ namespace JN.RabbitMQClient.TestApp
             
             var details = _consumerService.GetConsumerDetails();
 
-            if (details != null)
-            {
-                foreach (var consumerInfo in details)
-                {
-                    Console.ForegroundColor = consumerInfo.Id % 2 == 0 ? ConsoleColor.Blue : ConsoleColor.DarkGreen;
-
-                    await Console.Out.WriteLineAsync($"Consumer '{consumerInfo.Name}'; connected to {consumerInfo.ConnectedToHost}:{consumerInfo.ConnectedToPort}; firstErrorTimestamp: {firstErrorTimestamp}; started at {consumerInfo.ConnectionTime:yyyy-MM-dd HH:mm:ss}; {consumerInfo.LastMessageDate:yyyy-MM-dd HH:mm:ss} ").ConfigureAwait(false);
-
-                    Console.ResetColor();
-                }
-            }
+            await MessageHelper.ShowConsumerDetailsOnConsole(firstErrorTimestamp, details);
 
             switch (message)
             {
                 case "ok":
+                    await _senderService.SendTestMessage(message);
 
-                    if (_useSenderServiceKeepConnection)
-                        _senderServiceKeepConnection.Send(message);
-                    else
-                        _senderService.Send(message);
-                    
-                    await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);
                 case "requeue":
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
                 case "delay":
-                    return new MessageProcessInstruction(Constants.MessageProcessInstruction.RequeueMessageWithDelay,$"message delayed {DateTime.Now}");
+                    
+                    var newPriority = (byte)(priorityReceived <= 3 ? 5 : priorityReceived);
+
+                    return new MessageProcessInstruction
+                    {
+                        Value = Constants.MessageProcessInstruction.RequeueMessageWithDelay,
+                        AdditionalInfo = $"message delayed {DateTime.Now}",
+                        Priority = newPriority
+                    };
                 case "error":
                     throw new ErrorProcessingException("error processing message");
                 default:
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.Unknown);
             }
         }
-
 
         private async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {

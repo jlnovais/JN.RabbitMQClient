@@ -40,6 +40,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
 
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
             bool.TryParse(section["UseTLS"], out var useTls);
+            bool.TryParse(section["KeepConnectionOpen"], out var keepConnectionOpen);
 
             var conf = new BrokerConfigSender
             {
@@ -51,7 +52,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 Exchange = section["Exchange"],
                 RoutingKeyOrQueueName = section["RoutingKeyOrQueueName"],
                 ShuffleHostList = shuffleHostList,
-                UseTLS = useTls
+                UseTLS = useTls,
+                KeepConnectionOpen = keepConnectionOpen
 
             };
 

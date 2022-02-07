@@ -17,6 +17,7 @@ namespace JN.RabbitMQClient.Entities
     {
         public string RoutingKeyOrQueueName { get; set; }
         public string Exchange { get; set; }
+        public bool KeepConnectionOpen { get; set; }
     }
 
     public class BrokerConfigConsumers : BrokerConfig, IBrokerConfigConsumers

@@ -12,27 +12,28 @@ namespace JN.RabbitMQClient.TestApp
 {
     public static class Program
     {
-        private static IConfigurationRoot configuration;
+        private static IConfigurationRoot _configuration;
+        private static bool _useSenderKeepConnection = false;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Test app");
-
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            configuration = builder.Build();
+            _configuration = builder.Build();
 
-            bool useSenderKeepConnection = false;
+
 
             if (args?.Length>=1)
             {
-                useSenderKeepConnection = args[0] == "keepConnection";
+                _useSenderKeepConnection = args[0] == "keepConnection";
             }
-            
+
+            Console.WriteLine($"Starting Test app with parameter keepConnection = {_useSenderKeepConnection} ");
+
             // Create service collection and configure our services
             var services = ConfigureServices();
             // Generate a provider
@@ -42,7 +43,7 @@ namespace JN.RabbitMQClient.TestApp
 
             var app = serviceProvider.GetService<ConsoleApp>();
 
-            app.Run(useSenderKeepConnection);
+            app!.Run();
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
@@ -69,15 +70,16 @@ namespace JN.RabbitMQClient.TestApp
             // IMPORTANT! Register our application entry point
             services.AddTransient<ConsoleApp>();
 
+            var configSender = _configuration.GetBrokerConfigSender("BrokerConfigSender");
+            configSender.KeepConnectionOpen = _useSenderKeepConnection;
+
             services.AddSingleton<IRabbitMqConsumerService, RabbitMqConsumerService>();
             services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService>();
-            services.AddSingleton<IRabbitMqSenderServiceKeepConnection, RabbitMqSenderService2>();
-            services.AddSingleton<IBrokerConfigSender>(
-                configuration.GetBrokerConfigSender("BrokerConfigSender"));
+            services.AddSingleton<IBrokerConfigSender>(configSender);
             services.AddSingleton<IBrokerConfigConsumers>(
-                configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
+                _configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
 
-            services.AddSingleton<AppConfig>(configuration.GetAppConfig("BrokerConfigConsumersRetry"));
+            services.AddSingleton<AppConfig>(_configuration.GetAppConfig("BrokerConfigConsumersRetry"));
 
             services.AddSingleton<ILimiter>(GetLimiter());
 

@@ -50,7 +50,7 @@ namespace JN.RabbitMQClient.Interfaces
         /// <summary>
         /// Number of channels per connection
         /// </summary>
-        short MaxChannelsPerConnection { get; set; }
+        byte MaxChannelsPerConnection { get; set; }
 
         IEnumerable<ConsumerInfo> GetConsumerDetails();
 

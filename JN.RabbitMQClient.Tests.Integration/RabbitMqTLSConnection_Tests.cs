@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace JN.RabbitMQClient.Tests.Integration
 {
-    public class RabbitMqTLSConnection_Tests
+    public class RabbitMqTlsConnectionTests
     {
         private const string host = "rabbit.josenovais.com";
         private const string hostNameNotMatchingCertificate = "serverA";
