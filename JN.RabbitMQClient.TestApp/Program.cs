@@ -13,7 +13,7 @@ namespace JN.RabbitMQClient.TestApp
     public static class Program
     {
         private static IConfigurationRoot _configuration;
-        private static bool _useSenderKeepConnection = false;
+        private static bool _useSenderKeepConnection;
 
         static void Main(string[] args)
         {
