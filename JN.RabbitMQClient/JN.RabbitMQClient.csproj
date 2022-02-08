@@ -8,9 +8,9 @@
     <PackageProjectUrl>https://github.com/jlnovais/JN.RabbitMQClient</PackageProjectUrl>
     <Copyright>José Novais, 2022</Copyright>
     <Product>JN.RabbitMQClient - Simple RabbitMQ client</Product>
-    <AssemblyVersion>2.4.0</AssemblyVersion>
-    <FileVersion>2.4.0</FileVersion>
-    <Version>2.4.0</Version>
+    <AssemblyVersion>2.4.1</AssemblyVersion>
+    <FileVersion>2.4.1</FileVersion>
+    <Version>2.4.1</Version>
     <PackageIcon>packageIcon.png</PackageIcon>
   </PropertyGroup>
 
