@@ -4,6 +4,7 @@ using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Other;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 
 namespace JN.RabbitMQClient
 {
@@ -194,7 +195,7 @@ namespace JN.RabbitMQClient
             var routingKey = GetRoutingKey(routingKeyOrQueueName, config);
 
             if (channel.IsClosed)
-                throw new Exception("Channel is closed");
+                throw new RabbitMqClientException("Channel is closed");
 
             channel.BasicPublish(
                 exchange,

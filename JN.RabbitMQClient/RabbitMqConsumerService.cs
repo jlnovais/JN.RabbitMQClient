@@ -40,8 +40,7 @@ namespace JN.RabbitMQClient
         /// Number of channels per connection
         /// </summary>
         public byte MaxChannelsPerConnection { get; set; } = 3;
-        private bool _disposed;
-
+        private bool _disposedValue;
 
         public RabbitMqConsumerService(IBrokerConfigConsumers config)
         {
@@ -213,19 +212,7 @@ namespace JN.RabbitMQClient
         }
 
 
-        public void Dispose()
-        {
-            if (_disposed)
-                return;
-
-            foreach (var connection in _connections)
-            {
-                connection.Abort();
-                connection.Dispose();
-            }
-
-            _disposed = true;
-        }
+ 
 
 
         private IConnection GetConnection(string connectionName, int totalConsumers = 0, short maxChannelsPerConnection = 1)
@@ -238,7 +225,7 @@ namespace JN.RabbitMQClient
 
             CleanConnections();
 
-            if (_connections.Count() <= m)
+            if (_connections.Count <= m)
             {
                 var conn = base.GetConnection(connectionName);
                 _connections.Add(conn);
@@ -358,7 +345,7 @@ namespace JN.RabbitMQClient
             if (string.IsNullOrWhiteSpace(consumer.RetryQueue))
                 return;
 
-            var properties = deliveryArgs.BasicProperties; //consumer.Model.CreateBasicProperties();
+            var properties = deliveryArgs.BasicProperties; 
             RabbitMqUtilities.SetPropertiesSenderRequeueMessageWithDelay(properties, consumer.RetentionPeriodInRetryQueueMilliseconds, consumer.RetentionPeriodInRetryQueueMillisecondsMax, messageProcessInstruction.Priority);
 
             var firstErrorTimeStamp = RabbitMqUtilities.GetFirstErrorTimeStampFromMessageArgs(deliveryArgs.BasicProperties);
@@ -401,7 +388,27 @@ namespace JN.RabbitMQClient
             return ShutdownConsumer?.Invoke(consumerTag, errorCode, shutdownInitiator, errorMessage);
         }
 
- 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposedValue) 
+                return;
 
+            if (disposing)
+            {
+                foreach (var connection in _connections)
+                {
+                    connection.Abort();
+                    connection.Dispose();
+                }
+            }
+
+            _disposedValue = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
