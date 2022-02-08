@@ -35,13 +35,13 @@ namespace JN.RabbitMQClient.Other
         }
 
 
-        internal static void SetPropertiesSenderRequeueMessageWithDelay(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds, int retentionPeriodInRetryQueueMillisecondsMax, byte priority)
+        internal static void SetPropertiesSenderRequeueMessageWithDelay(IBasicProperties properties, int retentionPeriodInRetryQueueMilliseconds, int retentionPeriodInRetryQueueMillisecondsMax, byte? priority)
         {
             properties.Timestamp = new AmqpTimestamp(DateTime.UtcNow.ToUnixTimestamp());
             properties.Expiration = GetNumber(retentionPeriodInRetryQueueMilliseconds, retentionPeriodInRetryQueueMillisecondsMax).ToString();
 
-            if (priority > 0)
-                properties.Priority = priority;
+            if (priority.HasValue)
+                properties.Priority = priority.Value;
         }
 
 
@@ -87,8 +87,8 @@ namespace JN.RabbitMQClient.Other
             if (!string.IsNullOrWhiteSpace(msgProperties.CorrelationId))
                 properties.CorrelationId = msgProperties.CorrelationId;
 
-            if (msgProperties.DeliveryMode > 0)
-                properties.DeliveryMode = msgProperties.DeliveryMode;
+            if (msgProperties.DeliveryMode.HasValue)
+                properties.DeliveryMode = msgProperties.DeliveryMode.Value;
 
             if (!string.IsNullOrWhiteSpace(msgProperties.Expiration))
                 properties.Expiration = msgProperties.Expiration;
@@ -102,10 +102,11 @@ namespace JN.RabbitMQClient.Other
             if (!string.IsNullOrWhiteSpace(msgProperties.MessageId))
                 properties.MessageId = msgProperties.MessageId;
 
-            properties.Persistent = msgProperties.Persistent;
+            if (msgProperties.Persistent.HasValue)
+                properties.Persistent = msgProperties.Persistent.Value;
 
-            if (msgProperties.Priority > 0)
-                properties.Priority = msgProperties.Priority;
+            if (msgProperties.Priority.HasValue)
+                properties.Priority = msgProperties.Priority.Value;
 
             if (!string.IsNullOrWhiteSpace(msgProperties.ReplyTo))
                 properties.ReplyTo = msgProperties.ReplyTo;

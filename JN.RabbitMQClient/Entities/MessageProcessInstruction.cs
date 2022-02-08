@@ -12,12 +12,12 @@ namespace JN.RabbitMQClient.Entities
 
         public MessageProcessInstruction(Constants.MessageProcessInstruction value, string additionalInfo = null)
         {
-            Priority = 0;
+            Priority = null;
             Value = value;
             AdditionalInfo = additionalInfo;
         }
 
-        public MessageProcessInstruction(Constants.MessageProcessInstruction value, string additionalInfo, byte priority)
+        public MessageProcessInstruction(Constants.MessageProcessInstruction value, string additionalInfo, byte? priority)
         {
             Priority = priority;
             Value = value;
@@ -26,7 +26,7 @@ namespace JN.RabbitMQClient.Entities
         
         public Constants.MessageProcessInstruction Value { get; set; }
         public string AdditionalInfo { get; set; }
-        public byte Priority { get; set; }
+        public byte? Priority { get; set; }
 
     }
 }

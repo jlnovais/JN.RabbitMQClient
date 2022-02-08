@@ -32,7 +32,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
 
                 Persistent = true,
                 //ContentEncoding = System.Text.Encoding.UTF8.HeaderName,
-                Priority = 8,
+                //Priority = 8,
                 CorrelationId = "123456ABC"
             };
 
