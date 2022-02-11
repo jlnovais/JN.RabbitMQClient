@@ -19,6 +19,11 @@
     <releaseNotes>
 		Release Notes for current version (2.4.1):
 
+		- Update RabbitMQ.Client to latest version
+		- Bug fixes
+
+		Release Notes for version 2.4.0:
+
 		- Added support for message properties (in sender and consumer classes); messages can now be sent for more advanced scenarios, such as queues with support for priority messages, messages Headers, etc.
 		- Merged sender classes; feature for keep connection open was imported to the main sender class
 		- Changed type for MaxChannelsPerConnection property (in consumer service)

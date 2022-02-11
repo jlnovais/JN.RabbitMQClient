@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
 using RabbitMQ.Client;
@@ -11,7 +9,7 @@ namespace JN.RabbitMQClient.Other
     {
         private static readonly Random Random = new Random();
 
-    
+
         internal static long GetFirstErrorTimeStampFromMessageArgs(IBasicProperties properties)
         {
             long res = 0;
@@ -120,7 +118,7 @@ namespace JN.RabbitMQClient.Other
 
         private static int GetNumber(int min, int max)
         {
-            return min>=max ? min : Random.Next(min, max + 1);
+            return min >= max ? min : Random.Next(min, max + 1);
         }
     }
 }
