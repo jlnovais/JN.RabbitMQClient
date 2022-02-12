@@ -52,12 +52,12 @@
 
 	</releaseNotes>
     <dependencies>
-      <group targetFramework=".NETFramework4.6.1">
-        <dependency id="RabbitMQ.Client" version="6.2.2" exclude="Build,Analyzers" />
-      </group>
-      <group targetFramework=".NETStandard2.0">
-        <dependency id="RabbitMQ.Client" version="6.2.2" exclude="Build,Analyzers" />
-      </group>
+	    <group targetFramework=".NETFramework4.6.1">
+		    <dependency id="RabbitMQ.Client" version="6.2.3" exclude="Build,Analyzers" />
+	    </group>
+	    <group targetFramework=".NETStandard2.0">
+		    <dependency id="RabbitMQ.Client" version="6.2.3" exclude="Build,Analyzers" />
+	    </group>
     </dependencies>
   </metadata>
 </package>
