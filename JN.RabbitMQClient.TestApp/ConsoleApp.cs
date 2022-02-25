@@ -8,6 +8,7 @@ using JN.RabbitMQClient.Limiter;
 using JN.RabbitMQClient.TestApp.HelperClasses;
 using Microsoft.Extensions.Logging;
 using JN.RabbitMQClient.Other;
+using Microsoft.Extensions.Configuration;
 
 namespace JN.RabbitMQClient.TestApp
 {
@@ -16,15 +17,19 @@ namespace JN.RabbitMQClient.TestApp
         private readonly ILogger<ConsoleApp> _logger;
         private readonly IRabbitMqConsumerService _consumerService;
         private readonly IRabbitMqSenderService _senderService;
-        private readonly AppConfig _config;
+        private readonly IConfiguration _configuration;
 
-        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, ILimiter limiter, AppConfig config)
+        private readonly BrokerConfigConsumersRetry _retryConfig;
+
+
+        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, ILimiter limiter, IConfiguration configuration)
         {
             _logger = logger;
 
             _consumerService = consumerService;
             _senderService = senderService;
-            _config = config;
+            _configuration = configuration;
+            _retryConfig = configuration.GetBrokerConfigConsumersRetry("BrokerConfigConsumersRetry");
             
             _consumerService.ServiceDescription = "Consumer Service";
             _consumerService.ReceiveMessage += ProcessMessage;
@@ -49,15 +54,15 @@ namespace JN.RabbitMQClient.TestApp
 
             var retryQueueDetails = new RetryQueueDetails
             {
-                RetentionPeriodInRetryQueueMilliseconds = _config.BrokerRetentionPeriodInRetryQueueSeconds * 1000,
-                RetentionPeriodInRetryQueueMillisecondsMax = _config.BrokerRetentionPeriodInRetryQueueSecondsMax * 1000,
-                RetryQueue = _config.BrokerRetryQueue
+                RetentionPeriodInRetryQueueMilliseconds = _retryConfig.BrokerRetentionPeriodInRetryQueueSeconds * 1000,
+                RetentionPeriodInRetryQueueMillisecondsMax = _retryConfig.BrokerRetentionPeriodInRetryQueueSecondsMax * 1000,
+                RetryQueue = _retryConfig.BrokerRetryQueue
             };
 
             
             
             _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, totalConsumers: 2);
-            _consumerService.StartConsumers("consumers_Tag_B", retryQueueDetails, totalConsumers: 2);
+            _consumerService.StartConsumers("consumers_Tag_B", retryQueueDetails, totalConsumers: 2, queueName: _configuration.GetString("OtherQueueName"));
 
             _logger.LogInformation($"Starting consumers...");
 
@@ -87,13 +92,13 @@ namespace JN.RabbitMQClient.TestApp
         {
             var priorityReceived = properties.Priority;
 
-            var debugMessage = $"Message received by '{consumerTag}'. Exchange: {exchange}. Message: {message}. Priority: {priorityReceived}. Additional info: {additionalInfo} ";
+            var debugMessage = $"Message received by '{consumerTag}' from {routingKeyOrQueueName}. Exchange: {exchange}. Message: {message}. Priority: {priorityReceived}. Additional info: {additionalInfo} ";
 
             await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
 
             _logger.LogInformation(debugMessage);
 
-            if (MessageHelper.HasExpired(firstErrorTimestamp, _config.BrokerMessageTTLSeconds))
+            if (MessageHelper.HasExpired(firstErrorTimestamp, _retryConfig.BrokerMessageTTLSeconds))
             {
                 await Console.Out.WriteLineAsync("Message expired.").ConfigureAwait(false);
                 return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);

@@ -67,8 +67,11 @@ namespace JN.RabbitMQClient.TestApp
 
             });
 
+
             // IMPORTANT! Register our application entry point
             services.AddTransient<ConsoleApp>();
+            services.AddSingleton<IConfiguration>(_configuration);
+            
 
             var configSender = _configuration.GetBrokerConfigSender("BrokerConfigSender");
             configSender.KeepConnectionOpen = _useSenderKeepConnection;
@@ -79,7 +82,7 @@ namespace JN.RabbitMQClient.TestApp
             services.AddSingleton<IBrokerConfigConsumers>(
                 _configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
 
-            services.AddSingleton<AppConfig>(_configuration.GetAppConfig("BrokerConfigConsumersRetry"));
+            //services.AddSingleton<BrokerConfigConsumersRetry>(_configuration.GetBrokerConfigConsumersRetry("BrokerConfigConsumersRetry"));
 
             services.AddSingleton<ILimiter>(GetLimiter());
 

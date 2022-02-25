@@ -1,6 +1,6 @@
 ﻿namespace JN.RabbitMQClient.TestApp
 {
-    public class AppConfig
+    public class BrokerConfigConsumersRetry
     {
         public int BrokerMessageTTLSeconds { get; set; }
         public string BrokerRetryQueue { get; set; }
