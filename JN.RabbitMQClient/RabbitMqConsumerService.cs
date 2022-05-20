@@ -40,8 +40,19 @@ namespace JN.RabbitMQClient
         /// Number of channels per connection
         /// </summary>
         public byte MaxChannelsPerConnection { get; set; } = 3;
-        private bool _disposedValue;
 
+        private byte _prefetch = 1;
+        /// <summary>
+        /// Message prefetch (default is 1) for each consumer
+        /// </summary>
+        public byte ConsumersPrefetch
+        {
+            get => _prefetch;
+            set => _prefetch = value < 1 ? (byte)1 : value;
+        }
+
+        private bool _disposedValue;
+        
         public RabbitMqConsumerService(IBrokerConfigConsumers config)
         {
             _config = config;
@@ -124,6 +135,8 @@ namespace JN.RabbitMQClient
 
                 var channel = connection.CreateModel();
 
+                channel.BasicQos(prefetchCount: _prefetch, prefetchSize:0, global: false);
+
                 if (createQueue && !triedCreateQueue)
                 {
                     try
@@ -154,7 +167,7 @@ namespace JN.RabbitMQClient
                 var tag = $"{consumerName}_{i}";
 
                 consumer.ConsumerTag = tag;
-
+                
                 _consumers.Add(consumer);
 
                 channel.BasicConsume(routingKeyOrQueueName, false, tag, consumer);

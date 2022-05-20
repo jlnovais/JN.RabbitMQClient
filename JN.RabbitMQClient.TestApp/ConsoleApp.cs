@@ -38,6 +38,7 @@ namespace JN.RabbitMQClient.TestApp
 
             _consumerService.Limiter = limiter;
             _consumerService.MaxChannelsPerConnection = 3;
+            _consumerService.ConsumersPrefetch = 2;
             _senderService.ServiceDescription = "Sender Service";
         }
 

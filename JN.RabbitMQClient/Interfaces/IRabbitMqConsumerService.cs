@@ -39,8 +39,19 @@ namespace JN.RabbitMQClient.Interfaces
         /// <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
         void StopConsumers(string consumerTag);
 
+        /// <summary>
+        /// Event executed when a message is received.
+        /// </summary>
         event ReceiveMessageDelegate ReceiveMessage;
+
+        /// <summary>
+        /// Event executed when the consumer shuts down.
+        /// </summary>
         event ShutdownDelegate ShutdownConsumer;
+
+        /// <summary>
+        /// Event executed when an error occurs.
+        /// </summary>
         event ReceiveMessageErrorDelegate ReceiveMessageError;
         string ServiceDescription { get; set; }
         byte GetTotalRunningConsumers { get; }
@@ -51,6 +62,11 @@ namespace JN.RabbitMQClient.Interfaces
         /// Number of channels per connection
         /// </summary>
         byte MaxChannelsPerConnection { get; set; }
+
+        /// <summary>
+        /// Message prefetch (default is 1) for each consumer
+        /// </summary>
+        byte ConsumersPrefetch { get; set; }
 
         IEnumerable<ConsumerInfo> GetConsumerDetails();
 

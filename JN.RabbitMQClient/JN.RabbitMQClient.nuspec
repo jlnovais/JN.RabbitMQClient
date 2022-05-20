@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>JN.RabbitMQClient</id>
-    <version>2.4.1</version>
+    <version>2.4.2</version>
     <authors>José Novais</authors>
     <owners>José Novais</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -17,7 +17,13 @@
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
     <copyright>José Novais, 2022</copyright>
     <releaseNotes>
-		Release Notes for current version (2.4.1):
+		Release Notes for current version (2.4.2):
+
+		- Update RabbitMQ.Client to latest version
+		- Added ConsumersPrefetch property (in consumer service)
+		- Bug fixes
+
+		Release Notes for version 2.4.1:
 
 		- Update RabbitMQ.Client to latest version
 		- Bug fixes
@@ -53,10 +59,10 @@
 	</releaseNotes>
     <dependencies>
 	    <group targetFramework=".NETFramework4.6.1">
-		    <dependency id="RabbitMQ.Client" version="6.2.3" exclude="Build,Analyzers" />
+		    <dependency id="RabbitMQ.Client" version="6.3.0" exclude="Build,Analyzers" />
 	    </group>
 	    <group targetFramework=".NETStandard2.0">
-		    <dependency id="RabbitMQ.Client" version="6.2.3" exclude="Build,Analyzers" />
+		    <dependency id="RabbitMQ.Client" version="6.3.0" exclude="Build,Analyzers" />
 	    </group>
     </dependencies>
   </metadata>

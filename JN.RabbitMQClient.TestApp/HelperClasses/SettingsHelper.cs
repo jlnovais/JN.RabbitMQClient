@@ -20,7 +20,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
 
             bool.TryParse(section["UseTLS"], out var useTls);
-
+            
             var conf = new BrokerConfigConsumers
             {
                 Host = section["Host"],
@@ -32,7 +32,6 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 TotalInstances = totalInstances,
                 ShuffleHostList = shuffleHostList,
                 UseTLS = useTls
-
             };
 
             return conf;
