@@ -54,6 +54,7 @@ Example for consumer and sender services:
             consumerService.ShutdownConsumer += ShutdownConsumer;
             consumerService.ReceiveMessageError += ReceiveMessageError;
             consumerService.MaxChannelsPerConnection = 5;
+            consumerService.ConsumersPrefetch = 2;
             consumerService.ServiceDescription = "test consumer service";
 
             consumerService.StartConsumers("my consumer");

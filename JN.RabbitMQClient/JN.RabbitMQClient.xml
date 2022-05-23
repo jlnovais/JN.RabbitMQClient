@@ -57,9 +57,29 @@
             </summary>
             <param name="consumerTag">Consumer tag (optional). If specified, it must be the complete tag. Tag = consumerName (specified in StartConsumers method ) + "_" + id; Example : "consumerTest_0" </param>
         </member>
+        <member name="E:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.ReceiveMessage">
+            <summary>
+            Event executed when a message is received.
+            </summary>
+        </member>
+        <member name="E:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.ShutdownConsumer">
+            <summary>
+            Event executed when the consumer shuts down.
+            </summary>
+        </member>
+        <member name="E:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.ReceiveMessageError">
+            <summary>
+            Event executed when an error occurs.
+            </summary>
+        </member>
         <member name="P:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.MaxChannelsPerConnection">
             <summary>
             Number of channels per connection
+            </summary>
+        </member>
+        <member name="P:JN.RabbitMQClient.Interfaces.IRabbitMqConsumerService.ConsumersPrefetch">
+            <summary>
+            Message prefetch (default is 1) for each consumer
             </summary>
         </member>
         <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.Send(System.String,JN.RabbitMQClient.Interfaces.IMessageProperties)">
@@ -195,6 +215,11 @@
         <member name="P:JN.RabbitMQClient.RabbitMqConsumerService.MaxChannelsPerConnection">
             <summary>
             Number of channels per connection
+            </summary>
+        </member>
+        <member name="P:JN.RabbitMQClient.RabbitMqConsumerService.ConsumersPrefetch">
+            <summary>
+            Message prefetch (default is 1) for each consumer
             </summary>
         </member>
         <member name="M:JN.RabbitMQClient.RabbitMqConsumerService.StartConsumers(System.String,System.String,System.Nullable{System.Byte},System.Boolean)">
