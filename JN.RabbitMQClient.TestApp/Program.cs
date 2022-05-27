@@ -14,6 +14,7 @@ namespace JN.RabbitMQClient.TestApp
     {
         private static IConfigurationRoot _configuration;
         private static bool _useSenderKeepConnection;
+        private static bool overrideKeepConnection;
 
         static void Main(string[] args)
         {
@@ -30,9 +31,12 @@ namespace JN.RabbitMQClient.TestApp
             if (args?.Length>=1)
             {
                 _useSenderKeepConnection = args[0] == "keepConnection";
+                overrideKeepConnection = true;
+
+                Console.WriteLine($"Starting Test app with parameter keepConnection = {_useSenderKeepConnection} ");
             }
 
-            Console.WriteLine($"Starting Test app with parameter keepConnection = {_useSenderKeepConnection} ");
+           
 
             // Create service collection and configure our services
             var services = ConfigureServices();
@@ -73,7 +77,8 @@ namespace JN.RabbitMQClient.TestApp
             services.AddSingleton<IConfiguration>(_configuration);
             
             var configSender = _configuration.GetBrokerConfigSender("BrokerConfigSender");
-            configSender.KeepConnectionOpen = _useSenderKeepConnection;
+            if(overrideKeepConnection)
+                configSender.KeepConnectionOpen = _useSenderKeepConnection;
 
             services.AddSingleton<IRabbitMqConsumerService, RabbitMqConsumerService>();
             services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService>();

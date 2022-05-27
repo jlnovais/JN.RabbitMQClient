@@ -2,7 +2,7 @@
   "profiles": {
     "JN.RabbitMQClient.TestApp": {
       "commandName": "Project",
-      "commandLineArgs": "keepConnection00"
+      "commandLineArgs": ""
     }
   }
 }

@@ -112,7 +112,7 @@ namespace JN.RabbitMQClient.TestApp
             switch (message)
             {
                 case "ok":
-                    await _senderService.SendTestMessage(message);
+                    await _senderService.SendTestMessage(message + " | " + DateTime.Now);
 
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":
