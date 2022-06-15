@@ -19,17 +19,13 @@ namespace JN.RabbitMQClient.TestApp
         private readonly IRabbitMqConsumerService _consumerService;
         private readonly IRabbitMqSenderService _senderService;
         private readonly IConfiguration _configuration;
-        private readonly IOptions<BrokerConfigConsumers> _opt;
-
         private readonly BrokerConfigConsumersRetry _retryConfig;
-
 
         public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService,
             IRabbitMqSenderService senderService, ILimiter limiter, IConfiguration configuration,
             IOptions<BrokerConfigConsumers> opt
         )
         {
-            _opt = opt;
             _logger = logger;
 
             _consumerService = consumerService;
@@ -38,7 +34,7 @@ namespace JN.RabbitMQClient.TestApp
 
             _retryConfig = configuration.GetBrokerConfigConsumersRetry("BrokerConfigConsumersRetry");
 
-            _consumerService.ServiceDescription = "Consumer Service - connection for user " + _opt.Value.Username;
+            _consumerService.ServiceDescription = "Consumer Service - connection for user " + opt.Value.Username;
             _consumerService.ReceiveMessage += ProcessMessage;
             _consumerService.ShutdownConsumer += ProcessShutdown;
             _consumerService.ReceiveMessageError += ProcessError;
@@ -46,7 +42,7 @@ namespace JN.RabbitMQClient.TestApp
             _consumerService.Limiter = limiter;
             _consumerService.MaxChannelsPerConnection = 3;
             _consumerService.ConsumersPrefetch = 2;
-            _senderService.ServiceDescription = "Sender Service";
+            _senderService.ServiceDescription = $"service to send messages - {DateTime.Now}";
         }
 
 
@@ -58,7 +54,7 @@ namespace JN.RabbitMQClient.TestApp
         // Application starting point
         public void Run()
         {
-            _senderService.ServiceDescription = $"service to send messages - {DateTime.Now}";
+           
             
             var retryQueueDetails = new RetryQueueDetails
             {

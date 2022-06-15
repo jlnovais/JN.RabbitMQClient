@@ -14,7 +14,6 @@ namespace JN.RabbitMQClient
     {
         public RabbitMqUtilitiesService(IBrokerConfig config):base(config)
         {
-            //_config = config;
         }
 
 
