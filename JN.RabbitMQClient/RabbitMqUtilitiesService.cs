@@ -12,9 +12,9 @@ namespace JN.RabbitMQClient
     /// </summary>
     public class RabbitMqUtilitiesService : RabbitMqServiceBase, IRabbitMqUtilitiesService
     {
-        public RabbitMqUtilitiesService(IBrokerConfig config)
+        public RabbitMqUtilitiesService(IBrokerConfig config):base(config)
         {
-            _config = config;
+            //_config = config;
         }
 
 

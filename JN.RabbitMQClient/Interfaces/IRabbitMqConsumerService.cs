@@ -54,8 +54,8 @@ namespace JN.RabbitMQClient.Interfaces
         /// </summary>
         event ReceiveMessageErrorDelegate ReceiveMessageError;
         string ServiceDescription { get; set; }
-        byte GetTotalRunningConsumers { get; }
-        short GetTotalConsumers { get; }
+        byte TotalRunningConsumers { get; }
+        short TotalConsumers { get; }
         ILimiter Limiter { get; set; }
 
         /// <summary>
@@ -67,6 +67,11 @@ namespace JN.RabbitMQClient.Interfaces
         /// Message prefetch (default is 1) for each consumer
         /// </summary>
         byte ConsumersPrefetch { get; set; }
+
+        /// <summary>
+        /// Get consumer service connection details
+        /// </summary>
+        ConnectionDetails ConnectionDetails { get; }
 
         IEnumerable<ConsumerInfo> GetConsumerDetails();
 

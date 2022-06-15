@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using JN.RabbitMQClient.Entities;
 
 namespace JN.RabbitMQClient.Interfaces
 {
@@ -93,5 +94,9 @@ namespace JN.RabbitMQClient.Interfaces
 
         bool IsConnected { get; }
 
+        /// <summary>
+        /// Get sender service connection details
+        /// </summary>
+        ConnectionDetails ConnectionDetails { get; }
     }
 }

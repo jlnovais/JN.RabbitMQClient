@@ -9,6 +9,7 @@ using JN.RabbitMQClient.TestApp.HelperClasses;
 using Microsoft.Extensions.Logging;
 using JN.RabbitMQClient.Other;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace JN.RabbitMQClient.TestApp
 {
@@ -18,20 +19,26 @@ namespace JN.RabbitMQClient.TestApp
         private readonly IRabbitMqConsumerService _consumerService;
         private readonly IRabbitMqSenderService _senderService;
         private readonly IConfiguration _configuration;
+        private readonly IOptions<BrokerConfigConsumers> _opt;
 
         private readonly BrokerConfigConsumersRetry _retryConfig;
 
 
-        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService, IRabbitMqSenderService senderService, ILimiter limiter, IConfiguration configuration)
+        public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService,
+            IRabbitMqSenderService senderService, ILimiter limiter, IConfiguration configuration,
+            IOptions<BrokerConfigConsumers> opt
+        )
         {
+            _opt = opt;
             _logger = logger;
 
             _consumerService = consumerService;
             _senderService = senderService;
             _configuration = configuration;
+
             _retryConfig = configuration.GetBrokerConfigConsumersRetry("BrokerConfigConsumersRetry");
-            
-            _consumerService.ServiceDescription = "Consumer Service";
+
+            _consumerService.ServiceDescription = "Consumer Service - connection for user " + _opt.Value.Username;
             _consumerService.ReceiveMessage += ProcessMessage;
             _consumerService.ShutdownConsumer += ProcessShutdown;
             _consumerService.ReceiveMessageError += ProcessError;
@@ -52,7 +59,7 @@ namespace JN.RabbitMQClient.TestApp
         public void Run()
         {
             _senderService.ServiceDescription = $"service to send messages - {DateTime.Now}";
-
+            
             var retryQueueDetails = new RetryQueueDetails
             {
                 RetentionPeriodInRetryQueueMilliseconds = _retryConfig.BrokerRetentionPeriodInRetryQueueSeconds * 1000,
@@ -138,7 +145,7 @@ namespace JN.RabbitMQClient.TestApp
 
         private async Task ProcessShutdown(string consumerTag, ushort errorCode, string shutdownInitiator, string errorMessage)
         {
-            var debugMessage = $"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage} {Environment.NewLine} TotalConsumers: {_consumerService.GetTotalConsumers} | TotalRunningConsumers: {_consumerService.GetTotalRunningConsumers} ";
+            var debugMessage = $"Shutdown '{consumerTag}' | {errorCode} | {shutdownInitiator} | {errorMessage} {Environment.NewLine} TotalConsumers: {_consumerService.TotalConsumers} | TotalRunningConsumers: {_consumerService.TotalRunningConsumers} ";
             await Console.Out.WriteLineAsync(debugMessage).ConfigureAwait(false);
             _logger.LogInformation(debugMessage);
         }

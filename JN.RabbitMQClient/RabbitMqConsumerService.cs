@@ -53,9 +53,8 @@ namespace JN.RabbitMQClient
 
         private bool _disposedValue;
         
-        public RabbitMqConsumerService(IBrokerConfigConsumers config)
+        public RabbitMqConsumerService(IBrokerConfigConsumers config): base(config)
         {
-            _config = config;
         }
 
 
@@ -84,12 +83,32 @@ namespace JN.RabbitMQClient
             return consumers.ToList();
         }
 
-        public byte GetTotalRunningConsumers
+        public byte TotalRunningConsumers
         {
             get { return (byte)(_consumers.Any() ? _consumers.Count(x => x.IsRunning) : 0); }
         }
 
-        public short GetTotalConsumers => (short)(_consumers.Any() ? _consumers.Count : 0);
+        public short TotalConsumers => (short)(_consumers.Any() ? _consumers.Count : 0);
+
+        public ConnectionDetails ConnectionDetails
+        {
+            get
+            {
+                var config = (IBrokerConfigConsumers)_config;
+
+                return new ConnectionDetails
+                {
+                    Host = config.Host,
+                    Port = config.Port,
+                    UseTLS = config.UseTLS,
+                    Username = config.Username,
+                    VirtualHost = config.VirtualHost,
+                    RoutingKeyOrQueueName = config.RoutingKeyOrQueueName
+                };
+            }
+        }
+
+
 
 
         /// <summary>

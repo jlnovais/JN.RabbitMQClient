@@ -10,13 +10,18 @@ namespace JN.RabbitMQClient
 {
     public class RabbitMqServiceBase
     {
-        private protected IBrokerConfig _config;
+        private protected readonly IBrokerConfig _config;
 
         /// <summary>
         /// Service description - it will be used when a connection is setup - it will be visible on RabbitMq
         /// </summary>
         public string ServiceDescription { get; set; }
 
+
+        public RabbitMqServiceBase(IBrokerConfig config)
+        {
+            _config = config;
+        }
 
         internal IConnection GetConnection(string connectionName, bool automaticRecovery = true)
         {

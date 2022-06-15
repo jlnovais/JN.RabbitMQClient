@@ -20,10 +20,27 @@ namespace JN.RabbitMQClient
         public bool IsConnected => _connection != null && _connection.IsOpen && _channel !=null && _channel.IsOpen;
 
 
-        public RabbitMqSenderService(IBrokerConfigSender config)
+        public ConnectionDetails ConnectionDetails
         {
-            _config = config;
-            
+            get
+            {
+                var config = (IBrokerConfigSender)_config;
+
+                return new ConnectionDetails
+                {
+                    Host = config.Host,
+                    Port = config.Port,
+                    UseTLS = config.UseTLS,
+                    Username = config.Username,
+                    VirtualHost = config.VirtualHost,
+                    Exchange = config.Exchange,
+                    RoutingKeyOrQueueName = config.RoutingKeyOrQueueName
+                };
+            }
+        }
+
+        public RabbitMqSenderService(IBrokerConfigSender config): base(config)
+        {
         }
 
 

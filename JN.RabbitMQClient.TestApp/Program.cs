@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using JN.RabbitMQClient.Extensions;
 using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Limiter;
 using JN.RabbitMQClient.TestApp.HelperClasses;
@@ -80,11 +81,24 @@ namespace JN.RabbitMQClient.TestApp
             if(overrideKeepConnection)
                 configSender.KeepConnectionOpen = _useSenderKeepConnection;
 
-            services.AddSingleton<IRabbitMqConsumerService, RabbitMqConsumerService>();
-            services.AddSingleton<IRabbitMqSenderService, RabbitMqSenderService>();
-            services.AddSingleton<IBrokerConfigSender>(configSender);
-            services.AddSingleton<IBrokerConfigConsumers>(
-                _configuration.GetBrokerConfigConfigConsumers("BrokerConfigConsumers"));
+
+            services.AddConsumersService(options =>
+            {
+                var userOptions = _configuration.GetBrokerConfigConsumers("BrokerConfigConsumers");
+
+                options.RoutingKeyOrQueueName = userOptions.RoutingKeyOrQueueName;
+                options.TotalInstances = userOptions.TotalInstances;
+                options.Host = userOptions.Host;
+                options.Port = userOptions.Port;
+                options.Password = userOptions.Password;
+                options.Username = userOptions.Username;
+                options.ShuffleHostList = userOptions.ShuffleHostList;
+                options.UseTLS = userOptions.UseTLS;
+                options.VirtualHost = userOptions.VirtualHost;
+            });
+
+            services.AddSenderService(configSender);
+
 
             services.AddSingleton<ILimiter>(GetLimiter());
 

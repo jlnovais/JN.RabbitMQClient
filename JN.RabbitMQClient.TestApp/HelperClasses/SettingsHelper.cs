@@ -11,7 +11,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             return configuration[sectionName];
         }
 
-        public static BrokerConfigConsumers GetBrokerConfigConfigConsumers(this IConfiguration configuration,
+        public static BrokerConfigConsumers GetBrokerConfigConsumers(this IConfiguration configuration,
             string sectionName)
         {
             var section = configuration.GetSection(sectionName);
