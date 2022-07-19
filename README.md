@@ -48,6 +48,8 @@ Example for consumer and sender services:
 
             // consumer
 
+            // you can also use extensions AddConsumersService() and AddSenderService() (in namespace JN.RabbitMQClient.Extensions)
+
             var consumerService = new RabbitMqConsumerService(GetBrokerConfigConsumers());
 
             consumerService.ReceiveMessage += ReceiveMessage;

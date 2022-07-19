@@ -11,7 +11,7 @@
     <icon>packageIcon.png</icon>
     <projectUrl>https://jn-rabbitmqclient.josenovais.com/</projectUrl>
     <title>JN.RabbitMQClient</title>
-    <tags>RabbitMq;Client;Sender;Consumer;netstandard;netstandard2.0;csharp;netcore;service;Producer;Broker;microservice;Rabbit;limiter;NETFramework;net6;net5;netcoreapp3.1</tags>
+    <tags>RabbitMq;Client;Sender;Consumer;netstandard;netstandard2.0;csharp;netcore;service;Producer;Broker;microservice;Rabbit;limiter;NETFramework;net6;net5;netcoreapp3.1;amqp</tags>
     <repository type="git" url="https://github.com/jlnovais/JN.RabbitMQClient" />
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
@@ -67,10 +67,14 @@
 	</releaseNotes>
     <dependencies>
 	    <group targetFramework=".NETFramework4.6.1">
-		    <dependency id="RabbitMQ.Client" version="6.3.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="6.0.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="6.0.0" exclude="Build,Analyzers" />
+		    <dependency id="RabbitMQ.Client" version="6.4.0" exclude="Build,Analyzers" />
 	    </group>
 	    <group targetFramework=".NETStandard2.0">
-		    <dependency id="RabbitMQ.Client" version="6.3.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="6.0.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="6.0.0" exclude="Build,Analyzers" />
+		    <dependency id="RabbitMQ.Client" version="6.4.0" exclude="Build,Analyzers" />
 	    </group>
     </dependencies>
   </metadata>
