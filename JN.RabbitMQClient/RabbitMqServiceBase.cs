@@ -39,7 +39,10 @@ namespace JN.RabbitMQClient
 
             if (!string.IsNullOrEmpty(_config.VirtualHost))
                 factory.VirtualHost = _config.VirtualHost;
- 
+
+            if (_config.ConnectionTimeoutSeconds > 0)
+                factory.RequestedConnectionTimeout = TimeSpan.FromSeconds(_config.ConnectionTimeoutSeconds);
+
             factory.EndpointResolverFactory = GetEndpointResolver;
             var conn = factory.CreateConnection(connectionName);
 

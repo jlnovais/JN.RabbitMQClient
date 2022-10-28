@@ -9,6 +9,7 @@
         int Port { get; set; }
         bool ShuffleHostList { get; set; }
         bool UseTLS { get; set; }
+        int ConnectionTimeoutSeconds { get; set; }
     }
 
     public interface IBrokerConfigSender : IBrokerConfig

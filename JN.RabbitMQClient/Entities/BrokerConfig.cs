@@ -11,6 +11,7 @@ namespace JN.RabbitMQClient.Entities
         public int Port { get; set; }
         public bool ShuffleHostList { get; set; }
         public bool UseTLS { get; set; }
+        public int ConnectionTimeoutSeconds { get; set; }
     }
 
     public class BrokerConfigSender : BrokerConfig, IBrokerConfigSender
