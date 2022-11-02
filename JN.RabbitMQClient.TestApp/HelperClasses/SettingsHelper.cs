@@ -31,7 +31,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 RoutingKeyOrQueueName = section["RoutingKeyOrQueueName"],
                 TotalInstances = totalInstances,
                 ShuffleHostList = shuffleHostList,
-                UseTLS = useTls
+                UseTLS = useTls,
+                ConnectionTimeoutSeconds = Convert.ToInt16(section["ConnectionTimeoutSeconds"])
             };
 
             return conf;
@@ -56,7 +57,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 RoutingKeyOrQueueName = section["RoutingKeyOrQueueName"],
                 ShuffleHostList = shuffleHostList,
                 UseTLS = useTls,
-                KeepConnectionOpen = keepConnectionOpen
+                KeepConnectionOpen = keepConnectionOpen,
+                ConnectionTimeoutSeconds = Convert.ToInt16(section["ConnectionTimeoutSeconds"])
 
             };
 

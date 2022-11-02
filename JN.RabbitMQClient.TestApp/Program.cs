@@ -95,6 +95,8 @@ namespace JN.RabbitMQClient.TestApp
                 options.ShuffleHostList = userOptions.ShuffleHostList;
                 options.UseTLS = userOptions.UseTLS;
                 options.VirtualHost = userOptions.VirtualHost;
+                options.ConnectionTimeoutSeconds = userOptions.ConnectionTimeoutSeconds;
+
             });
 
             services.AddSenderService(configSender);
