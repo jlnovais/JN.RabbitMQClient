@@ -113,6 +113,23 @@ namespace JN.RabbitMQClient.Tests.HelperClasses
             return res;
         }
 
+        public uint GetTotalConsumer(string queueName)
+        {
+            var connectionFactory = new ConnectionFactory
+            {
+                HostName = _config.HostName,
+                UserName = _config.UserName,
+                Password = _config.Password,
+                VirtualHost = _config.VirtualHost
+            };
+            var connection = connectionFactory.CreateConnection();
+            var channel = connection.CreateModel();
+            var res = channel.ConsumerCount(queueName);
+            connection.Close();
+
+            return res;
+        }
+
         public void SendMessage(string queueName, string message)
         {
             var connectionFactory = new ConnectionFactory
