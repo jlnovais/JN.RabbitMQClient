@@ -25,7 +25,7 @@ namespace JN.RabbitMQClient
 
         internal IConnection GetConnection(string connectionName, bool automaticRecovery = true)
         {
-            if (string.IsNullOrEmpty(_config.Host))
+            if (string.IsNullOrWhiteSpace(_config.Host))
                 throw new ArgumentException("Invalid host.");
 
             var factory = new ConnectionFactory

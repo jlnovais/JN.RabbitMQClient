@@ -19,5 +19,15 @@
         };
 
         internal const string FirstErrorTimeStampHeaderName = "JN-firstErrorTimeStamp";
+
+
+        public enum Errors
+        {
+            OK = 0,
+            ErrorCreatingConnection = -1,
+            ErrorCreatingSendingMessage = -2,
+            ErrorGettingQueueDetails = -3,
+            InvalidMessage = -4
+        }
     }
 }

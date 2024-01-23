@@ -36,8 +36,22 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 CorrelationId = "123456ABC"
             };
 
-            senderService.Send(message, msgProperties);
-            await Console.Out.WriteLineAsync($"Message sent !! ").ConfigureAwait(false);
+            var res = senderService.Send(message, msgProperties);
+
+            if (res.Success)
+            {
+                await Console.Out.WriteLineAsync($"Message sent successfully !! ").ConfigureAwait(false);
+
+                if (res.ReturnedObject != null)
+                {
+                    await Console.Out.WriteLineAsync($"Consumer count: {res.ReturnedObject.ConsumerCount}").ConfigureAwait(false);
+                    await Console.Out.WriteLineAsync($"Message count: {res.ReturnedObject.MessageReadyCount}").ConfigureAwait(false);
+                }
+            }
+               
+
+
+
         }
 
         internal static async Task ShowConsumerDetailsOnConsole(long firstErrorTimestamp, IEnumerable<ConsumerInfo> details)

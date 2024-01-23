@@ -79,6 +79,7 @@ namespace JN.RabbitMQClient
             return res;
         }
 
+        [Obsolete("GetTotalMessages is deprecated, please use GetQueueInfo instead.")]
         public Result<uint> GetTotalMessages(string queueName)
         {
             var res = new Result<uint>();
@@ -92,6 +93,36 @@ namespace JN.RabbitMQClient
 
                     res.Success = true;
                     res.ReturnedObject = total;
+                }
+            }
+            catch (Exception e)
+            {
+                res.Success = false;
+                res.ErrorCode = -1;
+                res.ErrorDescription = e.Message;
+            }
+
+            return res;
+        }
+
+        public Result<QueueInfo> GetQueueInfo(string queueName)
+        {
+            var res = new Result<QueueInfo>();
+
+            try
+            {
+                using (var connection = GetConnection(ServiceDescription + "_UtilService"))
+                using (var channel = connection.CreateModel())
+                {
+                    var totalMessages = channel.MessageCount(queueName);
+                    var totalConsumers = channel.ConsumerCount(queueName);
+
+                    res.Success = true;
+                    res.ReturnedObject = new QueueInfo()
+                    {
+                        ConsumerCount = totalConsumers,
+                        MessageReadyCount = totalMessages
+                    };
                 }
             }
             catch (Exception e)

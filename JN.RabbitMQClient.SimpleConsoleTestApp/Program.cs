@@ -33,7 +33,6 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
                 Console.ReadKey();
                 Environment.Exit(-1);
             }
-            
 
             // sender
 
@@ -41,9 +40,18 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
 
             IMessageProperties properties = new MessageProperties { Priority = 3 };
 
-            senderService.Send("my message", properties);
+            var result = senderService.Send("my message", properties);
 
-            Console.WriteLine("Press any key to exit...");
+            Console.WriteLine($"Send result: {result.Success}");
+
+            Console.WriteLine(result.ReturnedObject != null
+                ? $"Queue details. ConsumerCount: {result.ReturnedObject.ConsumerCount}; MessageCount: {result.ReturnedObject.MessageReadyCount}"
+                : $"Unable to obtain queue details. Reason: {result.ErrorDescription}");
+
+
+            //--------
+
+            Console.WriteLine($"{Environment.NewLine}Press any key to exit...");
             Console.ReadKey();
 
             consumerService.Dispose();
@@ -58,7 +66,9 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
                 Host = hostName,
                 VirtualHost = "MyVirtualHost",
                 RoutingKeyOrQueueName = "MyTestQueue",
-                KeepConnectionOpen = true
+                KeepConnectionOpen = true,
+                GetQueueInfoOnSend = true,
+                //Exchange = "TesteEx"
             };
             return configSender;
         }
@@ -74,7 +84,7 @@ namespace JN.RabbitMQClient.SimpleConsoleTestApp
                 RoutingKeyOrQueueName = "MyTestQueue",
                 ShuffleHostList = false,
                 Port = 0,
-                TotalInstances = 100
+                TotalInstances = 5
             };
             return configConsumers;
         }

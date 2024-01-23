@@ -71,6 +71,21 @@ namespace JN.RabbitMQClient.Tests.Integration
             return service;
         }
 
+        //[TestCase("")]
+        //[TestCase(" ")]
+        [TestCase(null)]
+        public void SenderService_Send_InvalidMessage_returnsError(string message)
+        {
+            var senderService = GetSenderService();
+
+            var res = senderService.Send(message, "", queueName, Encoding.UTF8, false);
+
+            Assert.IsFalse(res.Success);
+
+            Assert.AreEqual((int)Constants.Errors.InvalidMessage, res.ErrorCode);
+
+        }
+
 
         [Test]
         public void SenderService_Send_messageIsInTheQueue()

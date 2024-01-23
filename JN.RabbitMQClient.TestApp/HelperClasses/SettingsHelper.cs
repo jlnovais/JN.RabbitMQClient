@@ -45,6 +45,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             bool.TryParse(section["ShuffleHostList"], out var shuffleHostList);
             bool.TryParse(section["UseTLS"], out var useTls);
             bool.TryParse(section["KeepConnectionOpen"], out var keepConnectionOpen);
+            bool.TryParse(section["GetQueueInfoOnSend"], out var getQueueInfoOnSend);
 
             var conf = new BrokerConfigSender
             {
@@ -58,7 +59,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 ShuffleHostList = shuffleHostList,
                 UseTLS = useTls,
                 KeepConnectionOpen = keepConnectionOpen,
-                ConnectionTimeoutSeconds = Convert.ToInt16(section["ConnectionTimeoutSeconds"])
+                ConnectionTimeoutSeconds = Convert.ToInt16(section["ConnectionTimeoutSeconds"]),
+                GetQueueInfoOnSend = getQueueInfoOnSend
 
             };
 

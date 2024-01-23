@@ -377,6 +377,7 @@
             <param name="encoding">Message encoding.</param>
             <param name="createQueue">Try to create the queue (when sending to a queue) - optional.</param>
             <param name="properties">Message properties (optional)</param>
+            <returns></returns>
         </member>
         <member name="P:JN.RabbitMQClient.RabbitMqServiceBase.ServiceDescription">
             <summary>

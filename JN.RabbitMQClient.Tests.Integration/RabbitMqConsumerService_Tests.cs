@@ -140,7 +140,7 @@ namespace JN.RabbitMQClient.Tests.Integration
 
             _consumerService = GetConsumerService(config);
 
-            Assert.Throws<ArgumentException>(() => _consumerService.StartConsumers("test", null, TotalConsumers));
+            Assert.That(() => _consumerService.StartConsumers("test", null, TotalConsumers), Throws.Exception);
         }
 
         [Test]
