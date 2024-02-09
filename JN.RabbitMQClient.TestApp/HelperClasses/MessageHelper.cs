@@ -38,6 +38,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
 
             var res = senderService.Send(message, msgProperties);
 
+           
+
             if (res.Success)
             {
                 await Console.Out.WriteLineAsync($"Message sent successfully !! ").ConfigureAwait(false);

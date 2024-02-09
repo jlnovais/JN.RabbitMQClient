@@ -269,7 +269,7 @@ namespace JN.RabbitMQClient
 
                 if (config.GetQueueInfoOnSend)
                 {
-                    var resInfo = GetQueueInfo(channel, routingKey);
+                    var resInfo = RabbitMqUtilitiesService.GetQueueInfo(channel, routingKey);
 
                     res.ReturnedObject = resInfo.ReturnedObject;
                     res.ErrorDescription = resInfo.ErrorDescription;
@@ -286,34 +286,6 @@ namespace JN.RabbitMQClient
             return res;
 
 
-        }
-
-        private Result<QueueInfo> GetQueueInfo(IModel channel, string queueName)
-        {
-            var res = new Result<QueueInfo>();
-
-            try
-            {
-                var statistics = new QueueInfo()
-                {
-                    ConsumerCount = channel.ConsumerCount(queueName),
-                    MessageReadyCount = channel.MessageCount(queueName)
-                };
-
-
-                res.Success = true;
-                res.ReturnedObject = statistics;
-
-                return res;
-            }
-            catch (Exception e)
-            {
-                res.Success = false;
-                res.ErrorCode = (int)Constants.Errors.ErrorGettingQueueDetails;
-                res.ErrorDescription = e.Message;
-            }
-
-            return res;
         }
 
 

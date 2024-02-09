@@ -107,28 +107,36 @@ namespace JN.RabbitMQClient
 
         public Result<QueueInfo> GetQueueInfo(string queueName)
         {
+            using (var connection = GetConnection(ServiceDescription + "_UtilService"))
+            using (var channel = connection.CreateModel())
+            {
+                return GetQueueInfo(channel, queueName);
+            }
+
+        }
+
+        public static Result<QueueInfo> GetQueueInfo(IModel channel, string queueName)
+        {
             var res = new Result<QueueInfo>();
 
             try
             {
-                using (var connection = GetConnection(ServiceDescription + "_UtilService"))
-                using (var channel = connection.CreateModel())
+                var statistics = new QueueInfo()
                 {
-                    var totalMessages = channel.MessageCount(queueName);
-                    var totalConsumers = channel.ConsumerCount(queueName);
+                    ConsumerCount = channel.ConsumerCount(queueName),
+                    MessageReadyCount = channel.MessageCount(queueName)
+                };
 
-                    res.Success = true;
-                    res.ReturnedObject = new QueueInfo()
-                    {
-                        ConsumerCount = totalConsumers,
-                        MessageReadyCount = totalMessages
-                    };
-                }
+
+                res.Success = true;
+                res.ReturnedObject = statistics;
+
+                return res;
             }
             catch (Exception e)
             {
                 res.Success = false;
-                res.ErrorCode = -1;
+                res.ErrorCode = (int)Constants.Errors.ErrorGettingQueueDetails;
                 res.ErrorDescription = e.Message;
             }
 
