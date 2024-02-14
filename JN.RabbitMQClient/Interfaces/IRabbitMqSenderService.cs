@@ -98,5 +98,12 @@ namespace JN.RabbitMQClient.Interfaces
         /// Get sender service connection details
         /// </summary>
         ConnectionDetails ConnectionDetails { get; }
+
+        /// <summary>
+        /// Get information about a queue.
+        /// </summary>
+        /// <param name="queueName"></param>
+        /// <returns></returns>
+        Result<QueueInfo> GetQueueInfo(string queueName);
     }
 }

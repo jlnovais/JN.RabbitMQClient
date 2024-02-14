@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>JN.RabbitMQClient</id>
-    <version>2.4.4</version>
+    <version>2.5.0</version>
     <authors>José Novais</authors>
     <owners>José Novais</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -17,13 +17,14 @@
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
     <copyright>José Novais, 2024</copyright>
     <releaseNotes>
-		Release Notes for current version 2.4.4:
+	    Release Notes for current version 2.5.0:
 
-		- Update RabbitMQ.Client to latest version
-		- Update minimum targetFramework to .NETFramework 4.6.2
-		- Added return object for 'Send' in the SenderService
-		- Added the possibility of returning the number of clients connected to a queue and the total number of ready messages as a response in the 'Send' method in SenderService. The functionality must be activated in the 'GetQueueInfoOnSend' property of the configuration.
-		- Minor bug fixes
+	    - Update RabbitMQ.Client to latest version
+	    - Update minimum targetFramework to .NETFramework 4.6.2
+	    - Added return object for 'Send' in the SenderService
+	    - Added the possibility of returning the number of clients connected to a queue and the total number of ready messages as a response in the 'Send' method in SenderService. The functionality must be activated in the 'GetQueueInfoOnSend' property of the configuration.
+	    - Added method 'GetQueueInfo' in the SenderService
+	    - Minor bug fixes
 
 		Release Notes for version 2.4.3.1:
 
@@ -79,13 +80,13 @@
 	</releaseNotes>
     <dependencies>
 	    <group targetFramework=".NETFramework4.6.2">
-		    <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="6.0.0" exclude="Build,Analyzers" />
-		    <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="6.0.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="8.0.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="8.0.0" exclude="Build,Analyzers" />
 		    <dependency id="RabbitMQ.Client" version="6.8.1" exclude="Build,Analyzers" />
 	    </group>
 	    <group targetFramework=".NETStandard2.0">
-		    <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="6.0.0" exclude="Build,Analyzers" />
-		    <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="6.0.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="8.0.0" exclude="Build,Analyzers" />
+		    <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="8.0.0" exclude="Build,Analyzers" />
 		    <dependency id="RabbitMQ.Client" version="6.8.1" exclude="Build,Analyzers" />
 	    </group>
     </dependencies>

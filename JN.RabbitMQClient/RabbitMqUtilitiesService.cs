@@ -115,6 +115,14 @@ namespace JN.RabbitMQClient
 
         }
 
+        public static Result<QueueInfo> GetQueueInfo(IConnection connection, string queueName)
+        {
+            using (var channel = connection.CreateModel())
+            {
+                return GetQueueInfo(channel, queueName);
+            }
+        }
+
         public static Result<QueueInfo> GetQueueInfo(IModel channel, string queueName)
         {
             var res = new Result<QueueInfo>();

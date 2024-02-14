@@ -115,7 +115,7 @@ namespace JN.RabbitMQClient.TestApp
             switch (message)
             {
                 case "ok":
-                    await _senderService.SendTestMessage(message + " | " + DateTime.Now);
+                    await _senderService.SendTestMessage(message + " | " + DateTime.Now, _configuration.GetString("OtherQueueToGetInfo"));
 
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":

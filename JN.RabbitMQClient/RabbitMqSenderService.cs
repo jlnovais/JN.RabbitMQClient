@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Channels;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Other;
@@ -288,6 +289,10 @@ namespace JN.RabbitMQClient
 
         }
 
+        public Result<QueueInfo> GetQueueInfo(string queueName)
+        {
+            return RabbitMqUtilitiesService.GetQueueInfo(_connection, queueName);
+        }
 
         protected static void CreateQueue(string routingKeyOrQueueName, bool create, string exchange, IModel channel)
         {

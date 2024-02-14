@@ -20,7 +20,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             return elapsedTime > brokerMessageTTLSeconds;
         }
 
-        internal static async Task SendTestMessage(this IRabbitMqSenderService senderService, string message)
+        internal static async Task SendTestMessage(this IRabbitMqSenderService senderService, string message, string otherQueueToGetInfo)
         {
             var msgProperties = new MessageProperties()
             {
@@ -38,7 +38,9 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
 
             var res = senderService.Send(message, msgProperties);
 
-           
+            
+
+
 
             if (res.Success)
             {
@@ -50,9 +52,37 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                     await Console.Out.WriteLineAsync($"Message count: {res.ReturnedObject.MessageReadyCount}").ConfigureAwait(false);
                 }
             }
-               
+            else
+            {
+                await Console.Out.WriteLineAsync($"Unable to get queue info: {res.ErrorDescription}").ConfigureAwait(false);
+            }
 
 
+            if (!string.IsNullOrWhiteSpace(otherQueueToGetInfo))
+            {
+                var otherQueueInfo = senderService.GetQueueInfo(otherQueueToGetInfo);
+
+                if (otherQueueInfo.Success)
+                {
+                    await Console.Out.WriteLineAsync($"Other queue info: ").ConfigureAwait(false);
+
+                    if (otherQueueInfo.ReturnedObject != null)
+                    {
+                        await Console.Out
+                            .WriteLineAsync($"Consumer count: {otherQueueInfo.ReturnedObject.ConsumerCount}")
+                            .ConfigureAwait(false);
+                        await Console.Out
+                            .WriteLineAsync($"Message count: {otherQueueInfo.ReturnedObject.MessageReadyCount}")
+                            .ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    await Console.Out
+                        .WriteLineAsync($"Unable to get other queue info: {otherQueueInfo.ErrorDescription}")
+                        .ConfigureAwait(false);
+                }
+            }
 
         }
 

@@ -202,6 +202,13 @@
             Get sender service connection details
             </summary>
         </member>
+        <member name="M:JN.RabbitMQClient.Interfaces.IRabbitMqSenderService.GetQueueInfo(System.String)">
+            <summary>
+            Get information about a queue.
+            </summary>
+            <param name="queueName"></param>
+            <returns></returns>
+        </member>
         <member name="T:JN.RabbitMQClient.Limiter.WindowLimiter">
             <summary>
             Limits the number of items to be processed
