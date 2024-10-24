@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>JN.RabbitMQClient</id>
-    <version>2.5.1</version>
+    <version>2.5.2</version>
     <authors>José Novais</authors>
     <owners>José Novais</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -11,15 +11,20 @@
     <icon>packageIcon.png</icon>
     <projectUrl>https://jn-rabbitmqclient.josenovais.com/</projectUrl>
     <title>JN.RabbitMQClient</title>
-    <tags>RabbitMq;Client;Sender;Consumer;netstandard;netstandard2.0;csharp;netcore;service;Producer;Broker;microservice;Rabbit;limiter;NETFramework;net6;net5;netcoreapp3.1;amqp</tags>
+    <tags>RabbitMq;Client;Sender;Consumer;netstandard;netstandard2.0;csharp;netcore;service;Producer;Broker;microservice;Rabbit;limiter;NETFramework;net8;net7;net6;net5;netcoreapp3.1;amqp</tags>
     <repository type="git" url="https://github.com/jlnovais/JN.RabbitMQClient" />
     <description>Simple implementation of RabbitMQ consumer and sender.</description>
     <summary>Simple implementation of RabbitMQ consumer and sender.</summary>
     <copyright>José Novais, 2024</copyright>
     <releaseNotes>
-	    Release Notes for current version 2.5.1:
+	    Release Notes for current version 2.5.2:
 
-	    - Minor bug fixes
+		- Support for connect to Streams (WORK IN PROGRESS)
+	
+
+		Release Notes for current version 2.5.1:
+
+		- Minor bug fixes
 
 		Release Notes for current version 2.5.0:
 

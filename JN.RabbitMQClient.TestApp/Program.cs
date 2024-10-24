@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Xml.Schema;
 using JN.RabbitMQClient.Extensions;
 using JN.RabbitMQClient.Interfaces;
 using JN.RabbitMQClient.Limiter;
@@ -101,18 +102,22 @@ namespace JN.RabbitMQClient.TestApp
 
             services.AddSenderService(configSender);
 
+            var useWindowLimiter = _configuration.GetBool("UseWindowLimiter");
 
-            services.AddSingleton<ILimiter>(GetLimiter());
+            services.AddSingleton<ILimiter>(_ => useWindowLimiter ? GetLimiter(_configuration) : null);
 
             return services;
         }
-
-        private static WindowLimiter GetLimiter()
+        
+        
+        private static WindowLimiter GetLimiter(IConfiguration configuration)
         {
-            const int maxAllowed = 1; // number of items to process in the time window
-            const int windowSeconds = 1;
-            const Constants.MessageProcessInstruction deniedInstruction = Constants.MessageProcessInstruction.RequeueMessageWithDelay;
+            var maxAllowed =  configuration.GetInt("WindowLimiterConfig:MaxAllowed"); // number of items to process in the time window
+            var windowSeconds = configuration.GetInt("WindowLimiterConfig:WindowSeconds");
 
+            var deniedInstruction =
+                configuration.GetMessageProcessInstruction("WindowLimiterConfig:DeniedProcessInstruction");
+                
             return new WindowLimiter(maxAllowed, windowSeconds, deniedInstruction);
         }
     }

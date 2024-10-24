@@ -54,21 +54,31 @@ namespace JN.RabbitMQClient.TestApp
         // Application starting point
         public void Run()
         {
-           
-            
-            var retryQueueDetails = new RetryQueueDetails
-            {
-                RetentionPeriodInRetryQueueMilliseconds = _retryConfig.BrokerRetentionPeriodInRetryQueueSeconds * 1000,
-                RetentionPeriodInRetryQueueMillisecondsMax = _retryConfig.BrokerRetentionPeriodInRetryQueueSecondsMax * 1000,
-                RetryQueue = _retryConfig.BrokerRetryQueue
-            };
+
+            var useRetryQueue = _configuration.GetBool("UseRetryQueue");
+
+            RetryQueueDetails retryQueueDetails = null;
+
+            if (useRetryQueue)
+                retryQueueDetails = new RetryQueueDetails
+                {
+                    RetentionPeriodInRetryQueueMilliseconds = _retryConfig.BrokerRetentionPeriodInRetryQueueSeconds * 1000,
+                    RetentionPeriodInRetryQueueMillisecondsMax = _retryConfig.BrokerRetentionPeriodInRetryQueueSecondsMax * 1000,
+                    RetryQueue = _retryConfig.BrokerRetryQueue
+                };
 
             
-            
-            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, totalConsumers: 2);
-            _consumerService.StartConsumers("consumers_Tag_B", retryQueueDetails, totalConsumers: 2, queueName: _configuration.GetString("OtherQueueName"));
+            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, streamOffset: 0);
 
-            _logger.LogInformation($"Starting consumers...");
+            var otherQueueName = _configuration.GetString("OtherQueueName");
+            var otherQueueConsumers = _configuration.GetByte("OtherQueueConsumers");
+
+
+            if (!string.IsNullOrWhiteSpace(otherQueueName) && otherQueueConsumers > 0)
+                _consumerService.StartConsumers("consumers_Tag_B", retryQueueDetails, queueName: otherQueueName, totalConsumers: otherQueueConsumers);
+
+
+            _logger.LogInformation($"Starting consumers...  using retry queue: {useRetryQueue}");
 
             var details = _consumerService.GetConsumerDetails();
 

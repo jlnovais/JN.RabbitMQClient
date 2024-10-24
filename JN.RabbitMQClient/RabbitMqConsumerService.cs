@@ -122,6 +122,7 @@ namespace JN.RabbitMQClient
             StartConsumers(consumerName, null, queueName, totalConsumers, createQueue);
         }
 
+
         /// <summary>
         /// StartConsumers - start consumers and connect them to a queue.
         /// </summary>
@@ -130,8 +131,9 @@ namespace JN.RabbitMQClient
         /// <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
         /// <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
         /// <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
+        /// <param name="streamOffset">Specifies the stream offset when connecting to a stream (has no effect if connecting to a queue); value 0 means from the beginning; null means from the end</param>
         /// <exception cref="RabbitMQClientException"></exception>
-        public void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null, byte? totalConsumers = null, bool createQueue = false)
+        public void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null, byte? totalConsumers = null, bool createQueue = false, int? streamOffset = null)
         {
             var config = (IBrokerConfigConsumers) _config;
 
@@ -149,17 +151,18 @@ namespace JN.RabbitMQClient
 
                 var totalCreatedConsumers = _consumers.Count;
 
-                var connection = GetConnection(ServiceDescription + "_" + i, totalCreatedConsumers, MaxChannelsPerConnection);
+                var connection = GetConnection(ServiceDescription + "_" + i, totalCreatedConsumers,
+                    MaxChannelsPerConnection);
 
                 var channel = connection.CreateModel();
 
-                channel.BasicQos(prefetchCount: _prefetch, prefetchSize:0, global: false);
+                channel.BasicQos(prefetchCount: _prefetch, prefetchSize: 0, global: false);
 
                 if (createQueue && !triedCreateQueue)
                 {
                     try
                     {
-                        RabbitMqUtilities.CreateQueueOrGetInfo(routingKeyOrQueueName, channel);
+                        RabbitMqUtilities.CreateQueueOrGetInfo(routingKeyOrQueueName, channel, streamOffset != null);
                         triedCreateQueue = true;
                     }
                     catch (Exception e)
@@ -174,8 +177,10 @@ namespace JN.RabbitMQClient
                     ConnectedToHost = connection.Endpoint.HostName,
                     ConnectionTime = DateTime.Now,
                     Id = i,
-                    RetentionPeriodInRetryQueueMilliseconds = retryQueueDetails?.RetentionPeriodInRetryQueueMilliseconds ?? 0,
-                    RetentionPeriodInRetryQueueMillisecondsMax = retryQueueDetails?.RetentionPeriodInRetryQueueMillisecondsMax ?? 0,
+                    RetentionPeriodInRetryQueueMilliseconds =
+                        retryQueueDetails?.RetentionPeriodInRetryQueueMilliseconds ?? 0,
+                    RetentionPeriodInRetryQueueMillisecondsMax =
+                        retryQueueDetails?.RetentionPeriodInRetryQueueMillisecondsMax ?? 0,
                     RetryQueue = retryQueueDetails?.RetryQueue
                 };
 
@@ -185,10 +190,28 @@ namespace JN.RabbitMQClient
                 var tag = $"{consumerName}_{i}";
 
                 consumer.ConsumerTag = tag;
-                
+
                 _consumers.Add(consumer);
 
-                channel.BasicConsume(routingKeyOrQueueName, false, tag, consumer);
+                //channel.BasicConsume(queue: routingKeyOrQueueName, autoAck: false, consumerTag: tag, consumer: consumer);
+
+                Dictionary<string, object> args = null;
+
+                if (streamOffset != null)
+                {
+                    if(streamOffset < 0)
+                        throw new ArgumentException("Invalid stream offset. Stream offset can't be negative");
+
+                    args = new Dictionary<string, object>
+                    {
+                        { "x-stream-offset", streamOffset }
+                    };
+                }
+
+
+                channel.BasicConsume(queue: routingKeyOrQueueName, autoAck: false, consumerTag: tag,
+                    args,
+                    consumer: consumer);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JN.RabbitMQClient.Entities;
 using JN.RabbitMQClient.Interfaces;
 using RabbitMQ.Client;
@@ -27,9 +28,19 @@ namespace JN.RabbitMQClient.Other
         }
 
 
-        internal static QueueDeclareOk CreateQueueOrGetInfo(string queueName, IModel channel)
+        internal static QueueDeclareOk CreateQueueOrGetInfo(string queueName, IModel channel, bool isStream = false)
         {
-            return channel.QueueDeclare(queueName, true, false, false);
+            Dictionary<string, object> args = null;
+
+            if (isStream)
+            {
+                args = new Dictionary<string, object>
+                {
+                    { "x-queue-type", "stream" }
+                };
+            }
+
+            return channel.QueueDeclare(queueName, true, false, false, args);
         }
 
 
