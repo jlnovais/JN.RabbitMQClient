@@ -1,0 +1,9 @@
+Some useful links about streams:
+
+https://programmingpercy.tech/blog/using-rabbitmq-streams-in-go/   (Go language but good explanation)
+
+https://www.rabbitmq.com/blog/2021/07/13/rabbitmq-streams-overview
+
+https://www.rabbitmq.com/docs/streams
+
+https://www.cloudamqp.com/blog/rabbitmq-streams-and-replay-features-part-3-limits-and-configurations-for-streams-in-rabbitmq.html

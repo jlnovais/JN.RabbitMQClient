@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.156
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JN.RabbitMQClient", "JN.RabbitMQClient\JN.RabbitMQClient.csproj", "{C3A312BB-B78D-4F19-A70D-F28146016B54}"
 EndProject
@@ -12,6 +11,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JN.RabbitMQClient.SimpleConsoleTestApp", "JN.RabbitMQClient.SimpleConsoleTestApp\JN.RabbitMQClient.SimpleConsoleTestApp.csproj", "{C22149AE-A070-4F19-95D6-0C76844A04B0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JN.RabbitMQClient.Tests.Integration", "JN.RabbitMQClient.Tests.Integration\JN.RabbitMQClient.Tests.Integration.csproj", "{7B58A99B-F57E-4EFD-953C-927B0DB2A208}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{037DBE92-4C70-48CC-94E5-62CB08CE6F01}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\read-me.txt = Docs\read-me.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

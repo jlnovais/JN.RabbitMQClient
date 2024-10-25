@@ -68,7 +68,7 @@ namespace JN.RabbitMQClient.TestApp
                 };
 
             
-            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, streamOffset: 0);
+            _consumerService.StartConsumers("consumers_Tag_A", retryQueueDetails, streamOffset: "next");
 
             var otherQueueName = _configuration.GetString("OtherQueueName");
             var otherQueueConsumers = _configuration.GetByte("OtherQueueConsumers");
@@ -118,13 +118,18 @@ namespace JN.RabbitMQClient.TestApp
                 return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessage);
             }
             
+            var offset = Utilities.GetStreamOffsetFromMessageHeader(properties);
+
+            await Console.Out.WriteLineAsync($"*** Message offset: {offset}").ConfigureAwait(false);
+
+
             var details = _consumerService.GetConsumerDetails();
 
             await MessageHelper.ShowConsumerDetailsOnConsole(firstErrorTimestamp, details);
 
             switch (message)
             {
-                case "ok":
+                case var m when m.StartsWith("ok"): //"ok":
                     await _senderService.SendTestMessage(message + " | " + DateTime.Now, _configuration.GetString("OtherQueueToGetInfo"));
 
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);

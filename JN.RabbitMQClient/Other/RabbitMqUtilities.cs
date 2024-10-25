@@ -11,6 +11,20 @@ namespace JN.RabbitMQClient.Other
         private static readonly Random Random = new Random();
 
 
+        internal static long GetStreamOffsetFromMessageHeader(IMessageProperties properties)
+        {
+            if (properties?.Headers == null)
+            {
+                return 0;
+            }
+
+            if (properties.Headers.TryGetValue(Constants.StreamOffsetHeaderName, out var value))
+                return (long)value;
+
+            return 0;
+        }
+
+
         internal static long GetFirstErrorTimeStampFromMessageArgs(IBasicProperties properties)
         {
             long res = 0;
@@ -21,8 +35,8 @@ namespace JN.RabbitMQClient.Other
             if (properties.Headers == null)
                 return res;
 
-            if (properties.Headers.ContainsKey(Constants.FirstErrorTimeStampHeaderName))
-                res = (long)(properties.Headers[Constants.FirstErrorTimeStampHeaderName]);
+            if (properties.Headers.TryGetValue(Constants.FirstErrorTimeStampHeaderName, out var header))
+                res = (long)(header);
 
             return res;
         }
@@ -36,7 +50,7 @@ namespace JN.RabbitMQClient.Other
             {
                 args = new Dictionary<string, object>
                 {
-                    { "x-queue-type", "stream" }
+                    { Constants.QueueTypeArgumentName, Constants.QueueTypeStreamArgumentValue }
                 };
             }
 

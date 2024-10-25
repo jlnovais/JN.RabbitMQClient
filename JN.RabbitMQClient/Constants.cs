@@ -20,6 +20,16 @@
 
         internal const string FirstErrorTimeStampHeaderName = "JN-firstErrorTimeStamp";
 
+        internal const string StreamOffsetHeaderName = "x-stream-offset";
+
+        internal const string QueueTypeArgumentName = "x-queue-type";
+        internal const string QueueTypeStreamArgumentValue = "stream";
+
+
+        internal const string QueueOffsetArgumentName = "x-stream-offset";
+
+
+
 
         public enum Errors
         {
