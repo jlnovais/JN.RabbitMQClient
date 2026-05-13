@@ -80,6 +80,8 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             bool.TryParse(section["KeepConnectionOpen"], out var keepConnectionOpen);
             bool.TryParse(section["GetQueueInfoOnSend"], out var getQueueInfoOnSend);
 
+            uint.TryParse(section["MessageConfirmationWaitMilliseconds"], out var messageConfirmationWaitMilliseconds);
+
             var conf = new BrokerConfigSender
             {
                 Host = section["Host"],
@@ -93,8 +95,9 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 UseTLS = useTls,
                 KeepConnectionOpen = keepConnectionOpen,
                 ConnectionTimeoutSeconds = Convert.ToInt16(section["ConnectionTimeoutSeconds"]),
-                GetQueueInfoOnSend = getQueueInfoOnSend
-
+                GetQueueInfoOnSend = getQueueInfoOnSend,
+                MessageConfirmation = Convert.ToBoolean(section["MessageConfirmation"]),
+                MessageConfirmationWaitMilliseconds = messageConfirmationWaitMilliseconds
             };
 
             return conf;

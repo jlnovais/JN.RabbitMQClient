@@ -26,7 +26,7 @@ namespace JN.RabbitMQClient.Interfaces
         /// <param name="queueName">Queue where the consumers will connect (optional - if not defined, the config value is used)</param>
         /// <param name="totalConsumers">Total consumers to start (optional - if not defined, the config value is used)</param>
         /// <param name="createQueue">Create queue to connect when starting consumers (optional - default is false)</param>
-        /// <param name="createQueueIsStream">When creating a queue, specify if is a stream (optional - default is false)</param>
+        /// <param name="queueIsStream">When creating a queue, specify if is a stream (optional - default is false)</param>
         /// <param name="streamOffset">Specifies the stream offset when connecting to a stream (has no effect if connecting to a queue). Available options:
         /// <list type="bullet">
         /// <item>
@@ -56,7 +56,7 @@ namespace JN.RabbitMQClient.Interfaces
         /// </list>
         /// </param>
         void StartConsumers(string consumerName, RetryQueueDetails retryQueueDetails, string queueName = null,
-            byte? totalConsumers = null, bool createQueue = false, bool createQueueIsStream = false,
+            byte? totalConsumers = null, bool createQueue = false, bool queueIsStream = false,
             object streamOffset = null);
 
         /// <summary>

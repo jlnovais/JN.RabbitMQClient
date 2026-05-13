@@ -14,6 +14,7 @@ namespace JN.RabbitMQClient
     /// </summary>
     public class RabbitMqSenderService : RabbitMqServiceBase, IRabbitMqSenderService, IDisposable
     {
+        private readonly uint _maxWaitTimeForMessageConfirmationMs = 2000;
         private IConnection _connection;
         private IModel _channel;
 
@@ -180,7 +181,7 @@ namespace JN.RabbitMQClient
                 {
                     try
                     {
-                        SetupConnection();
+                        SetupConnection(config.MessageConfirmation);
                     }
                     catch (Exception e)
                     {
@@ -268,6 +269,25 @@ namespace JN.RabbitMQClient
                     properties,
                     body);
 
+                if (config.MessageConfirmation)
+                {
+                    var waitTime = config.MessageConfirmationWaitMilliseconds <= 0
+                        ? _maxWaitTimeForMessageConfirmationMs
+                        : config.MessageConfirmationWaitMilliseconds;
+
+                    var resWait = channel.WaitForConfirms(TimeSpan.FromMilliseconds(waitTime));
+                    if (!resWait)
+                    {
+                        res.Success = false;
+                        res.ErrorCode = (int)Constants.Errors.MessageNotConfirmed;
+                        res.ErrorDescription = "Message not confirmed by broker";
+
+                        return res;
+
+                    }
+                }
+                
+
                 if (config.GetQueueInfoOnSend)
                 {
                     var resInfo = RabbitMqUtilitiesService.GetQueueInfo(channel, routingKey);
@@ -344,7 +364,7 @@ namespace JN.RabbitMQClient
             _channel?.Dispose();
         }
 
-        public void SetupConnection()
+        public void SetupConnection(bool enableMessageConfirmation = false )
         {
             lock (_lockObj)
             {
@@ -355,6 +375,11 @@ namespace JN.RabbitMQClient
                 
                 _connection = GetConnection(ServiceDescription + "_sender", false);
                 _channel = _connection.CreateModel();
+                if (enableMessageConfirmation)
+                {
+                    _channel.ConfirmSelect();
+                }
+                
             }
         }
 

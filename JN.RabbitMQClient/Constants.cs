@@ -37,7 +37,8 @@
             ErrorCreatingConnection = -1,
             ErrorCreatingSendingMessage = -2,
             ErrorGettingQueueDetails = -3,
-            InvalidMessage = -4
+            InvalidMessage = -4,
+            MessageNotConfirmed = -5
         }
     }
 }

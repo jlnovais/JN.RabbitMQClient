@@ -21,6 +21,8 @@ namespace JN.RabbitMQClient.Entities
         public bool KeepConnectionOpen { get; set; }
 
         public bool GetQueueInfoOnSend { get; set; }
+        public bool MessageConfirmation { get; set; }
+        public uint MessageConfirmationWaitMilliseconds { get; set; } = 1000;
     }
 
     public class BrokerConfigConsumers : BrokerConfig, IBrokerConfigConsumers

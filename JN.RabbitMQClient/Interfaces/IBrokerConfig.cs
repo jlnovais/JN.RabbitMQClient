@@ -18,6 +18,9 @@
         string Exchange { get; set; }
         bool KeepConnectionOpen { get; set; }
         bool GetQueueInfoOnSend { get; set; }
+        bool MessageConfirmation { get; set; }
+
+        uint MessageConfirmationWaitMilliseconds { get; set; }
     }
 
     public interface IBrokerConfigConsumers : IBrokerConfig
