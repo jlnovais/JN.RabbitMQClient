@@ -6,11 +6,11 @@
     <Authors>José Novais</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/jlnovais/JN.RabbitMQClient</PackageProjectUrl>
-    <Copyright>José Novais, 2024</Copyright>
+    <Copyright>José Novais, 2026</Copyright>
     <Product>JN.RabbitMQClient - Simple RabbitMQ client</Product>
-    <AssemblyVersion>2.6.0</AssemblyVersion>
-    <FileVersion>2.6.0</FileVersion>
-    <Version>2.6.0</Version>
+    <AssemblyVersion>2.6.1</AssemblyVersion>
+    <FileVersion>2.6.1</FileVersion>
+    <Version>2.6.1</Version>
     <PackageIcon>packageIcon.png</PackageIcon>
   </PropertyGroup>
 

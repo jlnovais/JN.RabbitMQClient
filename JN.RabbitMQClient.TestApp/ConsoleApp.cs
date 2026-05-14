@@ -21,6 +21,10 @@ namespace JN.RabbitMQClient.TestApp
         private readonly IConfiguration _configuration;
         private readonly BrokerConfigConsumersRetry _retryConfig;
 
+        private double _totalSentMessages = 0;
+        private double _totalSentMessagesError = 0;
+        private double _totalSentMessagesSuccess = 0;
+
         public ConsoleApp(ILogger<ConsoleApp> logger, IRabbitMqConsumerService consumerService,
             IRabbitMqSenderService senderService, ILimiter limiter, IConfiguration configuration,
             IOptions<BrokerConfigConsumers> opt
@@ -130,7 +134,21 @@ namespace JN.RabbitMQClient.TestApp
             switch (message)
             {
                 case var m when m.StartsWith("ok"): //"ok":
-                    await _senderService.SendTestMessage(message + " | " + DateTime.Now, _configuration.GetString("OtherQueueToGetInfo"));
+                    _totalSentMessages++;
+                    var messageSent = await _senderService.SendTestMessage(message + " | " + DateTime.Now,
+                        _configuration.GetString("OtherQueueToGetInfo"));
+
+                    if (messageSent)
+                        _totalSentMessagesSuccess++;
+                    else
+                        _totalSentMessagesError++;
+
+                    await Console.Out.WriteLineAsync($"Total messages sent: {_totalSentMessages}")
+                        .ConfigureAwait(false);
+                    await Console.Out.WriteLineAsync($"Total messages sent successfully: {_totalSentMessagesSuccess}")
+                        .ConfigureAwait(false);
+                    await Console.Out.WriteLineAsync($"Total messages sent with error: {_totalSentMessagesError}")
+                        .ConfigureAwait(false);
 
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.OK);
                 case "ignore":
@@ -138,7 +156,7 @@ namespace JN.RabbitMQClient.TestApp
                 case "requeue":
                     return new MessageProcessInstruction(Constants.MessageProcessInstruction.IgnoreMessageWithRequeue);
                 case "delay":
-                    
+
                     var newPriority = (byte)(priorityReceived <= 3 ? 5 : priorityReceived);
 
                     return new MessageProcessInstruction

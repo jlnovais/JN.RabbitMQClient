@@ -177,22 +177,25 @@ namespace JN.RabbitMQClient
 
             if (config.KeepConnectionOpen)
             {
-                if (!IsConnected)
+                lock (_lockObj)
                 {
-                    try
+                    if (!IsConnected)
                     {
-                        SetupConnection(config.MessageConfirmation);
-                    }
-                    catch (Exception e)
-                    {
-                        return new Result<QueueInfo>()
+                        try
                         {
-                            Success = false,
-                            ErrorCode = (int)Constants.Errors.ErrorCreatingConnection,
-                            ErrorDescription = e.Message
-                        };
+                            SetupConnection(config.MessageConfirmation);
+                        }
+                        catch (Exception e)
+                        {
+                            return new Result<QueueInfo>()
+                            {
+                                Success = false,
+                                ErrorCode = (int)Constants.Errors.ErrorCreatingConnection,
+                                ErrorDescription = e.Message
+                            };
+                        }
+
                     }
-                    
                 }
 
                 return _Send(exchangeName, routingKeyOrQueueName, createQueue, _channel, config, body, msgProperties);
@@ -254,6 +257,8 @@ namespace JN.RabbitMQClient
 
                 RabbitMqUtilities.SetProperties(properties, msgProperties);
 
+                properties.Persistent = true;
+
                 var exchange = GetExchange(exchangeName, config);
 
                 CreateQueue(routingKeyOrQueueName, createQueue, exchange, channel);
@@ -262,6 +267,11 @@ namespace JN.RabbitMQClient
 
                 if (channel.IsClosed)
                     throw new RabbitMqClientException("Channel is closed");
+
+                if (config.MessageConfirmation && !(channel.NextPublishSeqNo > 0))
+                {
+                    channel.ConfirmSelect();
+                }
 
                 channel.BasicPublish(
                     exchange,
@@ -275,6 +285,7 @@ namespace JN.RabbitMQClient
                         ? _maxWaitTimeForMessageConfirmationMs
                         : config.MessageConfirmationWaitMilliseconds;
 
+                    /*
                     var resWait = channel.WaitForConfirms(TimeSpan.FromMilliseconds(waitTime));
                     if (!resWait)
                     {
@@ -285,10 +296,37 @@ namespace JN.RabbitMQClient
                         return res;
 
                     }
+                    */
+
+                    try
+                    {
+                        channel.WaitForConfirmsOrDie(TimeSpan.FromMilliseconds(waitTime));
+                    }
+                    // 3. CAPTURA ESPECÍFICA DE TIMEOUT (Comum em falhas de VPN)
+                    catch (TimeoutException)
+                    {
+                        res.Success = false;
+                        res.ErrorCode = (int)Constants.Errors.MessageNotConfirmed;
+                        res.ErrorDescription = "Timeout: Broker didn't respond. VPN/Link might be down.";
+                        return res;
+                    }
+                    catch (OperationInterruptedException ex)
+                    {
+                        res.Success = false;
+                        res.ErrorCode = (int)Constants.Errors.MessageNotConfirmed;
+                        res.ErrorDescription = $"NACK/Failure: {ex.Message} / {ex.ShutdownReason}";
+                        return res;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
+
                 }
                 
 
-                if (config.GetQueueInfoOnSend)
+                if (config.GetQueueInfoOnSend && !channel.IsClosed)
                 {
                     var resInfo = RabbitMqUtilitiesService.GetQueueInfo(channel, routingKey);
 
@@ -360,26 +398,65 @@ namespace JN.RabbitMQClient
             if (!config.KeepConnectionOpen)
                 return;
 
-            _connection?.Dispose();
-            _channel?.Dispose();
+            lock (_lockObj)
+            {
+                try
+                {
+                    if (_channel != null && _channel.IsOpen) _channel.Close();
+                    _channel?.Dispose();
+                }
+                catch { /* Ignore */ }
+
+                try
+                {
+                    if (_connection != null && _connection.IsOpen) _connection.Close();
+                    _connection?.Dispose();
+                }
+                catch { /* Ignore */ }
+
+                _channel = null;
+                _connection = null;
+            }
         }
 
-        public void SetupConnection(bool enableMessageConfirmation = false )
+        private EventHandler<EventArgs> _recoveryHandler;
+
+        public void SetupConnection(bool enableMessageConfirmation = false)
         {
             lock (_lockObj)
             {
-                if (IsConnected)
-                    return;
+                if (IsConnected) return;
+
+                // Limpeza rigorosa
+                if (_connection is IAutorecoveringConnection oldRecovery && _recoveryHandler != null)
+                    oldRecovery.RecoverySucceeded -= _recoveryHandler;
 
                 CloseConnection();
-                
+
                 _connection = GetConnection(ServiceDescription + "_sender", false);
                 _channel = _connection.CreateModel();
+
+                _channel.ModelShutdown += (sender, reason) => {
+                    Console.WriteLine($"Channel closed. Reason: {reason.ReplyText}");
+                };
+
                 if (enableMessageConfirmation)
                 {
                     _channel.ConfirmSelect();
+
+                    if (_connection is IAutorecoveringConnection recovery)
+                    {
+                        // Criamos o handler de forma a podermos removê-lo depois
+                        _recoveryHandler = (sender, args) => {
+                            lock (_lockObj)
+                            {
+                                if (_channel != null && _channel.IsOpen)
+                                    _channel.ConfirmSelect();
+                            }
+                        };
+                        recovery.RecoverySucceeded += _recoveryHandler;
+                    }
                 }
-                
             }
         }
 

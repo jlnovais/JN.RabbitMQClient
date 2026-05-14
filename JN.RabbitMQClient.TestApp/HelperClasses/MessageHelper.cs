@@ -20,8 +20,9 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             return elapsedTime > brokerMessageTTLSeconds;
         }
 
-        internal static async Task SendTestMessage(this IRabbitMqSenderService senderService, string message, string otherQueueToGetInfo)
+        internal static async Task<bool> SendTestMessage(this IRabbitMqSenderService senderService, string message, string otherQueueToGetInfo)
         {
+            bool messageSent = false;
             var msgProperties = new MessageProperties()
             {
                 Headers = new Dictionary<string, object>()
@@ -39,12 +40,11 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             var res = senderService.Send(message, msgProperties);
 
             
-
-
-
             if (res.Success)
             {
                 await Console.Out.WriteLineAsync($"Message sent successfully !! ").ConfigureAwait(false);
+
+                messageSent = true;
 
                 if (res.ReturnedObject != null)
                 {
@@ -54,7 +54,9 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
             }
             else
             {
-                await Console.Out.WriteLineAsync($"Unable to get queue info: {res.ErrorDescription}").ConfigureAwait(false);
+                await Console.Out.WriteLineAsync($"Error sending message: {res.ErrorCode} / {res.ErrorDescription}").ConfigureAwait(false);
+
+                messageSent = false;
             }
 
 
@@ -84,6 +86,7 @@ namespace JN.RabbitMQClient.TestApp.HelperClasses
                 }
             }
 
+            return messageSent;
         }
 
         internal static async Task ShowConsumerDetailsOnConsole(long firstErrorTimestamp, IEnumerable<ConsumerInfo> details)
